@@ -16,7 +16,7 @@
   <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <main class="page">
+  <main class="page wide">
     <a class="back" href="./">← back to the sky</a>
     <h1 class="h1">Flori<i>legium</i></h1>
     <p class="lede">A gathering of flowers: words I picked up along the way.</p>
@@ -26,6 +26,7 @@
       <button role="tab" aria-selected="false" data-t="book">Shelf</button>
       <button role="tab" aria-selected="false" data-t="read">Reads</button>
     </div>
+    <div class="chips" id="genres" hidden></div>
     <div id="out"><div class="empty">Loading…</div></div>
   </main>
 
@@ -41,6 +42,8 @@
         .order("position", { ascending: true }).order("created_at", { ascending: false });
       items = data || [];
     }
+    let genre = "All";
+    const genresOf = (x) => String(x.genre || "").split(",").map((g) => g.trim()).filter(Boolean);
     const favColor = (u) => { const p = platform(u); return p === "Substack" ? "#e07a3c" : p === "Medium" ? "#2f2f2f" : "#B07A86"; };
 
     const quoteHtml = (x) => `<div class="card quote">“${esc(x.title)}”
@@ -50,7 +53,7 @@
       const tag = safeUrl(x.url) ? "a" : "div";
       return `<${tag} class="book" ${tag === "a" ? `href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener"` : ""}>
         <div class="cover" style="${img ? `background-image:url('${esc(img)}')` : `background:linear-gradient(160deg,${tint(x.title)},#8F5864)`}">${img ? "" : esc(x.title)}</div>
-        <b>${esc(x.title)}</b>${x.author ? `<span class="by">${esc(x.author)}</span>` : ""}${x.note ? `<span class="why">${esc(x.note)}</span>` : ""}</${tag}>`;
+        <b>${esc(x.title)}</b>${x.author ? `<span class="by">${esc(x.author)}</span>` : ""}${genresOf(x).length ? `<span class="gen">${esc(genresOf(x).join(" · "))}</span>` : ""}${x.note ? `<span class="why clamp">${esc(x.note)}</span>` : ""}</${tag}>`;
     };
     const readHtml = (x) => {
       const u = safeUrl(x.url), p = platform(u);
@@ -69,12 +72,25 @@
         if (b.length) html += `<div class="sec">On my shelf <span class="hand">I'd recommend ♡</span></div><div class="shelf">${b.slice(0, 6).map(bookHtml).join("")}</div>`;
         if (r.length) html += `<div class="sec">Good reads <span class="hand">worth your time</span></div>${r.slice(0, 5).map(readHtml).join("")}`;
       } else if (tab === "quote") html = q.map(quoteHtml).join("");
-      else if (tab === "book") html = b.length ? `<div class="shelf">${b.map(bookHtml).join("")}</div>` : "";
+      else if (tab === "book") {
+        const shown = b.filter((x) => genre === "All" || genresOf(x).map((g) => g.toLowerCase()).includes(genre.toLowerCase()));
+        html = shown.length ? `<div class="shelf">${shown.map(bookHtml).join("")}</div>` : "";
+      }
       else html = r.map(readHtml).join("");
+      // genre chips (Shelf tab only)
+      const all = ["All", ...new Map(b.flatMap(genresOf).map((g) => [g.toLowerCase(), g])).values()];
+      const gEl = document.getElementById("genres");
+      gEl.hidden = !(tab === "book" && all.length > 1);
+      gEl.innerHTML = all.map((g) => `<button class="chip" aria-pressed="${g.toLowerCase() === genre.toLowerCase()}" data-g="${esc(g)}">${esc(g)}</button>`).join("");
+      gEl.querySelectorAll(".chip").forEach((c) => c.onclick = () => { genre = c.dataset.g; render(); });
       document.getElementById("out").innerHTML = html || none;
+      // tap a long note to read it all
+      document.querySelectorAll("#out .why.clamp").forEach((n) => n.onclick = (e) => {
+        if (n.scrollHeight > n.clientHeight + 2 || n.classList.contains("expanded")) { e.preventDefault(); e.stopPropagation(); n.classList.toggle("expanded"); }
+      });
     }
     document.querySelectorAll(".tabs button").forEach((t) => t.onclick = () => {
-      tab = t.dataset.t;
+      tab = t.dataset.t; genre = "All";
       document.querySelectorAll(".tabs button").forEach((x) => x.setAttribute("aria-selected", String(x === t)));
       render();
     });

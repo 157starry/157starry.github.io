@@ -27,12 +27,13 @@
     flori: {
       label: "Florilegium", table: "star_flori", reorder: true, hint: "Quotes, books you recommend, and good reads.",
       title: (r) => r.title,
-      sub: (r) => ({ quote: "Quote", book: "Book", read: "Read" }[r.kind] || "") + (r.author ? " · " + r.author : ""),
+      sub: (r) => ({ quote: "Quote", book: "Book", read: "Read" }[r.kind] || "") + (r.author ? " · " + r.author : "") + (r.genre ? " · " + r.genre : ""),
       thumb: (r) => r.image_url,
       fields: [
         { k: "kind", label: "Type", type: "select", def: "quote", options: [["quote", "Quote / reflection"], ["book", "Book for the shelf"], ["read", "Good read (link)"]] },
         { k: "title", label: "The quote, book title, or article title", type: "textarea", req: true, max: 600 },
         { k: "author", label: "Author / source", type: "text", max: 120 },
+        { k: "genre", label: "Genre", type: "text", max: 40, suggest: true, hint: "One or more, separated by commas: Psychology, Philosophy, History, Fiction…", showIf: (v) => v.kind === "book" },
         { k: "note", label: "Your little note (shows in handwriting)", type: "text", max: 200 },
         { k: "url", label: "Link", type: "url", hint: "Needed for reads. Optional for books.", showIf: (v) => v.kind !== "quote" },
         { k: "image_url", label: "Book cover (optional)", type: "image", folder: "covers", showIf: (v) => v.kind === "book" },
