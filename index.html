@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>s(T☆R)light</title>
+  <meta name="description" content="finding æquanimitas in a princess-coded constellation">
+  <meta name="theme-color" content="#161a2e">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="s(T☆R)light">
+  <meta property="og:description" content="finding æquanimitas in a princess-coded constellation">
+  <meta property="og:url" content="https://157starry.github.io/">
+  <meta property="og:image" content="https://157starry.github.io/assets/og-image.png">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta name="twitter:card" content="summary_large_image">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="sky-page">
+  <div class="stars-bg" id="bg" aria-hidden="true"></div>
+  <main class="sky" id="sky">
+    <header class="sky-head">
+      <h1 class="sky-title" id="title">s(T☆R)light</h1>
+      <p class="sky-sub" id="sub"></p>
+    </header>
+    <svg id="lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
+    <nav id="stars" aria-label="Stars"></nav>
+    <p class="sky-hint">tiny ✧ = one entry · tap a star to open</p>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
+  <script src="common.js"></script>
+  <script>
+  (function () {
+    const { cfg, sb, esc, hash } = SL;
+    document.getElementById("title").textContent = cfg.title;
+    document.getElementById("sub").textContent = cfg.subtitle;
+
+    // background twinkles
+    const bg = document.getElementById("bg");
+    for (let i = 0; i < 120; i++) {
+      const d = document.createElement("i");
+      const s = Math.random() < .85 ? 2 : 3;
+      d.style.cssText = `width:${s}px;height:${s}px;left:${Math.random() * 100}%;top:${Math.random() * 100}%;opacity:${(.15 + Math.random() * .6).toFixed(2)};animation-delay:${(Math.random() * 4).toFixed(2)}s`;
+      bg.appendChild(d);
+    }
+
+    const stars = cfg.stars;
+    const q = { key: "quefory", label: "Quefory", desc: "ask me anything", href: cfg.queforyUrl, x: 57, y: 85, small: true };
+
+    // constellation lines: lect(o) → Florilegium → Nocturnes → Lieux → Starry Lab → lect(o), Lieux → Quefory
+    const pts = stars.map((s) => `${s.x},${s.y}`).join(" ");
+    const lieux = stars.find((s) => s.key === "lieux") || stars[stars.length - 1];
+    document.getElementById("lines").innerHTML =
+      `<g stroke="#F5E3E2" stroke-opacity=".35" stroke-width="1.2" fill="none" stroke-dasharray="3 5" vector-effect="non-scaling-stroke">
+        <polygon points="${pts}" vector-effect="non-scaling-stroke"/>
+        <line x1="${lieux.x}" y1="${lieux.y}" x2="${q.x}" y2="${q.y}" vector-effect="non-scaling-stroke"/></g>`;
+
+    document.getElementById("stars").innerHTML = stars.concat([q]).map((s) =>
+      `<a class="star ${s.small ? "small" : ""}" href="${esc(s.href)}" style="left:${s.x}%;top:${s.y}%">
+         <span class="s">${s.small ? "✧" : "✦"}</span><span class="l">${esc(s.label)}</span><span class="d">${esc(s.desc)}</span></a>`
+    ).join("");
+
+    // tiny stars: one per published entry, scattered around its star
+    if (!sb) return;
+    const tables = { lecto: "star_posts", florilegium: "star_flori", nocturnes: "star_songs", lieux: "star_places", lab: "star_projects" };
+    const sky = document.getElementById("sky");
+    stars.forEach(async (s) => {
+      const t = tables[s.key];
+      if (!t) return;
+      const { data } = await sb.from(t).select("id").limit(14);
+      (data || []).forEach((row) => {
+        const a = hash(row.id) * Math.PI * 2;
+        const r = 7 + hash(row.id + "r") * 7; // % of width
+        const el = document.createElement("span");
+        el.className = "tiny";
+        el.textContent = "✧";
+        el.style.left = `${s.x + Math.cos(a) * r}%`;
+        el.style.top = `${s.y + Math.sin(a) * r * 0.46}%`;
+        el.style.animationDelay = `${(hash(row.id + "d") * 3).toFixed(2)}s`;
+        sky.appendChild(el);
+      });
+    });
+  })();
+  </script>
+</body>
+</html>

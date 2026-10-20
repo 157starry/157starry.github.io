@@ -1,0 +1,85 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Florilegium · s(T☆R)light</title>
+  <meta name="description" content="A gathering of flowers: words I picked up along the way.">
+  <meta name="theme-color" content="#F6E9E9">
+  <meta property="og:title" content="Florilegium · s(T☆R)light">
+  <meta property="og:image" content="https://157starry.github.io/assets/og-image.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <a class="back" href="./">← back to the sky</a>
+    <h1 class="h1">Flori<i>legium</i></h1>
+    <p class="lede">A gathering of flowers: words I picked up along the way.</p>
+    <div class="tabs" role="tablist">
+      <button role="tab" aria-selected="true" data-t="all">All</button>
+      <button role="tab" aria-selected="false" data-t="quote">Quotes</button>
+      <button role="tab" aria-selected="false" data-t="book">Shelf</button>
+      <button role="tab" aria-selected="false" data-t="read">Reads</button>
+    </div>
+    <div id="out"><div class="empty">Loading…</div></div>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
+  <script src="common.js"></script>
+  <script>
+  (async function () {
+    const { sb, esc, safeUrl, platform, tint } = SL;
+    let items = [], tab = "all";
+    if (sb) {
+      const { data } = await sb.from("star_flori").select("*")
+        .order("position", { ascending: true }).order("created_at", { ascending: false });
+      items = data || [];
+    }
+    const favColor = (u) => { const p = platform(u); return p === "Substack" ? "#e07a3c" : p === "Medium" ? "#2f2f2f" : "#B07A86"; };
+
+    const quoteHtml = (x) => `<div class="card quote">“${esc(x.title)}”
+      ${x.author ? `<small>${esc(x.author)}</small>` : ""}${x.note ? `<span class="why">${esc(x.note)}</span>` : ""}</div>`;
+    const bookHtml = (x) => {
+      const img = safeUrl(x.image_url);
+      const tag = safeUrl(x.url) ? "a" : "div";
+      return `<${tag} class="book" ${tag === "a" ? `href="${esc(safeUrl(x.url))}" target="_blank" rel="noopener"` : ""}>
+        <div class="cover" style="${img ? `background-image:url('${esc(img)}')` : `background:linear-gradient(160deg,${tint(x.title)},#8F5864)`}">${img ? "" : esc(x.title)}</div>
+        <b>${esc(x.title)}</b>${x.author ? `<span class="by">${esc(x.author)}</span>` : ""}${x.note ? `<span class="why">${esc(x.note)}</span>` : ""}</${tag}>`;
+    };
+    const readHtml = (x) => {
+      const u = safeUrl(x.url), p = platform(u);
+      return `<a class="link" href="${esc(u)}" target="_blank" rel="noopener">
+        <div class="fav" style="background:${favColor(u)}">${esc(p[0] || "↗").toUpperCase()}</div>
+        <div><b>${esc(x.title)}</b><span>${esc(p)}${x.author ? " · " + esc(x.author) : ""}</span>${x.note ? `<span class="why">${esc(x.note)}</span>` : ""}</div>
+        <span class="arr">↗</span></a>`;
+    };
+
+    function render() {
+      const q = items.filter((x) => x.kind === "quote"), b = items.filter((x) => x.kind === "book"), r = items.filter((x) => x.kind === "read");
+      const none = `<div class="empty">Nothing picked yet.<br><span class="scribble">flowers coming soon ✧</span></div>`;
+      let html = "";
+      if (tab === "all") {
+        if (q.length) html += q.slice(0, 3).map(quoteHtml).join("");
+        if (b.length) html += `<div class="sec">On my shelf <span class="hand">I'd recommend ♡</span></div><div class="shelf">${b.slice(0, 6).map(bookHtml).join("")}</div>`;
+        if (r.length) html += `<div class="sec">Good reads <span class="hand">worth your time</span></div>${r.slice(0, 5).map(readHtml).join("")}`;
+      } else if (tab === "quote") html = q.map(quoteHtml).join("");
+      else if (tab === "book") html = b.length ? `<div class="shelf">${b.map(bookHtml).join("")}</div>` : "";
+      else html = r.map(readHtml).join("");
+      document.getElementById("out").innerHTML = html || none;
+    }
+    document.querySelectorAll(".tabs button").forEach((t) => t.onclick = () => {
+      tab = t.dataset.t;
+      document.querySelectorAll(".tabs button").forEach((x) => x.setAttribute("aria-selected", String(x === t)));
+      render();
+    });
+    render();
+  })();
+  </script>
+</body>
+</html>

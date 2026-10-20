@@ -1,0 +1,88 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Lieux · s(T☆R)light</title>
+  <meta name="description" content="Places that stayed with me.">
+  <meta name="theme-color" content="#F6E9E9">
+  <meta property="og:title" content="Lieux · s(T☆R)light">
+  <meta property="og:image" content="https://157starry.github.io/assets/og-image.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <a class="back" href="./">← back to the sky</a>
+    <h1 class="h1">Lieux</h1>
+    <p class="lede">Places that stayed with me. Tap a pin.</p>
+    <div id="map" role="region" aria-label="Map of places"></div>
+    <div id="places"></div>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="common.js"></script>
+  <script>
+  (async function () {
+    const { sb, esc, safeUrl, fmtMonth } = SL;
+    const map = L.map("map", { zoomControl: false, attributionControl: true, scrollWheelZoom: false }).setView([20, 10], 2);
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
+      maxZoom: 19, subdomains: "abcd",
+      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
+    }).addTo(map);
+    L.control.zoom({ position: "bottomright" }).addTo(map);
+
+    let places = [];
+    if (sb) {
+      const { data } = await sb.from("star_places").select("*").order("visited_on", { ascending: false, nullsFirst: false });
+      places = data || [];
+    }
+    if (!places.length) {
+      document.getElementById("places").innerHTML = `<div class="empty">No pins yet.<br><span class="scribble">first place soon ✧</span></div>`;
+      return;
+    }
+
+    const icon = (on) => L.divIcon({ className: "", html: `<div class="pin ${on ? "on" : ""}"></div>`, iconSize: [24, 24], iconAnchor: [12, 12] });
+    const markers = {};
+    document.getElementById("places").innerHTML = places.map((p) => {
+      const img = safeUrl(p.photo_url);
+      return `<article class="place" id="pl-${p.id}" data-id="${p.id}">
+        <div class="photo" ${img ? `style="background-image:url('${esc(img)}')"` : ""}></div>
+        <div class="in"><h3>${esc(p.name)}</h3>${p.note ? `<p>“${esc(p.note)}”</p>` : ""}
+        ${p.visited_on ? `<div class="m">${fmtMonth(p.visited_on)}</div>` : ""}</div></article>`;
+    }).join("");
+
+    function select(id, scroll) {
+      Object.entries(markers).forEach(([k, m]) => m.setIcon(icon(k === id)));
+      document.querySelectorAll(".place").forEach((el) => el.classList.toggle("on", el.dataset.id === id));
+      const p = places.find((x) => x.id === id);
+      if (p && p.lat != null) map.flyTo([p.lat, p.lng], Math.max(map.getZoom(), 13), { duration: .6 });
+      if (scroll) document.getElementById("pl-" + id).scrollIntoView({ behavior: "smooth", block: "start" });
+    }
+
+    const pts = [];
+    places.forEach((p) => {
+      if (p.lat == null || p.lng == null) return;
+      const m = L.marker([p.lat, p.lng], { icon: icon(false), title: p.name }).addTo(map);
+      m.on("click", () => select(p.id, true));
+      markers[p.id] = m;
+      pts.push([p.lat, p.lng]);
+    });
+    if (pts.length === 1) map.setView(pts[0], 14);
+    else if (pts.length > 1) map.fitBounds(pts, { padding: [30, 30] });
+
+    document.querySelectorAll(".place").forEach((el) => el.onclick = () => {
+      select(el.dataset.id, false);
+      document.getElementById("map").scrollIntoView({ behavior: "smooth", block: "center" });
+    });
+  })();
+  </script>
+</body>
+</html>

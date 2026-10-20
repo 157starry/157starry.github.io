@@ -1,0 +1,51 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Starry Lab · s(T☆R)light</title>
+  <meta name="description" content="Small things I made, and why I made them.">
+  <meta name="theme-color" content="#F6E9E9">
+  <meta property="og:title" content="Starry Lab · s(T☆R)light">
+  <meta property="og:image" content="https://157starry.github.io/assets/og-image.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <main class="page">
+    <a class="back" href="./">← back to the sky</a>
+    <h1 class="h1">Starry <i>Lab</i></h1>
+    <p class="lede">Small things I made, and why I made them.</p>
+    <div id="out"><div class="empty">Loading…</div></div>
+    <div class="soon"><b>Next experiment</b><div class="scribble" style="margin-top:6px">this space is waiting ✧</div></div>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
+  <script src="common.js"></script>
+  <script>
+  (async function () {
+    const { sb, esc, safeUrl } = SL;
+    let items = [];
+    if (sb) {
+      const { data } = await sb.from("star_projects").select("*")
+        .order("position", { ascending: true }).order("created_at", { ascending: false });
+      items = data || [];
+    }
+    document.getElementById("out").innerHTML = items.map((p) => {
+      const img = safeUrl(p.image_url), url = safeUrl(p.url);
+      const tags = String(p.tags || "").split(",").map((t) => t.trim()).filter(Boolean);
+      return `<article class="proj">
+        <div class="shot" ${img ? `style="background-image:url('${esc(img)}')"` : ""}>${img ? "" : esc(p.name)}</div>
+        <h3>${esc(p.name)}</h3>${p.description ? `<p>${esc(p.description)}</p>` : ""}
+        ${tags.length ? `<div class="tags">${tags.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
+        ${url ? `<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open ${esc(p.name)} ↗</a>` : ""}</article>`;
+    }).join("");
+  })();
+  </script>
+</body>
+</html>

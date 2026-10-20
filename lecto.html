@@ -1,0 +1,106 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>lect(o) · s(T☆R)light</title>
+  <meta name="description" content="Things I learn, written slowly.">
+  <meta name="theme-color" content="#F6E9E9">
+  <meta property="og:title" content="lect(o) · s(T☆R)light">
+  <meta property="og:description" content="Things I learn, written slowly.">
+  <meta property="og:image" content="https://157starry.github.io/assets/og-image.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <!-- List view -->
+  <main class="page" id="listView" hidden>
+    <a class="back" href="./">← back to the sky</a>
+    <div class="mast"><div class="k">s(T☆R)light<br>journal</div><div class="k" style="text-align:right">analysis · essays<br>notes to self</div></div>
+    <div class="head-row">
+      <div><h1 class="h1">lect<i>(o)</i></h1><p class="lede">Things I learn, written slowly.</p></div>
+      <span class="scribble circle" style="margin-top:14px">same curiosity,<br>new questions</span>
+    </div>
+    <div class="chips" id="cats"></div>
+    <div id="posts"><div class="empty">Loading…</div></div>
+  </main>
+
+  <!-- Article view -->
+  <main class="page" id="postView" hidden>
+    <a class="back" href="lecto.html">← lect(o)</a>
+    <div class="art-k" id="pCat"></div>
+    <h1 class="art-h" id="pTitle"></h1>
+    <p class="art-d" id="pDek"></p>
+    <div class="byline"><span>by s(T☆R)light</span><span id="pMeta"></span></div>
+    <article class="prose" id="pBody"></article>
+    <div class="endmark"><span class="scribble">thank you for reading ✧</span></div>
+    <a class="back" href="lecto.html">← more from lect(o)</a>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <script src="common.js"></script>
+  <script>
+  (async function () {
+    const { sb, esc, fmtMonth, fmtDate, readMins, md } = SL;
+    const slug = new URLSearchParams(location.search).get("p");
+
+    if (slug) {
+      document.getElementById("postView").hidden = false;
+      document.body.classList.add("article");
+      if (!sb) return;
+      const { data } = await sb.from("star_posts").select("*").eq("slug", slug).limit(1);
+      const p = data && data[0];
+      if (!p) { document.getElementById("pTitle").textContent = "This page drifted away ✧"; return; }
+      document.title = `${p.title} · lect(o)`;
+      document.getElementById("pCat").textContent = p.category || "lect(o)";
+      document.getElementById("pTitle").textContent = p.title;
+      document.getElementById("pDek").textContent = p.dek || "";
+      document.getElementById("pMeta").textContent = `${fmtDate(p.published_at)} · ${readMins(p.body)} min`;
+      document.getElementById("pBody").innerHTML = md(p.body);
+      document.querySelectorAll("#pBody a").forEach((a) => { a.target = "_blank"; a.rel = "noopener"; });
+      return;
+    }
+
+    document.getElementById("listView").hidden = false;
+    if (!sb) { document.getElementById("posts").innerHTML = `<div class="empty">Not connected yet.</div>`; return; }
+    const { data, error } = await sb.from("star_posts")
+      .select("slug,title,dek,category,featured,published_at,body")
+      .order("published_at", { ascending: false });
+    if (error) { document.getElementById("posts").innerHTML = `<div class="empty">Couldn't load right now.</div>`; return; }
+    const posts = data || [];
+    let cat = "All";
+    const cats = ["All", ...new Set(posts.map((p) => p.category).filter(Boolean))];
+
+    function renderCats() {
+      document.getElementById("cats").innerHTML = cats.length > 1
+        ? cats.map((c) => `<button class="chip" aria-pressed="${c === cat}" data-c="${esc(c)}">${esc(c)}</button>`).join("") : "";
+      document.querySelectorAll("#cats .chip").forEach((b) => b.onclick = () => { cat = b.dataset.c; renderCats(); renderPosts(); });
+    }
+    function renderPosts() {
+      const list = posts.filter((p) => cat === "All" || p.category === cat);
+      if (!list.length) {
+        document.getElementById("posts").innerHTML = `<div class="empty">The first page is still being written.<br><span class="scribble">soon ✧</span></div>`;
+        return;
+      }
+      const feat = cat === "All" ? (list.find((p) => p.featured) || list[0]) : null;
+      const ordered = feat ? [feat, ...list.filter((p) => p !== feat)] : list;
+      document.getElementById("posts").innerHTML = ordered.map((p) => {
+        const f = p === feat;
+        return `<a class="card ${f ? "feat" : ""}" href="lecto.html?p=${encodeURIComponent(p.slug)}">
+          <div class="meta">${f ? "Featured · " : ""}${esc(p.category || "lect(o)")}</div>
+          <h3>${esc(p.title)}</h3>${p.dek ? `<p>${esc(p.dek)}</p>` : ""}
+          <div class="small">${fmtMonth(p.published_at)} · ${readMins(p.body)} min read</div></a>`;
+      }).join("");
+    }
+    renderCats(); renderPosts();
+  })();
+  </script>
+</body>
+</html>

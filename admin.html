@@ -1,0 +1,108 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Keeper's room · s(T☆R)light</title>
+  <meta name="robots" content="noindex">
+  <meta name="theme-color" content="#F6E9E9">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.css">
+  <link rel="stylesheet" href="style.css">
+  <style>
+    body { font-family: var(--sans); }
+    .page { max-width: 720px; }
+    .top { display: flex; justify-content: space-between; align-items: center; gap: 8px; }
+    .h2 { font-family: var(--serif-display); font-weight: 900; font-size: 34px; margin: 10px 0 2px; }
+    .sub2 { font-size: 13px; color: var(--muted); margin-bottom: 14px; }
+    .field { width: 100%; background: var(--card); border: 1.5px solid var(--line); border-radius: 12px; padding: 11px 13px; font-size: 15px; outline: none; }
+    .field:focus { border-color: var(--mauve); }
+    textarea.field { min-height: 90px; resize: vertical; font-family: var(--serif); line-height: 1.6; }
+    textarea.field.big { min-height: 340px; }
+    label.lb { display: block; font-size: 12px; font-weight: bold; color: var(--muted); margin: 14px 0 6px; letter-spacing: .03em; }
+    .hint { font-size: 11.5px; color: var(--muted); margin-top: 5px; }
+    .b { display: inline-flex; align-items: center; justify-content: center; gap: 6px; border-radius: 999px; padding: 10px 16px; font-size: 14px; font-weight: bold; }
+    .b.dark { background: var(--ink); color: #fff; }
+    .b.pink { background: var(--mauve); color: #fff; }
+    .b.ghost { background: transparent; color: var(--muted); font-weight: normal; }
+    .b.line { border: 1.5px solid var(--line); color: var(--ink); background: var(--card); }
+    .b:disabled { opacity: .5; }
+    .danger { color: #a4454f; text-decoration: underline; font-size: 13px; }
+    .stabs { display: flex; gap: 6px; overflow-x: auto; padding-bottom: 4px; margin: 14px 0; }
+    .stab { white-space: nowrap; padding: 8px 14px; border-radius: 999px; border: 1px solid var(--line); color: var(--muted); font-size: 13px; background: transparent; }
+    .stab[aria-selected="true"] { background: var(--ink); color: #fff; border-color: var(--ink); }
+    .row { display: flex; align-items: center; gap: 10px; background: var(--card); border-radius: 14px; padding: 11px 12px; margin-bottom: 8px; }
+    .row .t { min-width: 0; flex: 1; cursor: pointer; }
+    .row b { font-family: var(--serif-display); font-size: 16px; display: block; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+    .row span { font-size: 12px; color: var(--muted); }
+    .row .thumb { width: 44px; height: 44px; border-radius: 10px; background: var(--mauve-l) center / cover; flex: none; }
+    .arrows { display: flex; gap: 4px; flex: none; }
+    .arrows button { width: 32px; height: 32px; border-radius: 9px; background: var(--paper); font-size: 14px; }
+    .arrows button:disabled { opacity: .3; }
+    .badge { font-size: 10px; font-weight: bold; padding: 2px 8px; border-radius: 999px; background: var(--mauve-l); color: var(--mauve-d); margin-left: 4px; vertical-align: middle; }
+    .badge.g { background: var(--matcha-l); color: #55703F; }
+    .sheet { position: fixed; inset: 0; background: var(--paper); z-index: 50; overflow-y: auto; }
+    .sheet[hidden] { display: none; }
+    .sheet .page { padding-bottom: 120px; }
+    .actions { position: fixed; left: 0; right: 0; bottom: 0; background: rgba(246,233,233,.96); border-top: 1px solid var(--line); padding: 12px 16px calc(12px + env(safe-area-inset-bottom)); display: flex; gap: 8px; justify-content: center; z-index: 60; }
+    .actions .b { flex: 1; max-width: 220px; }
+    .check { display: flex; align-items: center; gap: 10px; margin-top: 14px; font-size: 14px; }
+    .check input { width: 20px; height: 20px; accent-color: var(--mauve); }
+    .tools { display: flex; gap: 4px; flex-wrap: wrap; margin-bottom: 6px; }
+    .tools button { padding: 6px 10px; border-radius: 8px; background: var(--card); border: 1px solid var(--line); font-size: 13px; min-width: 34px; }
+    .preview { background: var(--paper-2); border-radius: 12px; padding: 16px; border: 1.5px dashed var(--line); }
+    .imgbox { display: flex; gap: 12px; align-items: center; }
+    .imgbox .pv { width: 84px; height: 84px; border-radius: 12px; background: var(--mauve-l) center / cover; flex: none; }
+    #pickMap { height: 260px; border-radius: 14px; border: 1px solid var(--line); }
+    .results button { display: block; width: 100%; text-align: left; padding: 8px 10px; font-size: 13px; border-bottom: 1px solid var(--line); background: var(--card); }
+    .error { color: #a4454f; font-size: 13px; min-height: 18px; margin-top: 6px; }
+    .two { display: flex; gap: 8px; } .two > * { flex: 1; }
+  </style>
+</head>
+<body>
+  <main class="page">
+    <div class="top">
+      <a class="back" href="./">← to the sky</a>
+      <button class="b ghost" id="logout" hidden>Sign out</button>
+    </div>
+    <h1 class="h2">Keeper's room ✧</h1>
+    <p class="sub2">Add and arrange everything in your constellation.</p>
+
+    <section id="login" hidden>
+      <label class="lb" for="email">Email</label><input id="email" class="field" type="email" autocomplete="username">
+      <label class="lb" for="password">Password</label><input id="password" class="field" type="password" autocomplete="current-password">
+      <div class="error" id="loginErr"></div>
+      <button class="b dark" id="loginBtn" style="margin-top:10px;width:100%">Enter</button>
+      <p class="hint">Same login as Quefory's Keeper room.</p>
+    </section>
+
+    <section id="dash" hidden>
+      <div class="stabs" id="stabs" role="tablist"></div>
+      <div class="top"><p class="sub2" id="secHint" style="margin:0"></p><button class="b pink" id="newBtn">+ New</button></div>
+      <div id="list" style="margin-top:12px"></div>
+    </section>
+  </main>
+
+  <div class="sheet" id="sheet" hidden>
+    <div class="page">
+      <button class="back" id="closeSheet">← back</button>
+      <h2 class="h2" id="formTitle" style="font-size:28px"></h2>
+      <form id="form" autocomplete="off" onsubmit="return false"></form>
+      <div class="error" id="formErr"></div>
+      <div style="margin-top:24px"><button class="danger" id="delBtn" hidden>Delete this</button></div>
+    </div>
+    <div class="actions" id="actions"></div>
+  </div>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked@12.0.2/marked.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/dompurify@3.1.6/dist/purify.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/leaflet@1.9.4/dist/leaflet.js"></script>
+  <script src="common.js"></script>
+  <script src="admin.js"></script>
+</body>
+</html>

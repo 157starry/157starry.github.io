@@ -1,0 +1,75 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Nocturnes · s(T☆R)light</title>
+  <meta name="description" content="The soundtrack of my little universe.">
+  <meta name="theme-color" content="#2a2440">
+  <meta property="og:title" content="Nocturnes · s(T☆R)light">
+  <meta property="og:image" content="https://157starry.github.io/assets/og-image.png">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body class="dusk">
+  <main class="page">
+    <a class="back" href="./">← back to the sky</a>
+    <h1 class="h1">Noc<i>turnes</i></h1>
+    <p class="lede">The soundtrack of my little universe.</p>
+    <div class="chips" id="moods"></div>
+    <div id="feat"></div>
+    <div id="list"><div class="empty" style="color:#d9c3cb">Loading…</div></div>
+    <p class="foot-note">tap a song · it opens in your own app ♡</p>
+  </main>
+
+  <script src="config.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
+  <script src="common.js"></script>
+  <script>
+  (async function () {
+    const { sb, esc, safeUrl, platform, tint } = SL;
+    let songs = [], mood = "All";
+    if (sb) {
+      const { data } = await sb.from("star_songs").select("*")
+        .order("position", { ascending: true }).order("created_at", { ascending: false });
+      songs = data || [];
+    }
+    const moods = ["All", ...new Set(songs.map((s) => s.mood).filter(Boolean))];
+    const featured = songs.find((s) => s.featured);
+
+    if (featured) {
+      const u = safeUrl(featured.url);
+      document.getElementById("feat").innerHTML =
+        `<a class="np" ${u ? `href="${esc(u)}" target="_blank" rel="noopener"` : ""}>
+          <div class="vinyl" style="--c:${tint(featured.title)}"></div>
+          <div><div class="k">On repeat this week</div><h3>${esc(featured.title)}</h3>
+          <div class="a">${esc(featured.artist || "")}</div>${featured.note ? `<div class="why">${esc(featured.note)} ✧</div>` : ""}</div></a>`;
+    }
+
+    function render() {
+      document.getElementById("moods").innerHTML = moods.length > 1
+        ? moods.map((m) => `<button class="chip" aria-pressed="${m === mood}" data-m="${esc(m)}">${esc(m)}</button>`).join("") : "";
+      document.querySelectorAll("#moods .chip").forEach((b) => b.onclick = () => { mood = b.dataset.m; render(); });
+      const list = songs.filter((s) => mood === "All" || s.mood === mood);
+      if (!songs.length) {
+        document.getElementById("list").innerHTML = `<div class="empty" style="color:#d9c3cb">The record player is warming up.<br><span class="scribble" style="color:#e7b9c3">first song soon ✧</span></div>`;
+        return;
+      }
+      document.getElementById("list").innerHTML = list.map((s, i) => {
+        const u = safeUrl(s.url);
+        return `<a class="track" ${u ? `href="${esc(u)}" target="_blank" rel="noopener"` : ""}>
+          <span class="no">${String(i + 1).padStart(2, "0")}</span>
+          <div class="mini" style="--c:${tint(s.title)}"></div>
+          <div class="tt"><b>${esc(s.title)}</b><span>${esc(s.artist || "")}${s.mood ? " · " + esc(s.mood) : ""}</span>${s.note ? `<span class="why">${esc(s.note)}</span>` : ""}</div>
+          ${u ? `<span class="open">${esc(platform(u))} ↗</span>` : ""}</a>`;
+      }).join("");
+    }
+    render();
+  })();
+  </script>
+</body>
+</html>
