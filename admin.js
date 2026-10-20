@@ -9,7 +9,7 @@
   // ---------- What each star stores ----------
   const SECTIONS = {
     lecto: {
-      label: "lect(o)", table: "star_posts", hint: "Long writing. Drafts stay hidden until you publish.",
+      label: "lect(o)", table: "star_posts", singleFeatured: true, hint: "Long writing. Drafts stay hidden until you publish.",
       order: [["published_at", false]],
       title: (r) => r.title,
       sub: (r) => `${r.published ? "" : "Draft · "}${r.category || "no topic"} · ${fmtMonth(r.published_at)}`,
@@ -25,8 +25,9 @@
       ],
     },
     flori: {
-      label: "Florilegium", table: "star_flori", reorder: true, hint: "Quotes, books you recommend, and good reads.",
+      label: "Florilegium", table: "star_flori", reorder: true, hint: "Drag ⠿ to change the order. ♡ = shown on the front of Florilegium.",
       title: (r) => r.title,
+      badge: (r) => (r.kind === "book" && r.featured ? "♡ recommended" : ""),
       sub: (r) => ({ quote: "Quote", book: "Book", read: "Read" }[r.kind] || "") + (r.author ? " · " + r.author : "") + (r.genre ? " · " + r.genre : ""),
       thumb: (r) => r.image_url,
       fields: [
@@ -37,11 +38,12 @@
         { k: "note", label: "Your little note (shows in handwriting)", type: "text", max: 200 },
         { k: "url", label: "Link", type: "url", hint: "Needed for reads. Optional for books.", showIf: (v) => v.kind !== "quote" },
         { k: "image_url", label: "Book cover (optional)", type: "image", folder: "covers", showIf: (v) => v.kind === "book" },
+        { k: "featured", label: "♡ Recommend: show this book on the front (All tab)", type: "check", def: false, showIf: (v) => v.kind === "book" },
         { k: "published", label: "Visible", type: "check", def: true },
       ],
     },
     songs: {
-      label: "Nocturnes", table: "star_songs", reorder: true, hint: "Use ↑ ↓ to change the order. ★ = On repeat this week.",
+      label: "Nocturnes", table: "star_songs", reorder: true, singleFeatured: true, hint: "Drag ⠿ to change the order. ★ = On repeat this week.",
       title: (r) => r.title, sub: (r) => [r.artist, r.mood].filter(Boolean).join(" · "),
       badge: (r) => (r.featured ? "★ on repeat" : ""),
       fields: [
@@ -69,7 +71,7 @@
       ],
     },
     lab: {
-      label: "Starry Lab", table: "star_projects", reorder: true, hint: "Things you built.",
+      label: "Starry Lab", table: "star_projects", reorder: true, hint: "Things you built. Drag ⠿ to change the order.",
       title: (r) => r.name, sub: (r) => r.tags || "", thumb: (r) => r.image_url,
       fields: [
         { k: "name", label: "Project name", type: "text", req: true, max: 80 },
@@ -144,19 +146,54 @@
         ${s.thumb ? `<div class="thumb" ${th ? `style="background-image:url('${esc(th)}')"` : ""}></div>` : ""}
         <div class="t" data-i="${i}"><b>${esc(s.title(r))}${badge ? `<span class="badge">${esc(badge)}</span>` : ""}${r.published === false ? `<span class="badge g">hidden</span>` : ""}</b>
         <span>${esc(s.sub(r))}</span></div>
-        ${s.reorder ? `<div class="arrows"><button data-up="${i}" ${i === 0 ? "disabled" : ""} aria-label="Move up">↑</button><button data-down="${i}" ${i === rows.length - 1 ? "disabled" : ""} aria-label="Move down">↓</button></div>` : ""}
+        ${s.reorder ? `<div class="arrows"><button data-top="${i}" ${i === 0 ? "disabled" : ""} aria-label="Move to the top" title="Move to the top">⤒</button><button class="grip" aria-label="Drag to reorder" title="Drag to reorder">⠿</button></div>` : ""}
       </div>`;
     }).join("");
     $("list").querySelectorAll(".t").forEach((el) => el.onclick = () => openForm(rows[+el.dataset.i]));
-    $("list").querySelectorAll("[data-up]").forEach((b) => b.onclick = () => move(+b.dataset.up, -1));
-    $("list").querySelectorAll("[data-down]").forEach((b) => b.onclick = () => move(+b.dataset.down, 1));
+    $("list").querySelectorAll("[data-top]").forEach((b) => b.onclick = () => {
+      const i = +b.dataset.top;
+      rows.unshift(rows.splice(i, 1)[0]);
+      renderList(); saveOrder();
+    });
+    if (s.reorder) makeSortable();
   }
 
-  async function move(i, dir) {
-    const j = i + dir;
-    if (j < 0 || j >= rows.length) return;
-    [rows[i], rows[j]] = [rows[j], rows[i]];
-    renderList();
+  // ---------- Drag to reorder (SortableJS: mouse + touch, auto-scrolls on long lists) ----------
+  let sortable = null, sortLib = null;
+  function loadSortable() {
+    if (window.Sortable) return Promise.resolve(window.Sortable);
+    if (!sortLib) sortLib = new Promise((ok, no) => {
+      const sc = document.createElement("script");
+      sc.src = "https://cdnjs.cloudflare.com/ajax/libs/Sortable/1.15.2/Sortable.min.js";
+      sc.onload = () => ok(window.Sortable); sc.onerror = no;
+      document.head.appendChild(sc);
+    });
+    return sortLib;
+  }
+  async function makeSortable() {
+    try { await loadSortable(); } catch { toast("Drag isn't available right now. Use ⤒ instead."); return; }
+    if (sortable) { sortable.destroy(); sortable = null; }
+    sortable = Sortable.create($("list"), {
+      handle: ".grip", draggable: ".row", animation: 160,
+      ghostClass: "drag-ghost", chosenClass: "drag-chosen",
+      scroll: true, scrollSensitivity: 90, scrollSpeed: 14, bubbleScroll: true,
+      onEnd: (e) => {
+        if (e.oldIndex === e.newIndex) return;
+        rows.splice(e.newIndex, 0, rows.splice(e.oldIndex, 1)[0]);
+        renderList(); saveOrder();
+      },
+    });
+  }
+  (function dragStyles() {
+    const st = document.createElement("style");
+    st.textContent = `.arrows .grip{cursor:grab;touch-action:none;font-size:20px;line-height:1}
+      .arrows .grip:active{cursor:grabbing}
+      .row.drag-ghost{opacity:.35}
+      .row.drag-chosen{box-shadow:0 10px 28px rgba(80,40,50,.18)}`;
+    document.head.appendChild(st);
+  })();
+
+  async function saveOrder() {
     const s = SECTIONS[cur];
     const jobs = [];
     rows.forEach((r, idx) => {
@@ -164,6 +201,7 @@
     });
     const res = await Promise.all(jobs);
     if (res.some((x) => x.error)) { toast("Couldn't save the order"); load(); }
+    else if (jobs.length) toast("Order saved ✧");
   }
 
   // ---------- Form ----------
@@ -423,7 +461,7 @@
       if (s.reorder) out.position = rows.length ? Math.min(...rows.map((r) => r.position || 0)) - 1 : 0;
       res = await sb.from(s.table).insert(out);
     }
-    if (!res.error && out.featured) await sb.from(s.table).update({ featured: false }).neq("id", id);
+    if (!res.error && out.featured && s.singleFeatured) await sb.from(s.table).update({ featured: false }).neq("id", id);
     $("saveBtn").disabled = false;
     if (res.error) { $("formErr").textContent = "Couldn't save: " + res.error.message; return; }
     toast("Saved ✧");

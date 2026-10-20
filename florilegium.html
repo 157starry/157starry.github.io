@@ -14,6 +14,9 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    .seeall{display:inline-block;margin:14px 0 4px;background:none;border:0;padding:0;font:inherit;font-size:14px;color:#8F5864;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+  </style>
 </head>
 <body>
   <main class="page wide">
@@ -26,7 +29,7 @@
       <button role="tab" aria-selected="false" data-t="book">Shelf</button>
       <button role="tab" aria-selected="false" data-t="read">Reads</button>
     </div>
-    <div class="chips" id="genres" hidden></div>
+    <div class="chips" id="genres" style="display:none"></div>
     <div id="out"><div class="empty">Loading…</div></div>
   </main>
 
@@ -63,13 +66,23 @@
         <span class="arr">↗</span></a>`;
     };
 
+    function setTab(t) {
+      tab = t;
+      document.querySelectorAll(".tabs button").forEach((x) => x.setAttribute("aria-selected", String(x.dataset.t === t)));
+    }
+
     function render() {
       const q = items.filter((x) => x.kind === "quote"), b = items.filter((x) => x.kind === "book"), r = items.filter((x) => x.kind === "read");
       const none = `<div class="empty">Nothing picked yet.<br><span class="scribble">flowers coming soon ✧</span></div>`;
       let html = "";
       if (tab === "all") {
         if (q.length) html += q.slice(0, 3).map(quoteHtml).join("");
-        if (b.length) html += `<div class="sec">On my shelf <span class="hand">I'd recommend ♡</span></div><div class="shelf">${b.slice(0, 6).map(bookHtml).join("")}</div>`;
+        if (b.length) {
+          // ♡ books you chose in the admin; if none are chosen yet, the first 6 on your shelf
+          const picks = b.some((x) => x.featured) ? b.filter((x) => x.featured) : b.slice(0, 6);
+          html += `<div class="sec">On my shelf <span class="hand">I'd recommend ♡</span></div><div class="shelf">${picks.map(bookHtml).join("")}</div>`;
+          if (b.length > picks.length) html += `<button class="seeall" data-go="book">See the whole shelf (${b.length} books) →</button>`;
+        }
         if (r.length) html += `<div class="sec">Good reads <span class="hand">worth your time</span></div>${r.slice(0, 5).map(readHtml).join("")}`;
       } else if (tab === "quote") html = q.map(quoteHtml).join("");
       else if (tab === "book") {
@@ -77,23 +90,31 @@
         html = shown.length ? `<div class="shelf">${shown.map(bookHtml).join("")}</div>` : "";
       }
       else html = r.map(readHtml).join("");
-      // genre chips (Shelf tab only)
-      const all = ["All", ...new Map(b.flatMap(genresOf).map((g) => [g.toLowerCase(), g])).values()];
+
+      // genre chips: shown on All and Shelf. On All, a genre opens the Shelf filtered by it.
+      const names = new Map();
+      b.flatMap(genresOf).forEach((g) => {
+        const k = g.toLowerCase(), had = names.get(k);
+        if (!had || (had === had.toUpperCase() && g !== g.toUpperCase())) names.set(k, g); // prefer "Science" over "SCIENCE"
+      });
+      const all = ["All", ...names.values()];
       const gEl = document.getElementById("genres");
-      gEl.hidden = !(tab === "book" && all.length > 1);
-      gEl.innerHTML = all.map((g) => `<button class="chip" aria-pressed="${g.toLowerCase() === genre.toLowerCase()}" data-g="${esc(g)}">${esc(g)}</button>`).join("");
-      gEl.querySelectorAll(".chip").forEach((c) => c.onclick = () => { genre = c.dataset.g; render(); });
+      gEl.style.display = (tab === "book" || tab === "all") && all.length > 1 ? "" : "none";
+      gEl.innerHTML = all.map((g) => `<button class="chip" aria-pressed="${tab === "book" && g.toLowerCase() === genre.toLowerCase() || tab === "all" && g === "All"}" data-g="${esc(g)}">${esc(g)}</button>`).join("");
+      gEl.querySelectorAll(".chip").forEach((c) => c.onclick = () => {
+        genre = c.dataset.g;
+        if (tab === "all" && genre !== "All") setTab("book");
+        render();
+      });
+
       document.getElementById("out").innerHTML = html || none;
+      document.querySelectorAll("#out [data-go]").forEach((btn) => btn.onclick = () => { genre = "All"; setTab(btn.dataset.go); render(); window.scrollTo({ top: 0, behavior: "smooth" }); });
       // tap a long note to read it all
       document.querySelectorAll("#out .why.clamp").forEach((n) => n.onclick = (e) => {
         if (n.scrollHeight > n.clientHeight + 2 || n.classList.contains("expanded")) { e.preventDefault(); e.stopPropagation(); n.classList.toggle("expanded"); }
       });
     }
-    document.querySelectorAll(".tabs button").forEach((t) => t.onclick = () => {
-      tab = t.dataset.t; genre = "All";
-      document.querySelectorAll(".tabs button").forEach((x) => x.setAttribute("aria-selected", String(x === t)));
-      render();
-    });
+    document.querySelectorAll(".tabs button").forEach((t) => t.onclick = () => { genre = "All"; setTab(t.dataset.t); render(); });
     render();
   })();
   </script>
