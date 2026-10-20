@@ -48,7 +48,7 @@
         { k: "artist", label: "Artist", type: "text", max: 120 },
         { k: "url", label: "Link", type: "url", hint: "Paste a YouTube, Spotify or Apple Music link." },
         { k: "note", label: "Why I love it (one line)", type: "text", max: 160 },
-        { k: "mood", label: "Mood", type: "text", max: 30, suggest: true, hint: "e.g. soft, hype, rainy, study, night walk" },
+        { k: "mood", label: "Mood", type: "text", max: 30, suggest: true, hint: "One or more, separated by commas: soft, hype, rainy, study…" },
         { k: "featured", label: "★ On repeat this week (only one song)", type: "check", def: false },
         { k: "published", label: "Visible", type: "check", def: true },
       ],

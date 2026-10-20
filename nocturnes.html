@@ -38,7 +38,8 @@
         .order("position", { ascending: true }).order("created_at", { ascending: false });
       songs = data || [];
     }
-    const moods = ["All", ...new Set(songs.map((s) => s.mood).filter(Boolean))];
+    const moodsOf = (s) => String(s.mood || "").split(",").map((m) => m.trim().toLowerCase()).filter(Boolean);
+    const moods = ["All", ...new Set(songs.flatMap(moodsOf))];
     const featured = songs.find((s) => s.featured);
 
     if (featured) {
@@ -54,7 +55,7 @@
       document.getElementById("moods").innerHTML = moods.length > 1
         ? moods.map((m) => `<button class="chip" aria-pressed="${m === mood}" data-m="${esc(m)}">${esc(m)}</button>`).join("") : "";
       document.querySelectorAll("#moods .chip").forEach((b) => b.onclick = () => { mood = b.dataset.m; render(); });
-      const list = songs.filter((s) => mood === "All" || s.mood === mood);
+      const list = songs.filter((s) => mood === "All" || moodsOf(s).includes(mood));
       if (!songs.length) {
         document.getElementById("list").innerHTML = `<div class="empty" style="color:#d9c3cb">The record player is warming up.<br><span class="scribble" style="color:#e7b9c3">first song soon ✧</span></div>`;
         return;
@@ -64,7 +65,7 @@
         return `<a class="track" ${u ? `href="${esc(u)}" target="_blank" rel="noopener"` : ""}>
           <span class="no">${String(i + 1).padStart(2, "0")}</span>
           <div class="mini" style="--c:${tint(s.title)}"></div>
-          <div class="tt"><b>${esc(s.title)}</b><span>${esc(s.artist || "")}${s.mood ? " · " + esc(s.mood) : ""}</span>${s.note ? `<span class="why">${esc(s.note)}</span>` : ""}</div>
+          <div class="tt"><b>${esc(s.title)}</b><span>${esc(s.artist || "")}${moodsOf(s).length ? " · " + esc(moodsOf(s).join(", ")) : ""}</span>${s.note ? `<span class="why">${esc(s.note)}</span>` : ""}</div>
           ${u ? `<span class="open">${esc(platform(u))} ↗</span>` : ""}</a>`;
       }).join("");
     }
