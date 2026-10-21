@@ -39,9 +39,9 @@
     .polaroid { background: #fff; padding: 10px 10px 28px; width: 78%; margin: 8px 0 4px 4px;
       box-shadow: 0 6px 16px rgba(60,40,45,.18); transform: rotate(-2.2deg); position: relative; }
     .pc:nth-child(even) .polaroid { transform: rotate(1.8deg); }
-    .polaroid .track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; aspect-ratio: 4 / 3; background: #EFE6E3; }
+    .polaroid .track { display: flex; overflow-x: auto; scroll-snap-type: x mandatory; scrollbar-width: none; background: #EFE6E3; }
     .polaroid .track::-webkit-scrollbar { display: none; }
-    .polaroid .track > div { flex: 0 0 100%; scroll-snap-align: center; background-size: cover; background-position: center; }
+    .polaroid .track > div { flex: 0 0 100%; aspect-ratio: 4 / 3; scroll-snap-align: center; background-size: cover; background-position: center; }
     .polaroid .none { display: grid; place-items: center; font-family: "Caveat", cursive; font-size: 20px; color: #B39AA0; }
     .polaroid .dots { position: absolute; left: 0; right: 0; bottom: 9px; display: flex; justify-content: center; gap: 6px; }
     .polaroid .dots i { width: 6px; height: 6px; border-radius: 50%; background: #E2D3D6; }
@@ -49,11 +49,10 @@
     .polaroid .tape { position: absolute; top: -10px; left: 50%; width: 70px; height: 20px; transform: translateX(-50%) rotate(-3deg);
       background: rgba(231,169,181,.55); }
 
-    .stamp { position: absolute; top: 18px; right: 18px; width: 64px; height: 76px; background: #F6E3E6;
-      display: flex; flex-direction: column; align-items: center; justify-content: center; color: #8F5864;
-      border: 3px solid #FFFDF8; outline: 1px dashed #D9B3BB; outline-offset: -7px;
-      -webkit-mask: radial-gradient(circle 4px at 4px 4px, transparent 98%, #000) -4px -4px / 10px 10px;
-      mask: radial-gradient(circle 4px at 4px 4px, transparent 98%, #000) -4px -4px / 10px 10px; }
+    .stamp { position: absolute; top: 18px; right: 18px; width: 66px; height: 78px; padding: 5px; color: #8F5864;
+      background: radial-gradient(circle at 5px 5px, transparent 2.6px, #F6E3E6 3px) -5px -5px / 10px 10px; }
+    .stamp .in { width: 100%; height: 100%; background: #F6E3E6; outline: 1px dashed #D9B3BB; outline-offset: -4px;
+      display: flex; flex-direction: column; align-items: center; justify-content: center; }
     .stamp span { font: 600 13px/1 "Lora", serif; letter-spacing: 1px; }
     .stamp b { font: 700 22px/1.1 "Playfair Display", serif; }
     .stamp em { font-style: normal; font-size: 11px; margin-top: 2px; }
@@ -86,7 +85,7 @@
   (async function () {
     const { sb, esc, safeUrl } = SL;
     const map = L.map("map", { zoomControl: false, attributionControl: true, scrollWheelZoom: false }).setView([1.3521, 103.8198], 11);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}{r}.png", {
+    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
       maxZoom: 19, subdomains: "abcd",
       attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
     }).addTo(map);
@@ -108,9 +107,9 @@
     };
     const MON = ["JAN", "FEB", "MAR", "APR", "MAY", "JUN", "JUL", "AUG", "SEP", "OCT", "NOV", "DEC"];
     const stamp = (d) => {
-      if (!d) return `<div class="stamp" aria-hidden="true"><b>✧</b><em>lieux</em></div>`;
+      if (!d) return `<div class="stamp" aria-hidden="true"><div class="in"><b>✧</b><em>lieux</em></div></div>`;
       const t = new Date(d);
-      return `<div class="stamp" title="${esc(t.toLocaleDateString("en-GB", { month: "long", year: "numeric" }))}"><span>${MON[t.getMonth()]}</span><b>’${String(t.getFullYear()).slice(2)}</b><em>✧</em></div>`;
+      return `<div class="stamp" title="${esc(t.toLocaleDateString("en-GB", { month: "long", year: "numeric" }))}"><div class="in"><span>${MON[t.getMonth()]}</span><b>’${String(t.getFullYear()).slice(2)}</b><em>✧</em></div></div>`;
     };
 
     const icon = (on) => L.divIcon({ className: "", html: `<div class="pin ${on ? "on" : ""}"></div>`, iconSize: [24, 24], iconAnchor: [12, 12] });
