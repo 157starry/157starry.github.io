@@ -60,13 +60,13 @@
       label: "Lieux", table: "star_places", hint: "Tap the map to place a pin, or search a place.",
       order: [["visited_on", false], ["created_at", false]],
       title: (r) => r.name, sub: (r) => (r.visited_on ? fmtMonth(r.visited_on) : "") + (r.lat == null ? " · no pin yet" : ""),
-      thumb: (r) => r.photo_url,
+      thumb: (r) => (Array.isArray(r.photos) && r.photos[0]) || r.photo_url,
       fields: [
         { k: "name", label: "Place name", type: "text", req: true, max: 120 },
         { k: "note", label: "One sentence about it", type: "text", max: 300 },
         { k: "visited_on", label: "When", type: "date" },
         { k: "pin", label: "Pin on the map", type: "map" },
-        { k: "photo_url", label: "Photo", type: "image", folder: "places" },
+        { k: "photos", label: "Photos (up to 4, the first one is the cover)", type: "images", folder: "places", max: 4 },
         { k: "published", label: "Visible", type: "check", def: true },
       ],
     },
@@ -189,7 +189,13 @@
     st.textContent = `.arrows .grip{cursor:grab;touch-action:none;font-size:20px;line-height:1}
       .arrows .grip:active{cursor:grabbing}
       .row.drag-ghost{opacity:.35}
-      .row.drag-chosen{box-shadow:0 10px 28px rgba(80,40,50,.18)}`;
+      .row.drag-chosen{box-shadow:0 10px 28px rgba(80,40,50,.18)}
+      .multi{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:8px}
+      .multi:empty{display:none}
+      .mp{position:relative;aspect-ratio:1;border-radius:10px;background:#eee center/cover}
+      .mp button{position:absolute;top:4px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(255,255,255,.92);cursor:pointer;font-size:14px;line-height:24px;padding:0}
+      .mp .rm{right:4px}.mp .mv{left:4px}
+      .mp .cov{position:absolute;left:4px;bottom:4px;font-size:10px;background:#8F5864;color:#fff;border-radius:8px;padding:2px 6px}`;
     document.head.appendChild(st);
   })();
 
@@ -243,6 +249,15 @@
           <button type="button" class="b ghost" data-clear="${id}" ${u ? "" : "hidden"}>Remove</button>
           <p class="hint" id="${id}_st">Photos are resized automatically.</p></div></div>
           <input type="hidden" id="${id}" value="${esc(u)}">`; break;
+      }
+      case "images": {
+        const list = (Array.isArray(val) && val.length ? val : (v.photo_url ? [v.photo_url] : [])).map(safeUrl).filter(Boolean).slice(0, f.max || 4);
+        input = `<div class="multi" id="${id}_box"></div>
+          <input type="file" accept="image/*" multiple id="${id}_file" hidden>
+          <button type="button" class="b line" id="${id}_add">Add photos</button>
+          <p class="hint" id="${id}_st">Up to ${f.max || 4}. Photos are resized automatically.</p>
+          <input type="hidden" id="${id}" value="${esc(JSON.stringify(list))}">`;
+        break;
       }
       case "markdown":
         input = `<div class="tools" data-for="${id}">
@@ -338,6 +353,36 @@
       $(id).value = ""; $(id + "_pv").style.backgroundImage = ""; b.hidden = true;
     });
 
+    // multi-photo fields
+    SECTIONS[cur].fields.filter((f) => f.type === "images").forEach((f) => {
+      const id = "f_" + f.k, max = f.max || 4, hid = $(id), box = $(id + "_box"), file = $(id + "_file"), add = $(id + "_add");
+      if (!hid) return;
+      const get = () => { try { return JSON.parse(hid.value || "[]"); } catch { return []; } };
+      const draw = () => {
+        const list = get();
+        box.innerHTML = list.map((u, i) => `<div class="mp" style="background-image:url('${esc(u)}')">
+          ${i === 0 ? `<span class="cov">cover</span>` : `<button type="button" class="mv" data-first="${i}" title="Make cover">★</button>`}
+          <button type="button" class="rm" data-rm="${i}" aria-label="Remove">×</button></div>`).join("");
+        add.hidden = list.length >= max;
+        box.querySelectorAll("[data-rm]").forEach((b) => b.onclick = () => { const l = get(); l.splice(+b.dataset.rm, 1); hid.value = JSON.stringify(l); draw(); });
+        box.querySelectorAll("[data-first]").forEach((b) => b.onclick = () => { const l = get(); l.unshift(l.splice(+b.dataset.first, 1)[0]); hid.value = JSON.stringify(l); draw(); });
+      };
+      add.onclick = () => file.click();
+      file.onchange = async () => {
+        const picked = [...file.files].slice(0, max - get().length);
+        if (!picked.length) return;
+        add.disabled = true; $("saveBtn").disabled = true;
+        for (let i = 0; i < picked.length; i++) {
+          $(id + "_st").textContent = `Uploading ${i + 1} of ${picked.length}…`;
+          try { const url = await uploadImage(picked[i], f.folder); hid.value = JSON.stringify([...get(), url].slice(0, max)); draw(); }
+          catch { toast("One photo failed to upload"); }
+        }
+        $(id + "_st").textContent = "Uploaded ✧ Tap ★ to choose the cover.";
+        add.disabled = false; $("saveBtn").disabled = false; file.value = "";
+      };
+      draw();
+    });
+
     // markdown toolbar
     $("form").querySelectorAll(".tools").forEach((bar) => {
       const ta = $(bar.dataset.for), pv = $(bar.dataset.for + "_pv"), file = $(bar.dataset.for + "_file");
@@ -384,7 +429,7 @@
     if ($("pickMap")) {
       const lat = parseFloat($("f_lat").value), lng = parseFloat($("f_lng").value);
       const has = !isNaN(lat) && !isNaN(lng);
-      pickMap = L.map("pickMap").setView(has ? [lat, lng] : [20, 10], has ? 14 : 2);
+      pickMap = L.map("pickMap").setView(has ? [lat, lng] : [1.3521, 103.8198], has ? 15 : 11);
       L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 19, attribution: "&copy; OpenStreetMap &copy; CARTO" }).addTo(pickMap);
       const setPin = (la, ln, fly) => {
         $("f_lat").value = la.toFixed(6); $("f_lng").value = ln.toFixed(6);
@@ -437,6 +482,12 @@
         continue;
       }
       let val = v[f.k];
+      if (f.type === "images") {
+        let list = []; try { list = JSON.parse(val || "[]"); } catch {}
+        out[f.k] = list;
+        if (cur === "places") out.photo_url = list[0] || null;
+        continue;
+      }
       if (f.type === "check") { out[f.k] = !!val; continue; }
       val = hiddenField ? "" : String(val ?? "").trim();
       if (f.req && !val) { $("formErr").textContent = `Please fill in “${f.label}”.`; return; }
