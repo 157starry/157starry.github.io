@@ -65,6 +65,13 @@
     .pc h3 { font: 700 21px/1.25 "Playfair Display", serif; color: #3B2A2F; margin: 14px 0 4px; padding-right: 8px; }
     .pc .note { font: 400 23px/1.25 "Caveat", cursive; color: #8F5864; margin: 0; }
     .pc .where { margin-top: 10px; font: 400 13px "Lora", serif; color: #9B8287; background: none; border: 0; padding: 0; cursor: pointer; }
+    .polaroid .track > div { cursor: zoom-in; }
+    .lb { position: fixed; inset: 0; z-index: 9999; background: rgba(40,25,30,.88); display: flex; align-items: center; justify-content: center; }
+    .lb[hidden] { display: none; }
+    .lb img { max-width: 92vw; max-height: 82vh; object-fit: contain; border: 8px solid #fff; border-bottom-width: 30px; box-shadow: 0 10px 40px rgba(0,0,0,.4); }
+    .lb button { position: absolute; background: rgba(255,255,255,.9); border: 0; border-radius: 50%; width: 42px; height: 42px; font-size: 20px; cursor: pointer; color: #3B2A2F; }
+    .lb .x { top: 16px; right: 16px; } .lb .pv { left: 12px; } .lb .nx { right: 12px; }
+    .lb .cap { position: absolute; bottom: 18px; left: 0; right: 0; text-align: center; color: #fff; font: 400 22px "Caveat", cursive; }
     .pc .where:hover { color: #8F5864; text-decoration: underline; }
   </style>
 </head>
@@ -126,6 +133,36 @@
         ${p.lat != null ? `<button class="where" type="button">⌖ see it on the map</button>` : ""}
       </article>`;
     }).join("") + `</div>`;
+
+    // tap a photo to see it whole
+    const lb = document.createElement("div");
+    lb.className = "lb"; lb.hidden = true;
+    lb.innerHTML = `<img alt=""><button class="x" aria-label="Close">×</button><button class="pv" aria-label="Previous">‹</button><button class="nx" aria-label="Next">›</button><div class="cap"></div>`;
+    document.body.appendChild(lb);
+    let lbList = [], lbI = 0, lbName = "";
+    const lbShow = () => {
+      lb.querySelector("img").src = lbList[lbI];
+      lb.querySelector(".cap").textContent = lbName + (lbList.length > 1 ? `  ·  ${lbI + 1}/${lbList.length}` : "");
+      lb.querySelector(".pv").hidden = lb.querySelector(".nx").hidden = lbList.length < 2;
+    };
+    const lbMove = (d) => { lbI = (lbI + d + lbList.length) % lbList.length; lbShow(); };
+    lb.querySelector(".pv").onclick = (e) => { e.stopPropagation(); lbMove(-1); };
+    lb.querySelector(".nx").onclick = (e) => { e.stopPropagation(); lbMove(1); };
+    lb.querySelector("img").onclick = (e) => { e.stopPropagation(); if (lbList.length > 1) lbMove(1); };
+    lb.onclick = () => { lb.hidden = true; document.body.style.overflow = ""; };
+    document.addEventListener("keydown", (e) => {
+      if (lb.hidden) return;
+      if (e.key === "Escape") lb.onclick();
+      if (e.key === "ArrowRight") lbMove(1);
+      if (e.key === "ArrowLeft") lbMove(-1);
+    });
+    document.querySelectorAll(".pc").forEach((card) => {
+      const p = places.find((x) => x.id === card.dataset.id);
+      card.querySelectorAll(".polaroid .track > div[role=img]").forEach((ph, i) => ph.addEventListener("click", () => {
+        lbList = photosOf(p); lbI = i; lbName = p.name; lbShow();
+        lb.hidden = false; document.body.style.overflow = "hidden";
+      }));
+    });
 
     // photo dots follow the swipe
     document.querySelectorAll(".polaroid .track").forEach((tr) => {
