@@ -195,6 +195,7 @@
       .mp{position:relative;aspect-ratio:1;border-radius:10px;background:#eee center/cover}
       .mp button{position:absolute;top:4px;width:24px;height:24px;border-radius:50%;border:0;background:rgba(255,255,255,.92);cursor:pointer;font-size:14px;line-height:24px;padding:0}
       .mp .rm{right:4px}.mp .mv{left:4px}
+      #pickMap .leaflet-tile-pane{filter:sepia(.35) saturate(.7) hue-rotate(-15deg) brightness(1.04)}
       .mp .cov{position:absolute;left:4px;bottom:4px;font-size:10px;background:#8F5864;color:#fff;border-radius:8px;padding:2px 6px}`;
     document.head.appendChild(st);
   })();
@@ -430,7 +431,7 @@
       const lat = parseFloat($("f_lat").value), lng = parseFloat($("f_lng").value);
       const has = !isNaN(lat) && !isNaN(lng);
       pickMap = L.map("pickMap").setView(has ? [lat, lng] : [1.3521, 103.8198], has ? 15 : 11);
-      L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", { subdomains: "abcd", maxZoom: 19, attribution: "&copy; OpenStreetMap &copy; CARTO" }).addTo(pickMap);
+      L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(pickMap);
       const setPin = (la, ln, fly) => {
         $("f_lat").value = la.toFixed(6); $("f_lng").value = ln.toFixed(6);
         if (pickMarker) pickMarker.setLatLng([la, ln]); else pickMarker = L.marker([la, ln]).addTo(pickMap);

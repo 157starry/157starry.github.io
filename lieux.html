@@ -20,7 +20,7 @@
     main.page.lieux { max-width: 980px; }
     .lieux #map { height: 340px; border-radius: 18px; overflow: hidden; border: 6px solid #FFFDF8;
       box-shadow: 0 10px 30px rgba(110,70,80,.14); margin: 18px 0 34px; }
-    .lieux #map .leaflet-tile-pane { filter: sepia(.28) saturate(.85) hue-rotate(-8deg); }
+    .lieux #map .leaflet-tile-pane { filter: sepia(.35) saturate(.7) hue-rotate(-15deg) brightness(1.04); }
     .lieux .sec-h { font-family: "Caveat", cursive; font-size: 26px; color: #8F5864; margin: 0 0 14px; }
 
     .postcards { display: grid; grid-template-columns: 1fr; gap: 26px; padding-bottom: 40px; }
@@ -85,10 +85,7 @@
   (async function () {
     const { sb, esc, safeUrl } = SL;
     const map = L.map("map", { zoomControl: false, attributionControl: true, scrollWheelZoom: false }).setView([1.3521, 103.8198], 11);
-    L.tileLayer("https://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}{r}.png", {
-      maxZoom: 19, subdomains: "abcd",
-      attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> &copy; <a href="https://carto.com/attributions">CARTO</a>',
-    }).addTo(map);
+    L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", { maxZoom: 19, attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>' }).addTo(map);
     L.control.zoom({ position: "bottomright" }).addTo(map);
 
     let places = [];
