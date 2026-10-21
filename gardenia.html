@@ -1,0 +1,475 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gardenia Starry 🌸</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;600&family=Lato:wght@300;400&display=swap');
+        
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: 'Lato', sans-serif;
+            background: linear-gradient(135deg, #F5E6D3 0%, #E8DCC4 100%);
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            padding: 20px;
+        }
+
+        .container {
+            background: #FDF8F3;
+            border-radius: 30px;
+            padding: 50px;
+            max-width: 900px;
+            width: 100%;
+            box-shadow: 0 20px 60px rgba(139, 115, 85, 0.15);
+            position: relative;
+            border: 3px solid #D4C4B0;
+        }
+
+        /* Floral decorations */
+        .flower-top-left, .flower-top-right, .flower-bottom-left, .flower-bottom-right {
+            position: absolute;
+            font-size: 3em;
+            opacity: 0.3;
+        }
+
+        .flower-top-left { top: 20px; left: 20px; }
+        .flower-top-right { top: 20px; right: 20px; }
+        .flower-bottom-left { bottom: 20px; left: 20px; }
+        .flower-bottom-right { bottom: 20px; right: 20px; }
+
+        /* Bunny corners */
+        .bunny-top {
+            position: absolute;
+            top: -40px;
+            right: 40px;
+            width: 140px;
+            height: 140px;
+            background: white;
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(139, 115, 85, 0.2);
+            border: 3px solid #C9B896;
+        }
+
+        .bunny-bottom {
+            position: absolute;
+            bottom: -40px;
+            left: 40px;
+            width: 140px;
+            height: 140px;
+            background: white;
+            border-radius: 50%;
+            padding: 10px;
+            box-shadow: 0 10px 30px rgba(139, 115, 85, 0.2);
+            border: 3px solid #C9B896;
+        }
+
+        .bunny-top img, .bunny-bottom img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            border-radius: 50%;
+        }
+
+        /* Header */
+        header {
+            text-align: center;
+            margin-bottom: 40px;
+        }
+
+        h1 {
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 3.5em;
+            color: #6B5D4F;
+            font-weight: 600;
+            margin-bottom: 10px;
+            letter-spacing: 2px;
+        }
+
+        .slogan {
+            font-size: 1.2em;
+            color: #8B9A7C;
+            font-style: italic;
+            letter-spacing: 3px;
+            font-weight: 300;
+        }
+
+        /* Timer section */
+        .timer-section {
+            background: linear-gradient(135deg, #F5F0E8, #EDE4D8);
+            border-radius: 25px;
+            padding: 40px;
+            margin: 30px 0;
+            border: 2px solid #D4C4B0;
+            box-shadow: inset 0 2px 10px rgba(0,0,0,0.05);
+        }
+
+        .session-title {
+            text-align: center;
+            color: #6B5D4F;
+            font-size: 1.1em;
+            margin-bottom: 20px;
+            font-weight: 400;
+        }
+
+        .timer-display {
+            text-align: center;
+            font-size: 5em;
+            font-family: 'Cormorant Garamond', serif;
+            color: #6B5D4F;
+            font-weight: 600;
+            margin: 20px 0;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.1);
+        }
+
+        /* Reminders */
+        .reminders {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 20px;
+            margin: 30px 0;
+        }
+
+        .reminder-card {
+            background: white;
+            padding: 20px;
+            border-radius: 15px;
+            border-left: 4px solid #8B9A7C;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.08);
+        }
+
+        .reminder-card h3 {
+            color: #6B5D4F;
+            font-size: 0.9em;
+            margin-bottom: 8px;
+            font-weight: 600;
+        }
+
+        .reminder-time {
+            color: #8B9A7C;
+            font-size: 1.1em;
+            font-weight: 400;
+        }
+
+        /* Progress */
+        .progress-section {
+            margin: 30px 0;
+        }
+
+        .progress-label {
+            text-align: center;
+            color: #6B5D4F;
+            margin-bottom: 15px;
+            font-weight: 400;
+        }
+
+        .progress-bar-container {
+            background: #E8DCC4;
+            height: 20px;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px rgba(0,0,0,0.1);
+        }
+
+        .progress-bar {
+            height: 100%;
+            background: linear-gradient(90deg, #8B9A7C, #A4B08C);
+            transition: width 0.3s ease;
+            border-radius: 20px;
+        }
+
+        .progress-stars {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 10px;
+            padding: 0 10px;
+        }
+
+        .star {
+            font-size: 1.5em;
+            opacity: 0.3;
+            transition: all 0.3s;
+        }
+
+        .star.active {
+            opacity: 1;
+            transform: scale(1.2);
+        }
+
+        /* Controls */
+        .controls {
+            display: flex;
+            gap: 20px;
+            justify-content: center;
+            margin: 30px 0;
+        }
+
+        .btn {
+            padding: 15px 40px;
+            border: none;
+            border-radius: 25px;
+            font-size: 1.1em;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            font-family: 'Lato', sans-serif;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+
+        .btn-start {
+            background: linear-gradient(135deg, #8B9A7C, #A4B08C);
+            color: white;
+        }
+
+        .btn-start:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 8px 20px rgba(139, 154, 124, 0.3);
+        }
+
+        .btn-quit {
+            background: #E8DCC4;
+            color: #6B5D4F;
+        }
+
+        .btn-quit:hover {
+            background: #D4C4B0;
+        }
+
+        /* Blooming Ledger */
+        .ledger {
+            background: white;
+            padding: 25px;
+            border-radius: 20px;
+            border: 2px solid #D4C4B0;
+            margin-top: 30px;
+        }
+
+        .ledger h2 {
+            color: #6B5D4F;
+            font-family: 'Cormorant Garamond', serif;
+            font-size: 1.8em;
+            margin-bottom: 15px;
+        }
+
+        .ledger-info {
+            background: #F5F0E8;
+            padding: 15px;
+            border-radius: 10px;
+            color: #6B5D4F;
+            border-left: 3px solid #8B9A7C;
+        }
+
+        .status-message {
+            text-align: center;
+            padding: 20px;
+            background: #E8F4E8;
+            border-radius: 15px;
+            color: #5A7C5A;
+            margin: 20px 0;
+            font-size: 1.1em;
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 30px; }
+            h1 { font-size: 2.5em; }
+            .timer-display { font-size: 3.5em; }
+            .reminders { grid-template-columns: 1fr; }
+            .bunny-top, .bunny-bottom { width: 100px; height: 100px; }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Floral decorations -->
+        <div class="flower-top-left">🌸</div>
+        <div class="flower-top-right">🌸</div>
+        <div class="flower-bottom-left">🌿</div>
+        <div class="flower-bottom-right">🌿</div>
+
+        <!-- Bunny with glasses (top right) -->
+        <div class="bunny-top">
+            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #F5E6D3, #E8DCC4); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3em;">
+                🐰
+            </div>
+        </div>
+
+        <!-- Cozy bunny (bottom left) -->
+        <div class="bunny-bottom">
+            <div style="width: 100%; height: 100%; background: linear-gradient(135deg, #F5E6D3, #E8DCC4); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 3em;">
+                🌸
+            </div>
+        </div>
+
+        <header>
+            <h1>Gardenia Starry 🌸</h1>
+            <p class="slogan">STUDY. HYDRATE. BLOOM.</p>
+        </header>
+
+        <div class="timer-section">
+            <div class="session-title">3 HOUR FOCUS SESSION</div>
+            <div class="timer-display" id="timer">03:00:00</div>
+
+            <div class="reminders">
+                <div class="reminder-card">
+                    <h3>💧 Next Water Reminder:</h3>
+                    <div class="reminder-time" id="water-reminder">in 30 mins</div>
+                </div>
+                <div class="reminder-card">
+                    <h3>☕ Break Timer:</h3>
+                    <div class="reminder-time" id="break-reminder">in focus | 10m break</div>
+                </div>
+            </div>
+
+            <div class="progress-section">
+                <div class="progress-label">Progress</div>
+                <div class="progress-bar-container">
+                    <div class="progress-bar" id="progress-bar" style="width: 0%"></div>
+                </div>
+                <div class="progress-stars">
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                    <span class="star">⭐</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="controls">
+            <button class="btn btn-start" id="startBtn">🚀 START FOCUS</button>
+            <button class="btn btn-quit" id="quitBtn">⏹️ QUIT</button>
+        </div>
+
+        <div class="status-message" id="status">
+            Starry! Keep it UP 🚀
+        </div>
+
+        <div class="ledger">
+            <h2>📊 The Blooming Ledger</h2>
+            <div class="ledger-info">
+                <p><strong>Today session:</strong> Koinós</p>
+                <p style="margin-top: 10px;"><strong>Total focus today:</strong> <span id="total-time">0 hours</span></p>
+                <p style="margin-top: 5px; font-style: italic; color: #8B9A7C;">Let's bloom, Tarry!</p>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        let startTime = null;
+        let timerInterval = null;
+        let totalSeconds = 3 * 3600; // 3 hours
+        let elapsedSeconds = 0;
+
+        const timerDisplay = document.getElementById('timer');
+        const progressBar = document.getElementById('progress-bar');
+        const waterReminder = document.getElementById('water-reminder');
+        const breakReminder = document.getElementById('break-reminder');
+        const statusMessage = document.getElementById('status');
+        const startBtn = document.getElementById('startBtn');
+        const quitBtn = document.getElementById('quitBtn');
+        const stars = document.querySelectorAll('.star');
+
+        function formatTime(seconds) {
+            const h = Math.floor(seconds / 3600);
+            const m = Math.floor((seconds % 3600) / 60);
+            const s = seconds % 60;
+            return `${h.toString().padStart(2, '0')}:${m.toString().padStart(2, '0')}:${s.toString().padStart(2, '0')}`;
+        }
+
+        function updateTimer() {
+            elapsedSeconds++;
+            const remaining = totalSeconds - elapsedSeconds;
+
+            if (remaining <= 0) {
+                stopTimer();
+                statusMessage.textContent = '🌸 Sesi Selesai! Kamu Hebat, Starry!';
+                statusMessage.style.background = '#FFE5EC';
+                return;
+            }
+
+            timerDisplay.textContent = formatTime(remaining);
+
+            // Update progress
+            const progress = (elapsedSeconds / totalSeconds) * 100;
+            progressBar.style.width = progress + '%';
+
+            // Update stars
+            const starsToActivate = Math.floor((progress / 100) * 5);
+            stars.forEach((star, index) => {
+                star.classList.toggle('active', index < starsToActivate);
+            });
+
+            // Water reminder (every 30 min)
+            const nextWater = 1800 - (elapsedSeconds % 1800);
+            const waterMins = Math.floor(nextWater / 60);
+            waterReminder.textContent = `in ${waterMins} mins`;
+
+            if (elapsedSeconds % 1800 === 0 && elapsedSeconds > 0) {
+                statusMessage.textContent = '💧 Stay hydrated, Princess TA!';
+                statusMessage.style.background = '#E3F2FD';
+            }
+
+            // Break reminder (every 60 min)
+            const nextBreak = 3600 - (elapsedSeconds % 3600);
+            const breakMins = Math.floor(nextBreak / 60);
+            breakReminder.textContent = `in ${breakMins} mins | 10m break`;
+
+            if (elapsedSeconds % 3600 === 0 && elapsedSeconds > 0) {
+                statusMessage.textContent = '🧘 Break Time! Stretch!';
+                statusMessage.style.background = '#FFF9E6';
+            }
+        }
+
+        function startTimer() {
+            if (timerInterval) return;
+            
+            startTime = Date.now();
+            statusMessage.textContent = '🌸 Focus mode activated! You got this!';
+            statusMessage.style.background = '#E8F4E8';
+            
+            timerInterval = setInterval(updateTimer, 1000);
+            startBtn.textContent = '⏸️ PAUSE';
+        }
+
+        function stopTimer() {
+            if (timerInterval) {
+                clearInterval(timerInterval);
+                timerInterval = null;
+                startBtn.textContent = '▶️ RESUME';
+            }
+        }
+
+        function resetTimer() {
+            stopTimer();
+            elapsedSeconds = 0;
+            timerDisplay.textContent = '03:00:00';
+            progressBar.style.width = '0%';
+            waterReminder.textContent = 'in 30 mins';
+            breakReminder.textContent = 'in focus | 10m break';
+            statusMessage.textContent = 'Starry! Keep it UP 🚀';
+            statusMessage.style.background = '#E8F4E8';
+            stars.forEach(star => star.classList.remove('active'));
+            startBtn.textContent = '🚀 START FOCUS';
+        }
+
+        startBtn.addEventListener('click', () => {
+            if (timerInterval) {
+                stopTimer();
+            } else {
+                startTimer();
+            }
+        });
+
+        quitBtn.addEventListener('click', resetTimer);
+    </script>
+</body>
+</html>
