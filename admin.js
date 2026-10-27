@@ -34,7 +34,7 @@
         { k: "kind", label: "Type", type: "select", def: "quote", options: [["quote", "Quote / reflection"], ["book", "Book for the shelf"], ["read", "Good read (link)"]] },
         { k: "title", label: "The quote, book title, or article title", type: "textarea", req: true, max: 600 },
         { k: "author", label: "Author / source", type: "text", max: 120 },
-        { k: "genre", label: "Genre", type: "text", max: 40, suggest: true, hint: "One or more, separated by commas: Psychology, Philosophy, History, Fiction…", showIf: (v) => v.kind === "book" },
+        { k: "genre", label: "Genre", type: "text", max: 40, suggest: true, upper: true, options: ["PHILOSOPHY", "PSYCHOLOGY", "SELF-GROWTH", "SCIENCE", "HISTORY", "SOCIETY", "FICTION", "ROMANCE"], hint: "Up to 2, separated by commas: PHILOSOPHY, PSYCHOLOGY, SELF-GROWTH, SCIENCE, HISTORY, SOCIETY, FICTION, ROMANCE" },
         { k: "note", label: "Your little note (shows in handwriting)", type: "text", max: 200 },
         { k: "url", label: "Link", type: "url", hint: "Needed for reads. Optional for books.", showIf: (v) => v.kind !== "quote" },
         { k: "image_url", label: "Book cover (optional)", type: "image", folder: "covers", showIf: (v) => v.kind === "book" },
@@ -229,7 +229,7 @@
     switch (f.type) {
       case "text": case "url":
         input = `<input id="${id}" class="field" type="${f.type === "url" ? "url" : "text"}" ${f.max ? `maxlength="${f.max}"` : ""} value="${esc(val ?? "")}" ${f.suggest ? `list="dl_${f.k}"` : ""} ${f.type === "url" ? 'placeholder="https://…"' : ""}>`
-          + (f.suggest ? `<datalist id="dl_${f.k}">${suggestions(f.k).map((o) => `<option value="${esc(o)}">`).join("")}</datalist>` : "");
+          + (f.suggest ? `<datalist id="dl_${f.k}">${(f.options || suggestions(f.k)).map((o) => `<option value="${esc(o)}">`).join("")}</datalist>` : "");
         break;
       case "textarea":
         input = `<textarea id="${id}" class="field" ${f.max ? `maxlength="${f.max}"` : ""}>${esc(val ?? "")}</textarea>`; break;
@@ -291,7 +291,7 @@
     SECTIONS[cur].fields.forEach((f) => {
       const el = $("f_" + f.k);
       if (f.type === "check") v[f.k] = el ? el.checked : f.def;
-      else if (f.type !== "map") v[f.k] = el ? el.value : "";
+      else if (f.type !== "map") v[f.k] = el ? (f.upper ? el.value.split(",").map((g) => g.trim().toUpperCase()).filter(Boolean).join(", ") : el.value) : "";
     });
     return v;
   }
