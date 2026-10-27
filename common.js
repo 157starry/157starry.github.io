@@ -84,4 +84,19 @@
   }
 
   window.SL = { cfg, sb, ready, esc, safeUrl, fmtMonth, fmtDate, readMins, md, platform, hash, tint, uploadImage, toast };
+
+  // Private view counter: +1 per page (or essay) per browser session. Never counts admin or the signed-in Keeper.
+  (async function countView() {
+    try {
+      if (!sb || /admin/.test(location.pathname)) return;
+      const page = (location.pathname.split("/").pop() || "index.html").replace(/\.html$/, "") || "index";
+      const p = new URLSearchParams(location.search).get("p");
+      const key = p ? `post:${p.toLowerCase()}` : `page:${page.toLowerCase()}`;
+      if (!/^(page|post):[a-z0-9-]{1,80}$/.test(key)) return;
+      try { if (sessionStorage.getItem("sl_v_" + key)) return; sessionStorage.setItem("sl_v_" + key, "1"); } catch {}
+      const { data } = await sb.auth.getSession();
+      if (data && data.session) return; // that's you
+      await sb.rpc("star_hit", { k: key });
+    } catch {}
+  })();
 })();

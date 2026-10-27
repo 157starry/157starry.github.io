@@ -102,7 +102,21 @@
       return;
     }
     $("login").hidden = true; $("dash").hidden = false; $("logout").hidden = false;
-    renderTabs(); load();
+    renderTabs(); load(); loadViews();
+  }
+
+  async function loadViews() {
+    const box = $("viewsList"); if (!box) return;
+    const { data, error } = await sb.from("star_views").select("key,count,updated_at").order("count", { ascending: false });
+    if (error) { box.textContent = "Run star_views.sql in Supabase first."; return; }
+    const { data: posts } = await sb.from("star_posts").select("slug,title");
+    const titles = Object.fromEntries((posts || []).map((p) => [`post:${p.slug}`, p.title]));
+    const PAGES = { "page:index": "Home (the sky)", "page:lecto": "lect(o)", "page:florilegium": "Florilegium", "page:nocturnes": "Nocturnes", "page:lieux": "Lieux", "page:lab": "Starry Lab" };
+    const rows = data || [];
+    $("viewsTotal").textContent = rows.length ? `· ${rows.reduce((a, r) => a + Number(r.count), 0)} total` : "";
+    box.innerHTML = rows.length ? rows.map((r) => `<div style="display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-top:1px solid var(--line,#eee)">
+        <span>${r.key.startsWith("post:") ? "✎ " : ""}${esc(titles[r.key] || PAGES[r.key] || r.key)}</span><b>${r.count}</b></div>`).join("")
+      : "No visits counted yet ✧";
   }
   $("loginBtn").onclick = login;
   $("password").addEventListener("keydown", (e) => { if (e.key === "Enter") login(); });
