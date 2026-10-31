@@ -1,0 +1,1304 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#8BC4B8">
+<title>Study Quest — Pixel Task Board</title>
+<link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16' shape-rendering='crispEdges'%3E%3Cpath fill='%23C0604D' d='M0 0h16v16H0z'/%3E%3Cpath fill='%23E8913A' d='M7 2h2v4h3v2h2v2h-4v4H6v-4H2V8h2V6h3z'/%3E%3C/svg%3E">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+:root{
+  --sage:#8BC4B8;
+  --sage-dark:#4F8177;
+  --sage-light:#D8EEE5;
+  --brick:#C0604D;
+  --brick-dark:#783D35;
+  --pink:#FBE9E3;
+  --cream:#FFF8E9;
+  --orange:#E8913A;
+  --orange-light:#F8D39D;
+  --ink:#303B37;
+  --muted:#6A5A50;
+  --white:#FFFCF4;
+  --shadow:#493F39;
+  --pixel:"Press Start 2P",monospace;
+  --terminal:"VT323",monospace;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+html{min-width:320px;scroll-behavior:smooth}
+body{
+  min-height:100dvh;
+  color:var(--ink);
+  font:20px/1.35 var(--terminal);
+  background-color:var(--pink);
+  background-image:repeating-linear-gradient(90deg,rgba(139,196,184,.88) 0,rgba(139,196,184,.88) 38px,rgba(255,248,233,.34) 38px,rgba(255,248,233,.34) 42px,rgba(192,96,77,.8) 42px,rgba(192,96,77,.8) 80px,rgba(255,248,233,.34) 80px,rgba(255,248,233,.34) 84px);
+  -webkit-font-smoothing:none;
+}
+body::before{
+  content:"";position:fixed;inset:0;pointer-events:none;z-index:-1;
+  background:repeating-linear-gradient(0deg,transparent 0,transparent 3px,rgba(48,59,55,.035) 3px,rgba(48,59,55,.035) 4px);
+}
+button,input,select{font:inherit}
+button{cursor:pointer;color:inherit}
+button:disabled{cursor:not-allowed;opacity:.45}
+button,a,input,select{-webkit-tap-highlight-color:transparent}
+:focus-visible{outline:3px solid var(--orange);outline-offset:3px}
+[hidden]{display:none!important}
+.pixel-icon{width:20px;height:20px;flex:0 0 auto;fill:currentColor;shape-rendering:crispEdges;image-rendering:pixelated}
+.shell{width:100%;max-width:1520px;margin:0 auto;padding:16px 12px 194px}
+body.friends-hidden .shell{padding-bottom:44px}
+.boot-line{
+  display:flex;align-items:center;justify-content:space-between;gap:12px;
+  padding:7px 10px;border:2px solid var(--ink);background:var(--ink);color:var(--cream);
+  font:8px/1.6 var(--pixel);letter-spacing:.04em;box-shadow:4px 4px 0 var(--brick-dark)
+}
+.boot-status{display:flex;align-items:center;gap:8px;white-space:nowrap}
+.back-lab{color:inherit;text-decoration:none;border-bottom:2px dotted currentColor;padding-bottom:1px}
+.back-lab:hover,.back-lab:focus-visible{opacity:.75}
+.status-dot{width:8px;height:8px;background:var(--orange);display:inline-block;animation:blink 1.2s steps(2,end) infinite}
+.masthead{position:relative;padding:30px 8px 22px;text-align:center}
+.masthead h1{
+  display:inline-block;color:var(--orange);font:clamp(25px,7vw,58px)/1.25 var(--pixel);
+  letter-spacing:-.04em;text-shadow:3px 3px 0 var(--cream),6px 6px 0 var(--brick-dark)
+}
+.masthead p{margin-top:16px;font:10px/1.8 var(--pixel);color:var(--ink)}
+.hero-star{position:absolute;color:var(--cream);width:28px;height:28px;filter:drop-shadow(2px 2px 0 var(--brick-dark))}
+.hero-star.one{left:4%;top:28px;transform:rotate(-12deg)}
+.hero-star.two{right:5%;bottom:24px;width:20px;height:20px;color:var(--orange)}
+.hero-heart{position:absolute;right:8%;top:20px;width:30px;height:30px;color:var(--brick);transform:rotate(8deg)}
+.companion-toolbar{
+  display:flex;align-items:center;justify-content:center;flex-wrap:wrap;gap:10px;
+  width:fit-content;max-width:100%;margin:0 auto 4px;padding:9px;border:2px solid var(--ink);
+  background:var(--cream);box-shadow:4px 4px 0 var(--brick-dark)
+}
+.party-count{font:8px/1.6 var(--pixel);padding:0 8px;white-space:nowrap}
+.party-count strong{color:var(--brick-dark)}
+.control-grid,.board-window{margin-top:16px}
+.control-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:16px}
+.window{
+  position:relative;min-width:0;background:var(--pink);border:3px solid var(--ink);
+  box-shadow:inset 2px 2px 0 var(--white),inset -2px -2px 0 var(--muted),6px 6px 0 var(--shadow)
+}
+.title-bar{
+  min-height:38px;display:flex;align-items:center;justify-content:space-between;gap:8px;
+  padding:4px 5px 4px 9px;background:var(--brick);color:var(--white);border-bottom:3px solid var(--ink);
+  user-select:none
+}
+.window:nth-child(even)>.title-bar{background:var(--sage-dark)}
+.title-text{display:flex;align-items:center;gap:8px;min-width:0;font:9px/1.5 var(--pixel);letter-spacing:.02em}
+.title-text span{overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.title-bar .pixel-icon{width:16px;height:16px}
+.window-controls{display:flex;gap:4px;flex:0 0 auto}
+.win-control{
+  width:28px;height:26px;display:grid;place-items:center;border:2px solid var(--ink);
+  background:var(--pink);color:var(--ink);font:18px/1 var(--terminal);
+  box-shadow:inset 1px 1px 0 var(--white),inset -1px -1px 0 var(--muted)
+}
+.win-control:hover{background:var(--orange-light)}
+.win-control:active{box-shadow:inset 1px 1px 0 var(--muted);transform:translate(1px,1px)}
+.window-body{padding:16px}
+.window.is-minimized .window-body{display:none}
+.window.is-closed{display:none}
+.window.is-maximized{position:fixed;inset:10px;z-index:70;overflow:auto;max-height:calc(100dvh - 20px);box-shadow:8px 8px 0 var(--shadow)}
+.window.is-maximized .window-body{min-height:calc(100dvh - 64px)}
+body.has-maximized{overflow:hidden}
+.section-heading{font:12px/1.6 var(--pixel);color:var(--brick-dark);margin-bottom:6px}
+.section-copy{color:var(--muted);font-size:19px;margin-bottom:16px}
+.task-form{display:grid;grid-template-columns:minmax(0,1fr);gap:12px}
+.field{display:flex;flex-direction:column;gap:6px;min-width:0}
+.field label,.friend-field-label{font:8px/1.5 var(--pixel);color:var(--ink)}
+.required{color:var(--brick)}
+.field input,.field select,.filter-field input,.filter-field select,.friend-name-input{
+  width:100%;min-height:44px;border:2px solid var(--ink);border-radius:0;background:var(--cream);color:var(--ink);
+  padding:8px 10px;box-shadow:inset 2px 2px 0 rgba(106,90,80,.22);outline-offset:2px
+}
+.field input:focus,.field select:focus,.filter-field input:focus,.filter-field select:focus,.friend-name-input:focus{background:var(--white)}
+.field input::placeholder,.filter-field input::placeholder,.friend-name-input::placeholder{color:#806E63;opacity:1}
+.form-actions{display:flex;flex-wrap:wrap;gap:10px;margin-top:4px}
+.btn{
+  min-height:44px;display:inline-flex;align-items:center;justify-content:center;gap:8px;
+  border:2px solid var(--ink);border-radius:0;padding:8px 14px;background:var(--pink);
+  font:9px/1.4 var(--pixel);box-shadow:inset 2px 2px 0 var(--white),inset -2px -2px 0 var(--muted),3px 3px 0 var(--ink);
+  transition:transform 100ms ease-out,background-color 140ms ease-out
+}
+.btn:hover:not(:disabled){background:var(--orange-light)}
+.btn:active:not(:disabled){transform:translate(2px,2px);box-shadow:inset 2px 2px 0 var(--muted),1px 1px 0 var(--ink)}
+.btn-primary{background:var(--orange);color:var(--ink)}
+.btn-primary:hover:not(:disabled){background:#F2A653}
+.btn-sage{background:var(--sage)}
+.btn-danger{background:var(--brick);color:var(--white)}
+.btn-small{font-size:7px;padding:6px 9px;min-height:38px;box-shadow:inset 1px 1px 0 var(--white),inset -1px -1px 0 var(--muted),2px 2px 0 var(--ink)}
+.btn .pixel-icon{width:15px;height:15px}
+.arrow-icon{display:inline-block;flex:0 0 auto;width:8px;height:8px;border-top:3px solid currentColor;border-right:3px solid currentColor}
+.arrow-left{transform:rotate(-135deg);margin-left:3px}
+.arrow-right{transform:rotate(45deg);margin-right:3px}
+.stats-top{display:flex;align-items:center;justify-content:space-between;gap:12px;margin-bottom:16px}
+.level-badge{background:var(--orange);border:2px solid var(--ink);padding:10px;box-shadow:3px 3px 0 var(--brick-dark);font:10px/1.5 var(--pixel)}
+.total-xp{text-align:right;font:9px/1.6 var(--pixel);color:var(--brick-dark)}
+.total-xp strong{display:block;font-size:18px;color:var(--ink)}
+.xp-labels{display:flex;justify-content:space-between;gap:8px;font:8px/1.5 var(--pixel);margin-bottom:8px}
+.progress-track{height:26px;border:3px solid var(--ink);background:var(--cream);padding:3px;box-shadow:inset 2px 2px 0 rgba(48,59,55,.2)}
+.progress-fill{height:100%;width:0;background:repeating-linear-gradient(90deg,var(--orange) 0,var(--orange) 12px,var(--orange-light) 12px,var(--orange-light) 15px);transition:width 220ms ease-out}
+.stat-grid{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));border:2px solid var(--ink);margin-top:16px;background:var(--cream)}
+.stat{padding:10px 4px;text-align:center}
+.stat+.stat{border-left:2px solid var(--ink)}
+.stat strong{display:block;font:17px/1.2 var(--pixel);color:var(--brick-dark)}
+.stat span{display:block;margin-top:7px;font:7px/1.4 var(--pixel)}
+.xp-key{margin-top:12px;text-align:center;color:var(--muted);font-size:18px}
+.timer-display{
+  position:relative;padding:12px 8px 8px;border:3px solid var(--ink);background:#263D36;color:#C9F7D4;
+  text-align:center;box-shadow:inset 3px 3px 0 #172923,3px 3px 0 var(--sage-dark)
+}
+.timer-time{font:clamp(58px,17vw,82px)/1 var(--terminal);letter-spacing:.08em;text-shadow:0 0 8px rgba(201,247,212,.35);font-variant-numeric:tabular-nums}
+.timer-caption{font:7px/1.5 var(--pixel);color:var(--sage);margin-top:6px;letter-spacing:.06em}
+.timer-actions{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-top:14px}
+.timer-actions .btn{padding-left:6px;padding-right:6px;font-size:7px}
+.timer-note{text-align:center;margin-top:12px;color:var(--muted)}
+.board-window .window-body{padding:12px}
+.filters{display:grid;grid-template-columns:minmax(0,1fr);gap:10px;padding-bottom:14px;border-bottom:2px dashed var(--brick)}
+.filter-field{display:flex;flex-direction:column;gap:5px;min-width:0}
+.filter-field label{font:7px/1.5 var(--pixel)}
+.filter-actions{display:flex;align-items:end}
+.filter-actions .btn{width:100%}
+.board-summary{display:flex;align-items:center;justify-content:space-between;gap:12px;margin:14px 2px 12px;font:8px/1.5 var(--pixel);color:var(--muted)}
+.legend{display:flex;flex-wrap:wrap;gap:10px;font:18px/1 var(--terminal)}
+.legend span{display:inline-flex;align-items:center;gap:5px}
+.legend i{width:12px;height:12px;border:1px solid var(--ink);display:inline-block}
+.legend .soon{background:var(--orange-light)}
+.legend .late{background:var(--brick)}
+.board-grid{display:grid;grid-template-columns:minmax(0,1fr);gap:14px}
+.board-column{min-width:0;border:2px solid var(--ink);background:rgba(255,248,233,.5)}
+.column-header{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:10px;border-bottom:2px solid var(--ink);background:var(--sage);font:9px/1.5 var(--pixel)}
+.board-column:nth-child(2) .column-header{background:var(--orange-light)}
+.board-column:nth-child(3) .column-header{background:var(--sage-light)}
+.column-count{display:grid;place-items:center;min-width:25px;height:25px;border:2px solid var(--ink);background:var(--cream);font:12px/1 var(--terminal)}
+.task-list{min-height:150px;padding:10px;display:flex;flex-direction:column;gap:12px;transition:background-color 140ms ease-out}
+.task-list.drag-over{background:var(--orange-light);outline:3px dashed var(--brick);outline-offset:-5px}
+.empty-state{margin:auto;width:100%;padding:24px 8px;text-align:center;border:2px dashed var(--muted);color:var(--muted);font:8px/1.8 var(--pixel)}
+.welcome-empty{grid-column:1/-1;padding:38px 18px;text-align:center;border:3px dashed var(--brick);background:var(--cream)}
+.welcome-empty .pixel-icon{width:38px;height:38px;color:var(--orange);margin-bottom:16px}
+.welcome-empty h2{font:12px/1.9 var(--pixel);color:var(--brick-dark);max-width:620px;margin:0 auto 18px}
+.welcome-empty p{font-size:22px;margin-bottom:18px;color:var(--muted)}
+.task-card{position:relative;background:var(--cream);border:2px solid var(--ink);box-shadow:4px 4px 0 var(--muted);cursor:grab;transition:transform 140ms ease-out,box-shadow 140ms ease-out}
+.task-card:hover{transform:translate(-1px,-2px);box-shadow:6px 6px 0 var(--muted)}
+.task-card:active{cursor:grabbing}
+.task-card.is-dragging{opacity:.45;transform:scale(.98)}
+.task-card.deadline-soon{background:#FFF0D5;border-color:var(--brick-dark)}
+.task-card.overdue{background:#F7C9BC;border:3px solid var(--brick-dark)}
+.task-card.is-done{background:#E2F0E7}
+.card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;padding:10px 10px 0}
+.subject-tag{max-width:65%;padding:4px 6px;background:var(--sage-light);border:1px solid var(--ink);font:7px/1.5 var(--pixel);overflow-wrap:anywhere}
+.priority-tag{padding:4px 6px;border:1px solid var(--ink);font:7px/1.5 var(--pixel);white-space:nowrap}
+.priority-high{background:var(--brick);color:var(--white)}
+.priority-medium{background:var(--orange-light)}
+.priority-low{background:var(--sage-light)}
+.card-content{padding:10px}
+.task-name{font:23px/1.12 var(--terminal);overflow-wrap:anywhere}
+.is-done .task-name{text-decoration:line-through;text-decoration-thickness:2px}
+.deadline-line{display:flex;align-items:flex-start;gap:6px;margin-top:10px;font-size:18px;line-height:1.15}
+.deadline-line .pixel-icon{width:16px;height:16px;margin-top:1px}
+.deadline-alert{display:inline-block;margin-top:9px;padding:4px 6px;background:var(--orange);border:1px solid var(--ink);font:7px/1.5 var(--pixel)}
+.overdue .deadline-alert{background:var(--brick);color:var(--white);animation:blink 1s steps(2,end) infinite}
+.card-xp{margin-top:10px;color:var(--brick-dark);font:8px/1.5 var(--pixel)}
+.card-actions{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;padding:10px;border-top:2px dashed rgba(48,59,55,.35)}
+.card-actions .btn{width:100%;min-width:0}
+.move-controls{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:7px;grid-column:1/-1}
+.footer{margin-top:24px;text-align:center;color:var(--ink);font:8px/1.9 var(--pixel)}
+.footer .pixel-icon{display:inline-block;vertical-align:middle;width:15px;height:15px;color:var(--brick)}
+.window-dock{position:fixed;left:8px;right:8px;bottom:166px;z-index:60;display:flex;align-items:center;gap:8px;flex-wrap:wrap;padding:8px;border:2px solid var(--ink);background:var(--pink);box-shadow:4px 4px 0 var(--shadow)}
+body.friends-hidden .window-dock{bottom:8px}
+.window-dock>span{font:7px/1.5 var(--pixel)}
+.window-dock .btn{min-height:36px}
+.toast-region{position:fixed;right:12px;bottom:172px;z-index:110;display:flex;flex-direction:column;align-items:flex-end;gap:10px;pointer-events:none;max-width:calc(100vw - 24px)}
+body.friends-hidden .toast-region{bottom:16px}
+.toast{padding:12px 14px;border:3px solid var(--ink);background:var(--orange);box-shadow:5px 5px 0 var(--ink);font:9px/1.6 var(--pixel);transform:translateY(12px);opacity:0;transition:transform 180ms ease-out,opacity 180ms ease-out}
+.toast.show{transform:translateY(0);opacity:1}
+.toast.sage{background:var(--sage)}
+.toast.brick{background:var(--brick);color:var(--white)}
+.level-overlay{position:fixed;inset:0;z-index:90;display:grid;place-items:center;padding:20px;background:rgba(48,59,55,.45);pointer-events:none}
+.level-box{position:relative;min-width:min(88vw,420px);padding:32px 22px;text-align:center;border:4px solid var(--ink);background:var(--cream);box-shadow:9px 9px 0 var(--brick-dark);transform:scale(.85);opacity:0;transition:transform 220ms ease-out,opacity 220ms ease-out}
+.level-overlay.show .level-box{transform:scale(1);opacity:1}
+.level-box .pixel-icon{width:48px;height:48px;color:var(--orange);margin-bottom:18px}
+.level-box h2{font:clamp(20px,6vw,34px)/1.5 var(--pixel);color:var(--orange);text-shadow:3px 3px 0 var(--brick-dark)}
+.level-box p{margin-top:14px;font:10px/1.6 var(--pixel)}
+.pixel-burst{position:absolute;width:10px;height:10px;background:var(--brick);box-shadow:18px 8px 0 var(--orange),-16px 14px 0 var(--sage),5px -17px 0 var(--brick);animation:blink .6s steps(2,end) infinite}
+.pixel-burst.a{left:18px;top:20px}.pixel-burst.b{right:30px;bottom:28px;transform:rotate(90deg)}
+.modal-backdrop{position:fixed;inset:0;z-index:100;display:grid;place-items:center;padding:16px;background:rgba(48,59,55,.66)}
+.error-window,.friend-window{width:min(100%,520px);background:var(--pink);border:3px solid var(--ink);box-shadow:inset 2px 2px 0 var(--white),inset -2px -2px 0 var(--muted),8px 8px 0 var(--shadow)}
+.error-window .title-bar,.friend-window .title-bar{background:var(--brick)}
+.error-body{padding:22px 18px 18px}
+.error-message-row{display:flex;align-items:flex-start;gap:16px}
+.error-icon{display:grid;place-items:center;flex:0 0 auto;width:48px;height:48px;border:3px solid var(--ink);background:var(--brick);color:var(--white);font:26px/1 var(--pixel);box-shadow:3px 3px 0 var(--brick-dark)}
+.error-message{font-size:22px;line-height:1.3;white-space:pre-line;overflow-wrap:anywhere}
+.error-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:12px;margin-top:22px}
+.friend-dialog-body{padding:20px 18px 18px}
+.friend-dialog-copy{margin-bottom:16px;color:var(--muted);font-size:21px}
+.gender-picker{border:0;margin-bottom:16px}
+.gender-picker legend{margin-bottom:8px}
+.gender-options{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px}
+.gender-option{position:relative;display:flex;align-items:center;justify-content:center;gap:8px;min-height:48px;border:2px solid var(--ink);background:var(--cream);font:9px/1.4 var(--pixel);cursor:pointer}
+.gender-option input{width:18px;height:18px;accent-color:var(--brick)}
+.gender-option:has(input:checked){background:var(--sage);box-shadow:inset 0 0 0 2px var(--white)}
+.friend-form-error{margin-top:10px;padding:8px;border:2px solid var(--brick-dark);background:#F7C9BC;color:var(--brick-dark);font:8px/1.6 var(--pixel)}
+.friend-dialog-actions{display:flex;justify-content:flex-end;flex-wrap:wrap;gap:10px;margin-top:18px}
+.friend-dialog-actions .remove-friend{margin-right:auto}
+.friends-floor{position:fixed;left:0;right:0;bottom:0;height:150px;z-index:55;pointer-events:none}
+.friends-floor::after{content:"";position:absolute;left:0;right:0;bottom:0;height:16px;border-top:3px solid var(--ink);background:repeating-linear-gradient(90deg,var(--brick) 0,var(--brick) 24px,var(--orange) 24px,var(--orange) 28px,var(--sage) 28px,var(--sage) 52px,var(--cream) 52px,var(--cream) 56px);box-shadow:0 -3px 0 rgba(255,248,233,.5)}
+.friends-floor.is-empty{height:34px}
+.friend-stage{position:absolute;inset:0;overflow:hidden;overflow-x:clip;overflow-y:visible}
+.floor-empty{position:absolute;left:0;right:0;bottom:18px;text-align:center;font:7px/1.5 var(--pixel);color:var(--ink)}
+.friend{position:absolute;bottom:14px;width:96px;height:132px;pointer-events:none;animation:friendWander var(--walk-duration,24s) linear infinite alternate;will-change:transform}
+.friend[data-index="0"]{left:4%}
+.friend[data-index="1"]{left:56%;animation-name:friendWanderReverse}
+.friend:hover,.friend:focus-within{animation-play-state:paused}
+.friend-name{position:absolute;left:50%;bottom:100px;z-index:4;transform:translateX(-50%);max-width:112px;min-height:26px;padding:3px 6px;border:2px solid var(--ink);background:var(--cream);font:7px/1.5 var(--pixel);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;box-shadow:2px 2px 0 var(--shadow);pointer-events:auto}
+.friend-name:hover{background:var(--orange-light)}
+.friend-reaction{position:absolute;left:0;bottom:-4px;width:96px;height:128px;transform-origin:50% 100%}
+/* Sprite sheets: 6 frames x 48x80px, drawn at 2x and cropped from y=16.
+   0 idle | 1-2 walk | 3 sit + read | 4 arms up (stretch / worried) | 5 jump */
+.friend-sprite{position:relative;display:block;width:96px;height:128px;filter:drop-shadow(2px 2px 0 rgba(48,59,55,.25))}
+.sprite-frames{position:absolute;inset:0;z-index:1;background-image:var(--sheet);background-repeat:no-repeat;background-size:576px 160px;background-position:0 -32px;image-rendering:pixelated}
+.friend-sprite[data-char="lumi"]{--sheet:url("data:image/png;base64,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")}
+.friend-sprite[data-char="bram"]{--sheet:url("data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAASAAAABQCAYAAAC51qj1AAAH6UlEQVR4nO2dX4gVVRzHz7Xbg9aCoG54I8WMzDJXWtQXix7CWmNLgxJdWdLAJIMo60khgrQHs4JQRHCDxV2JIIMl7d9DkC9iK96QymoLCzZdFTaiIjJu/ObeM507OzN3Zs6ZOefc8/3A5c7//Z5zD9/5nTPnN8sYAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAMB4Kh3Ta/TRrQMA4BgVmA8AoB3NZ1peFwYA2E2lYTzr7l2S298o5XZlAIBVZjP++18l0XgWdt7Ali5awI59cc47hu8XjxG3ZQEGBIDjVDqm18hsxib+8NZpOQy+X4XxcMoqLgIAsJ+FEcZDUVD9u77+1fmf6MuPmGRABASAw1Qa0Y9oNJyG0URCERG6YAAAafPJiqwJ4SkYAEAbMCAAHKSiIPoh6Boy84RgQAAAbcCAAHCMSkj0Iz5i5+tJtslGQTAgAByccDgmGAkt//LtqG8ufD1uW/B8umYWEyrsKZiqmZO6gH69QH8+ERA3Fs4td3Q3rUdt49v5BMas5Sq5VvlZgH69QH9+msKMJQ1kQjJlm+Zi5acB+vUC/e1Nuahs2v3HTzPbgH69QH9x7Nu9q2l9x85XU+3XbkCtsmnF/SbeGaBfL9CvDzKXg59eDGzd5ZtMq/3aDUgY1PIrXswnEdb9UXITKp4D/XqBfv10LO9kZ4eOsWV960KjHtpPBI8xqgumI5tWJdCvF+gvhvGRd2o33bPSW7505pS//dG9O9n8ZXeyC2e/9tbFCIigfXSMyJfDBxhd69KZU565Vno3lwo1oCTZtGFZtfyOobsRQT/0u6yfc2bvHvbm9995y8/3bZoy5hO2XzSvhgmxtJRsz6aVAfqh30X94yER0JETI6kGoTf19HrRTvBahUdAAAD7uCREKzPZbPZsz2Y2ya54kUwY3JDoPDo+6lppKZuQTasjFIX+OtDvnv4X3zvJuruXe8ujo6fZ8OBh/29TRMOXJ7654H13Lp7vnxuMcILXSgsiIADAFIMhI7q774nMXatcZ0KblE2bBehvBvrd0m8SqSMgYULVlIQ2MTmN55hEbSPE83k2bd6hKPRDv8v649jY/1RN7Fox+oTsE7tshUdAvKLCsml5qr6Y4Ba1TUz1F68tUxjoh37oz4ZoMCqPbUXJ9mzarEB/Heh3T//GgIFQREPb+GAysW3LenZw4N0py8GB67BrpdGCQWgAHGM4YBJB82lF49gaXUe2O1a2PZtWFdCvF+h3k7Lt2bQqgH69QL+7lG3PplUF9OsF+s3gn2vXvO+3Dw3528Tl68tqR22UvhGRZ9NyyOFFlw/LpjUJ6NcL9JsBmUzYJw8yGxCN2tOH54FQtux9K1Z4H1oOErafzuXXkSkE9EM/9NuJkoLTtO2s2bTMAKBfL9Cvh8Gj7/uP0C9PTPhdsKhoR9w3p7PepST6NzyWuRxKKuDPkRGvIHHZtBwxm3ZGb68RDQj69QL9eqHH8A/1PJzqnI9OfKhkRrTyCkibTWsa0K8X6NfH3Mq82qzZc2KPuXrlMvt1/GdlZcitMmRfVKQb6NeLDfpFswnqa6U/7lyXDAgzoQGQIOurSGXPzQsymCJR6rxJk9RUZtPKEMzwtU1/kDT688pulsG2+g9GMWn0mxgB6UBZwdNmyJrQiHgOTJY3uZmgXzZDmZfdhLK41n5Mqv+5lXmhdS92tZIcU3gXTGw0wWS2uGzaBkbdgdPoz9rg8iZpNrMpZXC1/ZhS/yLBsZ+wrliSYwqfCZ0mi1bluToh3SrfiSJL2mxmk3Cx/YD/wSC0BNyEdN2BTTJBFfw7to0tvX1GY209u+u6F0KWG3S/UbS8tuZqgmgmjwFqGJAEMv3/dtKgkgefudxy+eMD8Y+KQXIO7d9X6+rqYjOPf8Am16z1ti3p6ma3LeqacuwP56vsXHW06dhqtVrbun1HyRgDKjqbVjXQbwanPglP2ly5ejczGRvrv1qtMnbzAlrw14ODy7Q+NDhQj7iFY2XJpTbicklsAPr1Y7rRcMKiz6T1P2pA5JomepGJdKIwz44L5PXHV3nfG25dxY7++DdztezDg4eZadgQAUW9Fznt+S5Tsj2bVgboN0s/DUK/9NbU/5sVhMaAJmYdMU6/bfVvAlIR0AM3/uYvf8Y6M5+rC/7DZ80G1j0ALGrQlc2ssv1cHEsWAZH5tEP7GUYEpK4LRj9GmmQ2cSq6bhpv90+VjGfaI/C09c8MoPvpl5smt/Xfn6yr1Xl1E1v92mJ/ncqts0xZ2k9h4trZgGRyWGzPfzFhDMUEDS6PAQHDB6H5xKVWdwVTKTozWAVJptDbgK1GY2ObaUsDCoSaLUNT02gVKpsQwQU1xOi1ov5pFrTNkwzRtUqP04/hk97BgpnApja0OJ023Jk375mdqG7rYy3Mmvq3pf3oQOm/5bF9SjpNNf/8yUe8Keev7HyuaT9FEDZEEWE6qSxi2ais2gS2OVHtxJb2Y30EFHWnteEOTHkubM1aNknfbUY7lw3Yy7QiIghb7sCUA8M/YQZqg4lG6Ywrmwl609Zt1vPyJkqTiVrbLgKKu8uafgeOy3MhAxUzhmUzgIvIaiaj2bp9h7fPNK1cb1//lqZtQ4MDvuY46PcIOVfrbxJX/za0n7YwoLi7q2l3XtmMYROxQWPQcHScq6P+bfttAAAAAAAAy4n/AM9WREWRi/qHAAAAAElFTkSuQmCC")}
+.sprite-acc{position:absolute;inset:0;width:96px;height:128px;overflow:visible;shape-rendering:crispEdges}
+.sprite-acc.back{z-index:0}.sprite-acc.front{z-index:2}
+.friend-reaction.is-walking .sprite-frames{animation:spriteWalk .56s step-end infinite}
+.friend-reaction.is-reading .sprite-frames{background-position-x:-288px}
+.friend-reaction.is-breaking .sprite-frames{animation:spriteStretch .7s step-end 4}
+.friend-reaction.is-worried .sprite-frames{background-position-x:-384px}
+.friend-reaction.is-worried .friend-sprite{animation:worriedShake 1.6s steps(1,end) infinite}
+.friend-reaction.is-jumping .sprite-frames{background-position-x:-480px}
+.friend-reaction.is-jumping .sprite-acc{transform:translateY(-28px)}
+.friend-speech{position:absolute;left:50%;bottom:130px;z-index:5;transform:translateX(-35%);min-width:88px;max-width:142px;padding:7px 8px;border:2px solid var(--ink);background:var(--white);font:7px/1.6 var(--pixel);text-align:center;box-shadow:3px 3px 0 var(--brick-dark)}
+.friend-speech::after{content:"";position:absolute;left:18px;bottom:-7px;width:8px;height:8px;border-right:2px solid var(--ink);border-bottom:2px solid var(--ink);background:var(--white);transform:rotate(45deg)}
+.friend-reaction.is-jumping{animation:happyJump .46s ease-out 4}
+.friend:has(.is-jumping) .friend-name{bottom:132px}
+.friend:has(.is-jumping) .friend-speech{bottom:162px}
+.friends-floor.focus-mode .friend{animation-play-state:paused}
+.pixel-confetti{position:absolute;left:50%;bottom:70px;width:6px;height:6px;pointer-events:none}
+.pixel-confetti i{position:absolute;width:6px;height:6px;background:var(--orange);animation:confettiPop .7s steps(4,end) 3}
+.pixel-confetti i:nth-child(2){background:var(--brick);--x:26px;--y:-38px;animation-delay:.08s}
+.pixel-confetti i:nth-child(3){background:var(--sage);--x:-30px;--y:-32px;animation-delay:.14s}
+.pixel-confetti i:nth-child(4){background:var(--cream);--x:38px;--y:-14px;animation-delay:.2s}
+.pixel-confetti i:nth-child(5){background:var(--brick);--x:-40px;--y:-8px;animation-delay:.26s}
+.pixel-confetti i:first-child{--x:8px;--y:-46px}
+.friends-floor.high-five .friend{animation:none;transform:none;transition:left 240ms ease-out}
+.friends-floor.high-five .friend[data-index="0"]{left:calc(50% - 92px)}
+.friends-floor.high-five .friend[data-index="1"]{left:calc(50% - 4px)}
+.high-five-spark{display:none;position:absolute;left:50%;bottom:118px;width:14px;height:14px;background:var(--orange);box-shadow:10px 0 0 var(--brick),-10px 0 0 var(--sage),0 -10px 0 var(--cream);transform:translateX(-50%) rotate(45deg);animation:blink .4s steps(2,end) infinite}
+.friends-floor.high-five .high-five-spark{display:block}
+@keyframes blink{50%{opacity:.35}}
+@keyframes friendWander{from{transform:translateX(0)}to{transform:translateX(var(--walk-range,200px))}}
+@keyframes friendWanderReverse{from{transform:translateX(var(--walk-range,160px))}to{transform:translateX(0)}}
+@keyframes happyJump{0%,100%{transform:translateY(0)}45%{transform:translateY(-24px)}70%{transform:translateY(-17px)}}
+@keyframes spriteWalk{0%{background-position-x:-96px}25%{background-position-x:0}50%{background-position-x:-192px}75%{background-position-x:0}}
+@keyframes spriteStretch{0%{background-position-x:0}50%{background-position-x:-384px}}
+@keyframes worriedShake{0%,60%,100%{transform:translateX(0)}66%,78%{transform:translateX(-2px)}72%,84%{transform:translateX(2px)}}
+@keyframes confettiPop{0%{transform:translate(0,0);opacity:1}100%{transform:translate(var(--x),var(--y));opacity:0}}
+@media (min-width:600px){
+  .shell{padding:20px 20px 194px}
+  .task-form{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .field-task,.form-actions{grid-column:1/-1}
+  .filters{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .card-actions{grid-template-columns:repeat(4,minmax(0,1fr))}
+  .move-controls{grid-column:1/3}
+}
+@media (min-width:760px){
+  .control-grid{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .form-window{grid-column:1/-1}
+  .filters{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .filter-actions{grid-column:1/-1;justify-content:flex-end}
+  .filter-actions .btn{width:auto}
+  .board-grid{grid-template-columns:repeat(3,minmax(0,1fr))}
+  .card-actions{grid-template-columns:repeat(2,minmax(0,1fr))}
+  .move-controls{grid-column:1/-1}
+  .window-body{padding:18px}
+}
+@media (min-width:1180px){
+  .control-grid{grid-template-columns:1.35fr .85fr .85fr;align-items:start}
+  .form-window{grid-column:auto}
+  .filters{grid-template-columns:1fr 1.4fr 1fr auto}
+  .filter-actions{grid-column:auto}
+  .masthead{padding-top:36px}
+}
+@media (max-width:599px){
+  .boot-line{font-size:6px}
+  .boot-line>span:first-child{max-width:62%}
+  .masthead p{font-size:8px}
+  .companion-toolbar{width:100%;padding:8px}
+  .companion-toolbar .btn{font-size:7px;flex:1 1 140px;padding-left:8px;padding-right:8px}
+  .party-count{width:100%;text-align:center}
+  .title-bar{min-height:52px}
+  .win-control{width:44px;height:44px}
+  .window-controls{gap:3px}
+  .title-text{font-size:7px}
+  .window-dock .btn{min-height:44px}
+  .card-actions .btn{min-height:44px}
+  .timer-actions .btn{min-height:48px}
+  .error-icon{width:40px;height:40px;font-size:20px}
+  .hero-heart{right:2%}
+  .friend-speech{font-size:6px;max-width:110px;min-width:76px}
+  .friend-dialog-actions .btn{font-size:7px}
+  .friend-dialog-actions .remove-friend{margin-right:0}
+}
+@media (prefers-reduced-motion:reduce){
+  html{scroll-behavior:auto}
+  *,*::before,*::after{animation:none!important;transition:none!important}
+  .friend{transform:none!important}
+}
+</style>
+</head>
+<body>
+<svg width="0" height="0" style="position:absolute;overflow:hidden" aria-hidden="true">
+  <symbol id="i-star" viewBox="0 0 16 16"><path d="M7 0h2v4h3v2h2v4h-2v2h-2v4H6v-4H4v-2H2V6h2V4h3z"/></symbol>
+  <symbol id="i-heart" viewBox="0 0 16 16"><path d="M2 2h4v2h4V2h4v2h2v6h-2v2h-2v2h-2v2H6v-2H4v-2H2v-2H0V4h2z"/></symbol>
+  <symbol id="i-folder" viewBox="0 0 16 16"><path d="M0 2h6v2h8v2h2v8H0zm2 6v4h12V8z" fill-rule="evenodd"/></symbol>
+  <symbol id="i-clock" viewBox="0 0 16 16"><path d="M4 0h8v2h2v2h2v8h-2v2h-2v2H4v-2H2v-2H0V4h2V2h2zm1 4v5h6V7H7V4z"/></symbol>
+  <symbol id="i-check" viewBox="0 0 16 16"><path d="M14 2h2v4h-2v2h-2v2h-2v2H8v2H4v-2H2v-2H0V6h4v2h2v2h2V8h2V6h2V4h2z"/></symbol>
+  <symbol id="i-hand" viewBox="0 0 16 16"><path d="M6 0h4v2h2v2h2v2h2v8h-2v2H4v-2H2v-2H0V8h2V6h2v6h2V2h2V0z"/></symbol>
+  <symbol id="i-plus" viewBox="0 0 16 16"><path d="M6 0h4v6h6v4h-6v6H6v-6H0V6h6z"/></symbol>
+</svg>
+
+<div class="shell">
+  <div class="boot-line">
+    <span><a class="back-lab" href="lab.html" title="Back to Starry Lab">◂ STARRY LAB</a> &nbsp;·&nbsp; STUDY_QUEST OS // VERSION 2.0</span>
+    <span class="boot-status"><i class="status-dot"></i> PRIVATE LOCAL SAVE</span>
+  </div>
+
+  <header class="masthead">
+    <svg class="pixel-icon hero-star one" aria-hidden="true"><use href="#i-star"/></svg>
+    <svg class="pixel-icon hero-heart" aria-hidden="true"><use href="#i-heart"/></svg>
+    <svg class="pixel-icon hero-star two" aria-hidden="true"><use href="#i-star"/></svg>
+    <h1>STUDY QUEST</h1>
+    <p>INSERT COIN, PRESS START — TURN HOMEWORK INTO XP!</p>
+  </header>
+
+  <div class="companion-toolbar" aria-label="Little Friends controls">
+    <span class="party-count">LITTLE FRIENDS: <strong id="friend-count">0 / 2</strong></span>
+    <button class="btn btn-sage" type="button" id="add-friend"><svg class="pixel-icon" aria-hidden="true"><use href="#i-plus"/></svg>ADD LITTLE FRIEND</button>
+    <button class="btn" type="button" id="toggle-friends" aria-pressed="false">HIDE FRIENDS</button>
+  </div>
+
+  <main>
+    <div class="control-grid">
+      <section class="window app-window form-window" id="form-window" data-window-title="QUEST BUILDER" aria-labelledby="form-title">
+        <div class="title-bar">
+          <div class="title-text"><svg class="pixel-icon" aria-hidden="true"><use href="#i-folder"/></svg><span id="form-title">QUEST_BUILDER.EXE</span></div>
+          <div class="window-controls">
+            <button class="win-control" data-window-action="minimize" aria-label="Minimize quest builder" title="Minimize">_</button>
+            <button class="win-control" data-window-action="maximize" aria-label="Maximize quest builder" title="Maximize">□</button>
+            <button class="win-control" data-window-action="close" aria-label="Close quest builder" title="Close">×</button>
+          </div>
+        </div>
+        <div class="window-body">
+          <h2 class="section-heading" id="form-heading">NEW SIDE QUEST</h2>
+          <p class="section-copy">Fill your private quest log. Required fields are marked with *.</p>
+          <form id="task-form" class="task-form" novalidate>
+            <input type="hidden" id="edit-id">
+            <div class="field">
+              <label for="subject">SUBJECT <span class="required">*</span></label>
+              <input id="subject" name="subject" type="text" maxlength="60" placeholder="e.g. Communication" autocomplete="off">
+            </div>
+            <div class="field field-task">
+              <label for="task-name">TASK NAME <span class="required">*</span></label>
+              <input id="task-name" name="task" type="text" maxlength="120" placeholder="e.g. Psychology of Communication Task 9" autocomplete="off">
+            </div>
+            <div class="field">
+              <label for="deadline">DEADLINE</label>
+              <input id="deadline" name="deadline" type="date">
+            </div>
+            <div class="field">
+              <label for="priority">PRIORITY</label>
+              <select id="priority" name="priority">
+                <option value="Low">LOW — 10 XP</option>
+                <option value="Medium" selected>MEDIUM — 25 XP</option>
+                <option value="High">HIGH — 50 XP</option>
+              </select>
+            </div>
+            <div class="form-actions">
+              <button class="btn btn-primary" type="submit" id="submit-task"><svg class="pixel-icon" aria-hidden="true"><use href="#i-plus"/></svg><span>ADD QUEST</span></button>
+              <button class="btn" type="button" id="cancel-edit" hidden>CANCEL EDIT</button>
+            </div>
+          </form>
+        </div>
+      </section>
+
+      <section class="window app-window" id="stats-window" data-window-title="PLAYER STATS" aria-labelledby="stats-title">
+        <div class="title-bar">
+          <div class="title-text"><svg class="pixel-icon" aria-hidden="true"><use href="#i-star"/></svg><span id="stats-title">PLAYER_STATS.DAT</span></div>
+          <div class="window-controls">
+            <button class="win-control" data-window-action="minimize" aria-label="Minimize player stats" title="Minimize">_</button>
+            <button class="win-control" data-window-action="maximize" aria-label="Maximize player stats" title="Maximize">□</button>
+            <button class="win-control" data-window-action="close" aria-label="Close player stats" title="Close">×</button>
+          </div>
+        </div>
+        <div class="window-body">
+          <div class="stats-top">
+            <div class="level-badge">LEVEL <span id="level-number">1</span></div>
+            <div class="total-xp">TOTAL XP<strong id="total-xp">0</strong></div>
+          </div>
+          <div class="xp-labels"><span id="rank-label">RANK: ROOKIE</span><span id="xp-progress-label">0 / 100 XP</span></div>
+          <div class="progress-track" role="progressbar" aria-label="Experience toward next level" aria-valuemin="0" aria-valuemax="100" aria-valuenow="0" id="xp-progress">
+            <div class="progress-fill" id="xp-fill"></div>
+          </div>
+          <div class="stat-grid">
+            <div class="stat"><strong id="active-count">0</strong><span>ACTIVE</span></div>
+            <div class="stat"><strong id="done-count">0</strong><span>CLEARED</span></div>
+            <div class="stat"><strong id="overdue-count">0</strong><span>OVERDUE</span></div>
+          </div>
+          <p class="xp-key">LOW +10 // MEDIUM +25 // HIGH +50</p>
+        </div>
+      </section>
+
+      <section class="window app-window" id="timer-window" data-window-title="FOCUS TIMER" aria-labelledby="timer-title">
+        <div class="title-bar">
+          <div class="title-text"><svg class="pixel-icon" aria-hidden="true"><use href="#i-clock"/></svg><span id="timer-title">FOCUS_TIMER.CLK</span></div>
+          <div class="window-controls">
+            <button class="win-control" data-window-action="minimize" aria-label="Minimize focus timer" title="Minimize">_</button>
+            <button class="win-control" data-window-action="maximize" aria-label="Maximize focus timer" title="Maximize">□</button>
+            <button class="win-control" data-window-action="close" aria-label="Close focus timer" title="Close">×</button>
+          </div>
+        </div>
+        <div class="window-body">
+          <div class="timer-display">
+            <div class="timer-time" id="timer-display" role="timer" aria-label="25 minutes remaining">25:00</div>
+            <div class="timer-caption" id="timer-status">25 MIN FOCUS PROTOCOL</div>
+          </div>
+          <div class="timer-actions">
+            <button class="btn btn-sage" id="timer-start" type="button">START</button>
+            <button class="btn" id="timer-pause" type="button" disabled>PAUSE</button>
+            <button class="btn btn-danger" id="timer-reset" type="button">RESET</button>
+          </div>
+          <p class="timer-note">One quest. One session. No distractions.</p>
+        </div>
+      </section>
+    </div>
+
+    <section class="window app-window board-window" id="board-window" data-window-title="MISSION BOARD" aria-labelledby="board-title">
+      <div class="title-bar">
+        <div class="title-text"><svg class="pixel-icon" aria-hidden="true"><use href="#i-folder"/></svg><span id="board-title">MISSION_BOARD.EXE</span></div>
+        <div class="window-controls">
+          <button class="win-control" data-window-action="minimize" aria-label="Minimize mission board" title="Minimize">_</button>
+          <button class="win-control" data-window-action="maximize" aria-label="Maximize mission board" title="Maximize">□</button>
+          <button class="win-control" data-window-action="close" aria-label="Close mission board" title="Close">×</button>
+        </div>
+      </div>
+      <div class="window-body">
+        <div class="filters" aria-label="Task filters">
+          <div class="filter-field">
+            <label for="filter-subject">FILTER: SUBJECT</label>
+            <select id="filter-subject"><option value="">ALL SUBJECTS</option></select>
+          </div>
+          <div class="filter-field">
+            <label for="search">KEYWORD SEARCH</label>
+            <input id="search" type="search" placeholder="Search your quest log..." autocomplete="off">
+          </div>
+          <div class="filter-field">
+            <label for="sort-tasks">SORT QUESTS</label>
+            <select id="sort-tasks">
+              <option value="deadline">DEADLINE FIRST</option>
+              <option value="priority">PRIORITY FIRST</option>
+              <option value="newest">NEWEST FIRST</option>
+            </select>
+          </div>
+          <div class="filter-actions"><button class="btn" type="button" id="clear-filters">CLEAR</button></div>
+        </div>
+        <div class="board-summary">
+          <span id="visible-count">0 / 0 QUESTS</span>
+          <div class="legend" aria-label="Deadline color legend"><span><i class="soon"></i>≤3 DAYS</span><span><i class="late"></i>OVERDUE</span></div>
+        </div>
+        <div class="board-grid" id="board-grid" aria-live="polite"></div>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <svg class="pixel-icon" aria-hidden="true"><use href="#i-heart"/></svg>
+    YOUR PRIVATE BOARD · SAVED IN THIS BROWSER ONLY
+  </footer>
+</div>
+
+<aside class="friends-floor is-empty" id="friends-floor" aria-label="Little Friends study companions">
+  <div class="friend-stage" id="friend-stage"><div class="floor-empty">ADD A LITTLE FRIEND FOR COMPANY!</div></div>
+  <i class="high-five-spark" aria-hidden="true"></i>
+</aside>
+
+<div class="window-dock" id="window-dock" hidden><span>RESTORE:</span><div id="dock-buttons"></div></div>
+<div class="toast-region" id="toast-region" aria-live="polite" aria-atomic="true"></div>
+
+<div class="level-overlay" id="level-overlay" hidden aria-live="assertive">
+  <div class="level-box">
+    <i class="pixel-burst a"></i><i class="pixel-burst b"></i>
+    <svg class="pixel-icon" aria-hidden="true"><use href="#i-star"/></svg>
+    <h2>LEVEL UP!</h2>
+    <p id="level-up-text">LEVEL 2 UNLOCKED</p>
+  </div>
+</div>
+
+<div class="modal-backdrop" id="modal-backdrop" hidden>
+  <section class="error-window" role="alertdialog" aria-modal="true" aria-labelledby="modal-title" aria-describedby="modal-message">
+    <div class="title-bar">
+      <div class="title-text"><span id="modal-title">SYSTEM ERROR</span></div>
+      <div class="window-controls"><button class="win-control" type="button" id="modal-close" aria-label="Close dialog">×</button></div>
+    </div>
+    <div class="error-body">
+      <div class="error-message-row"><div class="error-icon" aria-hidden="true">!</div><p class="error-message" id="modal-message"></p></div>
+      <div class="error-actions">
+        <button class="btn" type="button" id="modal-cancel">CANCEL</button>
+        <button class="btn btn-danger" type="button" id="modal-confirm">DELETE</button>
+      </div>
+    </div>
+  </section>
+</div>
+
+<div class="modal-backdrop" id="friend-modal" hidden>
+  <section class="friend-window" role="dialog" aria-modal="true" aria-labelledby="friend-modal-title">
+    <div class="title-bar">
+      <div class="title-text"><svg class="pixel-icon" aria-hidden="true"><use href="#i-heart"/></svg><span id="friend-modal-title">NEW_LITTLE_FRIEND.EXE</span></div>
+      <div class="window-controls"><button class="win-control" type="button" id="friend-modal-close" aria-label="Close friend dialog">×</button></div>
+    </div>
+    <div class="friend-dialog-body">
+      <p class="friend-dialog-copy" id="friend-dialog-copy">Choose a study companion and give them a name.</p>
+      <form id="friend-form" novalidate>
+        <input type="hidden" id="friend-edit-id">
+        <fieldset class="gender-picker" id="gender-picker">
+          <legend class="friend-field-label">CHOOSE A FRIEND</legend>
+          <div class="gender-options">
+            <label class="gender-option"><input type="radio" name="friend-gender" value="Boy" checked>BOY</label>
+            <label class="gender-option"><input type="radio" name="friend-gender" value="Girl">GIRL</label>
+          </div>
+        </fieldset>
+        <label class="friend-field-label" for="friend-name-input">FRIEND NAME <span class="required">*</span></label>
+        <input class="friend-name-input" id="friend-name-input" type="text" maxlength="18" placeholder="e.g. Pip" autocomplete="off">
+        <p class="friend-form-error" id="friend-form-error" hidden>NAME REQUIRED! GIVE YOUR FRIEND A NAME.</p>
+        <div class="friend-dialog-actions">
+          <button class="btn btn-danger remove-friend" type="button" id="remove-friend" hidden>REMOVE</button>
+          <button class="btn" type="button" id="friend-cancel">CANCEL</button>
+          <button class="btn btn-primary" type="submit" id="friend-submit">ADD FRIEND</button>
+        </div>
+      </form>
+    </div>
+  </section>
+</div>
+
+<script>
+(() => {
+  "use strict";
+
+  const STORAGE_KEY = "studyQuestTaskBoard.v2";
+  const XP = { Low: 10, Medium: 25, High: 50 };
+  const ACCESSORIES = ["hat", "glasses", "backpack"];
+  const COLUMNS = [
+    { id: "todo", title: "TO DO" },
+    { id: "progress", title: "IN PROGRESS" },
+    { id: "done", title: "DONE" }
+  ];
+  const PRIORITY_ORDER = { High: 0, Medium: 1, Low: 2 };
+  const $ = (selector, root = document) => root.querySelector(selector);
+  const $$ = (selector, root = document) => [...root.querySelectorAll(selector)];
+  const uid = () => globalThis.crypto?.randomUUID?.() || `quest-${Date.now()}-${Math.random().toString(16).slice(2)}`;
+  const escapeHTML = (value) => String(value).replace(/[&<>'"]/g, char => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", "'": "&#39;", '"': "&quot;" }[char]));
+  const parseDate = (value) => {
+    if (!value) return null;
+    const [year, month, day] = value.split("-").map(Number);
+    return new Date(year, month - 1, day);
+  };
+  const dayDifference = (value) => {
+    const deadline = parseDate(value);
+    if (!deadline || Number.isNaN(deadline.getTime())) return null;
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    return Math.round((deadline - today) / 86400000);
+  };
+  const formatDate = (value) => {
+    const date = parseDate(value);
+    return date ? new Intl.DateTimeFormat("en-US", { month: "short", day: "numeric", year: "numeric" }).format(date) : "NO DEADLINE";
+  };
+  const currentLevel = () => Math.floor(state.xp / 100) + 1;
+  const accessoriesForLevel = (level) => ACCESSORIES.filter((_, index) => level >= index + 2);
+  const hasActiveOverdue = () => state.tasks.some(task => task.status !== "done" && (dayDifference(task.deadline) ?? 0) < 0);
+
+  function defaultState() {
+    return { tasks: [], xp: 0, timer: { remaining: 1500, running: false, endAt: null }, friends: [], friendsHidden: false };
+  }
+
+  let storageAvailable = true;
+  function loadState() {
+    try {
+      const raw = localStorage.getItem(STORAGE_KEY);
+      if (!raw) return defaultState();
+      const saved = JSON.parse(raw);
+      if (!saved || !Array.isArray(saved.tasks)) throw new Error("Invalid save data");
+      const tasks = saved.tasks.filter(task => task && task.id && COLUMNS.some(column => column.id === task.status)).map(task => ({
+        id: String(task.id), subject: String(task.subject || "General"), name: String(task.name || "Untitled Quest"),
+        deadline: task.deadline || "", priority: XP[task.priority] ? task.priority : "Medium", status: task.status,
+        createdAt: Number(task.createdAt) || Date.now(), xpEarned: Number(task.xpEarned) || 0
+      }));
+      const friends = Array.isArray(saved.friends) ? saved.friends.slice(0, 2).filter(friend => friend && friend.id).map(friend => ({
+        id: String(friend.id), gender: friend.gender === "Girl" ? "Girl" : "Boy", name: String(friend.name || "Pip").slice(0, 18),
+        accessories: Array.isArray(friend.accessories) ? friend.accessories.filter(item => ACCESSORIES.includes(item)) : []
+      })) : [];
+      return {
+        tasks, friends,
+        xp: Math.max(0, Number(saved.xp) || 0),
+        friendsHidden: Boolean(saved.friendsHidden),
+        timer: {
+          remaining: Math.max(0, Number(saved.timer?.remaining ?? 1500)),
+          running: Boolean(saved.timer?.running),
+          endAt: Number(saved.timer?.endAt) || null
+        }
+      };
+    } catch (error) {
+      storageAvailable = false;
+      return defaultState();
+    }
+  }
+
+  let state = loadState();
+  function saveState() {
+    try { localStorage.setItem(STORAGE_KEY, JSON.stringify(state)); }
+    catch (error) { storageAvailable = false; }
+  }
+  function syncAccessories(level, persist = true) {
+    const allowed = accessoriesForLevel(level);
+    let changed = false;
+    state.friends.forEach(friend => {
+      const next = allowed.filter(a => true);
+      const current = friend.accessories.slice().sort().join(",");
+      const target = next.slice().sort().join(",");
+      if (current !== target) { friend.accessories = next; changed = true; }
+    });
+    if (changed && persist) saveState();
+  }
+  syncAccessories(currentLevel(), false);
+  if (storageAvailable) saveState();
+
+  const board = $("#board-grid");
+  const subjectFilter = $("#filter-subject");
+  const searchInput = $("#search");
+  const sortSelect = $("#sort-tasks");
+
+  function populateFilter(select, values, allLabel) {
+    const previous = select.value;
+    select.replaceChildren(new Option(allLabel, ""));
+    [...new Set(values)].sort((a, b) => a.localeCompare(b)).forEach(value => select.add(new Option(value, value)));
+    select.value = [...select.options].some(option => option.value === previous) ? previous : "";
+  }
+
+  function filteredTasks() {
+    const query = searchInput.value.trim().toLowerCase();
+    const tasks = state.tasks.filter(task => {
+      const matchesSubject = !subjectFilter.value || task.subject === subjectFilter.value;
+      const haystack = `${task.subject} ${task.name} ${task.priority}`.toLowerCase();
+      return matchesSubject && (!query || haystack.includes(query));
+    });
+    return tasks.sort((a, b) => {
+      if (sortSelect.value === "priority") return PRIORITY_ORDER[a.priority] - PRIORITY_ORDER[b.priority] || (dayDifference(a.deadline) ?? 99999) - (dayDifference(b.deadline) ?? 99999);
+      if (sortSelect.value === "newest") return b.createdAt - a.createdAt;
+      return (dayDifference(a.deadline) ?? 99999) - (dayDifference(b.deadline) ?? 99999) || b.createdAt - a.createdAt;
+    });
+  }
+
+  function deadlineMarkup(task) {
+    if (task.status === "done") return "";
+    const difference = dayDifference(task.deadline);
+    let alert = "";
+    if (difference !== null && difference < 0) alert = '<span class="deadline-alert">OVERDUE!</span>';
+    else if (difference === 0) alert = '<span class="deadline-alert">DUE TODAY!</span>';
+    else if (difference !== null && difference <= 3) alert = `<span class="deadline-alert">${difference} DAY${difference === 1 ? "" : "S"} LEFT!</span>`;
+    return `<div class="deadline-line"><svg class="pixel-icon" aria-hidden="true"><use href="#i-clock"/></svg><span>${escapeHTML(formatDate(task.deadline))}</span></div>${alert}`;
+  }
+
+  function cardMarkup(task) {
+    const difference = dayDifference(task.deadline);
+    const statusClass = task.status === "done" ? "" : difference !== null && difference < 0 ? "overdue" : difference !== null && difference <= 3 ? "deadline-soon" : "";
+    const index = COLUMNS.findIndex(column => column.id === task.status);
+    const nextContent = index === 1
+      ? '<span>DONE</span><svg class="pixel-icon" aria-hidden="true"><use href="#i-check"/></svg>'
+      : '<span>NEXT</span><span class="arrow-icon arrow-right" aria-hidden="true"></span>';
+    return `<article class="task-card ${statusClass} ${task.status === "done" ? "is-done" : ""}" draggable="true" data-id="${escapeHTML(task.id)}" aria-label="${escapeHTML(task.name)}">
+      <div class="card-top"><span class="subject-tag">${escapeHTML(task.subject)}</span><span class="priority-tag priority-${task.priority.toLowerCase()}">${task.priority.toUpperCase()}</span></div>
+      <div class="card-content">
+        <h3 class="task-name">${escapeHTML(task.name)}</h3>
+        ${deadlineMarkup(task)}
+        <div class="card-xp">${task.status === "done" ? "EARNED" : "REWARD"}: +${XP[task.priority]} XP!</div>
+      </div>
+      <div class="card-actions">
+        <div class="move-controls">
+          <button class="btn btn-small" type="button" data-action="back" ${index === 0 ? "disabled" : ""} aria-label="Move ${escapeHTML(task.name)} back"><span class="arrow-icon arrow-left" aria-hidden="true"></span><span>BACK</span></button>
+          <button class="btn btn-small btn-sage" type="button" data-action="next" ${index === COLUMNS.length - 1 ? "disabled" : ""} aria-label="Move ${escapeHTML(task.name)} forward">${nextContent}</button>
+        </div>
+        <button class="btn btn-small" type="button" data-action="edit">EDIT</button>
+        <button class="btn btn-small btn-danger" type="button" data-action="delete">DEL</button>
+      </div>
+    </article>`;
+  }
+
+  function renderBoard() {
+    const tasks = filteredTasks();
+    if (state.tasks.length === 0) {
+      board.innerHTML = `<div class="welcome-empty">
+        <svg class="pixel-icon" aria-hidden="true"><use href="#i-star"/></svg>
+        <h2>NO QUESTS YET. ADD YOUR FIRST QUEST TO PRESS START!</h2>
+        <p>Your private adventure begins with one small task.</p>
+        <button class="btn btn-primary" type="button" data-welcome-add>CREATE FIRST QUEST</button>
+      </div>`;
+    } else {
+      board.innerHTML = COLUMNS.map(column => {
+        const columnTasks = tasks.filter(task => task.status === column.id);
+        return `<section class="board-column" aria-labelledby="column-${column.id}">
+          <div class="column-header"><h2 id="column-${column.id}">${column.title}</h2><span class="column-count">${columnTasks.length}</span></div>
+          <div class="task-list" data-status="${column.id}">${columnTasks.length ? columnTasks.map(cardMarkup).join("") : '<div class="empty-state">NO QUESTS HERE<br>DROP ONE IN!</div>'}</div>
+        </section>`;
+      }).join("");
+    }
+    $("#visible-count").textContent = `${tasks.length} / ${state.tasks.length} QUESTS`;
+  }
+
+  function renderStats() {
+    const level = currentLevel();
+    const progress = state.xp % 100;
+    const ranks = ["ROOKIE", "GRINDING", "SCHOLAR", "ACE", "LEGEND"];
+    $("#level-number").textContent = level;
+    $("#total-xp").textContent = state.xp;
+    $("#rank-label").textContent = `RANK: ${ranks[Math.min(level - 1, ranks.length - 1)]}`;
+    $("#xp-progress-label").textContent = `${progress} / 100 XP`;
+    $("#xp-fill").style.width = `${progress}%`;
+    $("#xp-progress").setAttribute("aria-valuenow", progress);
+    $("#active-count").textContent = state.tasks.filter(task => task.status !== "done").length;
+    $("#done-count").textContent = state.tasks.filter(task => task.status === "done").length;
+    $("#overdue-count").textContent = state.tasks.filter(task => task.status !== "done" && (dayDifference(task.deadline) ?? 0) < 0).length;
+  }
+
+  function renderAll() {
+    populateFilter(subjectFilter, state.tasks.map(task => task.subject), "ALL SUBJECTS");
+    renderBoard();
+    renderStats();
+    renderFriends();
+  }
+
+  function toast(message, tone = "") {
+    const item = document.createElement("div");
+    item.className = `toast ${tone}`;
+    item.textContent = message;
+    $("#toast-region").append(item);
+    requestAnimationFrame(() => item.classList.add("show"));
+    setTimeout(() => {
+      item.classList.remove("show");
+      setTimeout(() => item.remove(), 200);
+    }, 2400);
+  }
+
+  let levelTimer;
+  function celebrateLevel(level) {
+    clearTimeout(levelTimer);
+    syncAccessories(level);
+    const overlay = $("#level-overlay");
+    const gear = { 2: "HAT EQUIPPED!", 3: "GLASSES EQUIPPED!", 4: "BACKPACK EQUIPPED!" };
+    $("#level-up-text").textContent = `LEVEL ${level} UNLOCKED${gear[level] ? ` · ${gear[level]}` : ""}`;
+    overlay.hidden = false;
+    requestAnimationFrame(() => overlay.classList.add("show"));
+    playChime([523, 659, 784, 1047]);
+    reactFriends("level", 3300);
+    levelTimer = setTimeout(() => {
+      overlay.classList.remove("show");
+      setTimeout(() => { overlay.hidden = true; }, 230);
+    }, 1900);
+  }
+
+  function moveTask(id, newStatus) {
+    const task = state.tasks.find(item => item.id === id);
+    if (!task || task.status === newStatus || !COLUMNS.some(column => column.id === newStatus)) return;
+    const oldStatus = task.status;
+    const oldLevel = currentLevel();
+    let message = "QUEST MOVED!";
+    if (newStatus === "done" && oldStatus !== "done") {
+      task.xpEarned = XP[task.priority];
+      state.xp += task.xpEarned;
+      message = `+${task.xpEarned} XP! QUEST CLEARED!`;
+    } else if (oldStatus === "done" && newStatus !== "done") {
+      const deduction = task.xpEarned || XP[task.priority];
+      state.xp = Math.max(0, state.xp - deduction);
+      task.xpEarned = 0;
+      message = `-${deduction} XP — QUEST REOPENED`;
+    }
+    task.status = newStatus;
+    const newLevel = currentLevel();
+    if (newLevel !== oldLevel) syncAccessories(newLevel);
+    saveState();
+    renderAll();
+    toast(message, newStatus === "done" ? "sage" : oldStatus === "done" ? "brick" : "");
+    if (newLevel > oldLevel) celebrateLevel(newLevel);
+    else if (newStatus === "done" && oldStatus !== "done") reactFriends("done", 2800);
+  }
+
+  let modalConfirmAction = null;
+  let lastFocused = null;
+  function openModal({ title, message, confirmText = "OK", danger = false, onConfirm = null, alertOnly = false }) {
+    lastFocused = document.activeElement;
+    modalConfirmAction = onConfirm;
+    $("#modal-title").textContent = title;
+    $("#modal-message").textContent = message;
+    $("#modal-confirm").textContent = confirmText;
+    $("#modal-confirm").className = `btn ${danger ? "btn-danger" : "btn-primary"}`;
+    $("#modal-cancel").hidden = alertOnly;
+    $("#modal-backdrop").hidden = false;
+    document.body.style.overflow = "hidden";
+    $("#modal-confirm").focus();
+  }
+  function closeModal() {
+    $("#modal-backdrop").hidden = true;
+    document.body.style.overflow = "";
+    modalConfirmAction = null;
+    if (lastFocused?.isConnected) lastFocused.focus();
+  }
+  $("#modal-confirm").addEventListener("click", () => {
+    const action = modalConfirmAction;
+    closeModal();
+    if (action) action();
+  });
+  $("#modal-cancel").addEventListener("click", closeModal);
+  $("#modal-close").addEventListener("click", closeModal);
+  $("#modal-backdrop").addEventListener("click", event => { if (event.target === event.currentTarget) closeModal(); });
+
+  function trapTab(event, container) {
+    if (event.key !== "Tab") return;
+    const focusable = $$("button:not([hidden]):not(:disabled),input:not([hidden]):not(:disabled),select:not([hidden]):not(:disabled)", container).filter(element => element.offsetParent !== null);
+    if (!focusable.length) return;
+    const first = focusable[0], last = focusable[focusable.length - 1];
+    if (event.shiftKey && document.activeElement === first) { event.preventDefault(); last.focus(); }
+    else if (!event.shiftKey && document.activeElement === last) { event.preventDefault(); first.focus(); }
+  }
+  document.addEventListener("keydown", event => {
+    if (!$("#friend-modal").hidden) {
+      if (event.key === "Escape") { event.preventDefault(); closeFriendModal(); }
+      trapTab(event, $("#friend-modal"));
+      return;
+    }
+    if (!$("#modal-backdrop").hidden) {
+      if (event.key === "Escape") { event.preventDefault(); closeModal(); }
+      trapTab(event, $("#modal-backdrop"));
+    }
+  });
+
+  function resetForm() {
+    $("#task-form").reset();
+    $("#edit-id").value = "";
+    $("#priority").value = "Medium";
+    $("#form-heading").textContent = "NEW SIDE QUEST";
+    $("#submit-task span").textContent = "ADD QUEST";
+    $("#cancel-edit").hidden = true;
+  }
+
+  function focusQuestForm() {
+    const formWindow = $("#form-window");
+    formWindow.classList.remove("is-closed", "is-minimized");
+    updateDock();
+    formWindow.scrollIntoView({ behavior: "smooth", block: "start" });
+    setTimeout(() => $("#subject").focus(), 250);
+  }
+
+  function editTask(id) {
+    const task = state.tasks.find(item => item.id === id);
+    if (!task) return;
+    $("#edit-id").value = task.id;
+    $("#subject").value = task.subject;
+    $("#task-name").value = task.name;
+    $("#deadline").value = task.deadline;
+    $("#priority").value = task.priority;
+    $("#form-heading").textContent = "EDIT SIDE QUEST";
+    $("#submit-task span").textContent = "SAVE CHANGES";
+    $("#cancel-edit").hidden = false;
+    focusQuestForm();
+  }
+
+  $("#task-form").addEventListener("submit", event => {
+    event.preventDefault();
+    const subject = $("#subject").value.trim();
+    const name = $("#task-name").value.trim();
+    const missing = [];
+    if (!subject) missing.push("Subject");
+    if (!name) missing.push("Task Name");
+    if (missing.length) {
+      openModal({ title: "INPUT ERROR", message: `QUEST CREATION FAILED!\n\nRequired: ${missing.join(", ")}\n\nPlease fill the missing field${missing.length > 1 ? "s" : ""} and try again.`, confirmText: "GOT IT", alertOnly: true });
+      return;
+    }
+    const editId = $("#edit-id").value;
+    if (editId) {
+      const task = state.tasks.find(item => item.id === editId);
+      if (task) {
+        const newPriority = $("#priority").value;
+        if (task.status === "done" && newPriority !== task.priority) {
+          const newXP = XP[newPriority];
+          state.xp = Math.max(0, state.xp - (task.xpEarned || 0) + newXP);
+          task.xpEarned = newXP;
+        }
+        Object.assign(task, { subject, name, deadline: $("#deadline").value, priority: newPriority });
+      }
+      toast("QUEST UPDATED!", "sage");
+    } else {
+      state.tasks.push({ id: uid(), subject, name, deadline: $("#deadline").value, priority: $("#priority").value, status: "todo", createdAt: Date.now(), xpEarned: 0 });
+      toast("NEW QUEST ADDED! +0 XP", "sage");
+    }
+    saveState();
+    resetForm();
+    renderAll();
+  });
+  $("#cancel-edit").addEventListener("click", resetForm);
+
+  board.addEventListener("click", event => {
+    if (event.target.closest("[data-welcome-add]")) { focusQuestForm(); return; }
+    const button = event.target.closest("button[data-action]");
+    if (!button) return;
+    const card = button.closest(".task-card");
+    const task = state.tasks.find(item => item.id === card?.dataset.id);
+    if (!task) return;
+    const index = COLUMNS.findIndex(column => column.id === task.status);
+    if (button.dataset.action === "next") moveTask(task.id, COLUMNS[Math.min(index + 1, COLUMNS.length - 1)].id);
+    if (button.dataset.action === "back") moveTask(task.id, COLUMNS[Math.max(index - 1, 0)].id);
+    if (button.dataset.action === "edit") editTask(task.id);
+    if (button.dataset.action === "delete") {
+      openModal({
+        title: "SYSTEM ERROR", message: `DELETE THIS QUEST?\n\n"${task.name}"\n\nThis action cannot be undone.`, confirmText: "DELETE", danger: true,
+        onConfirm: () => {
+          if (task.status === "done" && task.xpEarned > 0) {
+            state.xp = Math.max(0, state.xp - task.xpEarned);
+          }
+          state.tasks = state.tasks.filter(item => item.id !== task.id);
+          if ($("#edit-id").value === task.id) resetForm();
+          saveState(); renderAll(); toast("QUEST DELETED", "brick");
+        }
+      });
+    }
+  });
+
+  board.addEventListener("dragstart", event => {
+    const card = event.target.closest(".task-card");
+    if (!card) return;
+    event.dataTransfer.setData("text/plain", card.dataset.id);
+    event.dataTransfer.effectAllowed = "move";
+    requestAnimationFrame(() => card.classList.add("is-dragging"));
+  });
+  board.addEventListener("dragend", () => {
+    $$(".is-dragging", board).forEach(card => card.classList.remove("is-dragging"));
+    $$(".drag-over", board).forEach(list => list.classList.remove("drag-over"));
+  });
+  board.addEventListener("dragover", event => {
+    const list = event.target.closest(".task-list");
+    if (!list) return;
+    event.preventDefault();
+    event.dataTransfer.dropEffect = "move";
+    $$(".drag-over", board).forEach(item => { if (item !== list) item.classList.remove("drag-over"); });
+    list.classList.add("drag-over");
+  });
+  board.addEventListener("drop", event => {
+    const list = event.target.closest(".task-list");
+    if (!list) return;
+    event.preventDefault();
+    const id = event.dataTransfer.getData("text/plain");
+    list.classList.remove("drag-over");
+    moveTask(id, list.dataset.status);
+  });
+
+  [subjectFilter, sortSelect].forEach(control => control.addEventListener("change", renderBoard));
+  searchInput.addEventListener("input", renderBoard);
+  $("#clear-filters").addEventListener("click", () => {
+    subjectFilter.value = ""; searchInput.value = ""; sortSelect.value = "deadline";
+    renderBoard(); toast("FILTERS CLEARED");
+  });
+
+  function updateDock() {
+    const closed = $$(".app-window.is-closed");
+    const dock = $("#window-dock");
+    dock.hidden = closed.length === 0;
+    const container = $("#dock-buttons");
+    container.replaceChildren();
+    closed.forEach(windowElement => {
+      const button = document.createElement("button");
+      button.type = "button";
+      button.className = "btn btn-small";
+      button.textContent = windowElement.dataset.windowTitle;
+      button.addEventListener("click", () => { windowElement.classList.remove("is-closed"); updateDock(); });
+      container.append(button);
+    });
+  }
+
+  document.addEventListener("click", event => {
+    const button = event.target.closest("[data-window-action]");
+    if (!button) return;
+    const windowElement = button.closest(".window");
+    const action = button.dataset.windowAction;
+    if (action === "minimize") {
+      windowElement.classList.toggle("is-minimized");
+      button.setAttribute("aria-expanded", String(!windowElement.classList.contains("is-minimized")));
+    }
+    if (action === "maximize") {
+      const willMaximize = !windowElement.classList.contains("is-maximized");
+      $$(".app-window.is-maximized").forEach(item => item.classList.remove("is-maximized"));
+      windowElement.classList.toggle("is-maximized", willMaximize);
+      windowElement.classList.remove("is-minimized");
+      document.body.classList.toggle("has-maximized", willMaximize);
+    }
+    if (action === "close") {
+      windowElement.classList.remove("is-maximized");
+      windowElement.classList.add("is-closed");
+      document.body.classList.remove("has-maximized");
+      updateDock();
+    }
+  });
+  document.addEventListener("keydown", event => {
+    if (event.key === "Escape" && $("#modal-backdrop").hidden && $("#friend-modal").hidden) {
+      const maximized = $(".app-window.is-maximized");
+      if (maximized) { maximized.classList.remove("is-maximized"); document.body.classList.remove("has-maximized"); }
+    }
+  });
+
+  let friendLastFocused = null;
+  function openFriendModal(id = null) {
+    if (!id && state.friends.length >= 2) { toast("PARTY FULL! MAXIMUM 2 FRIENDS", "brick"); return; }
+    const friend = state.friends.find(item => item.id === id);
+    friendLastFocused = document.activeElement;
+    $("#friend-edit-id").value = friend?.id || "";
+    $("#friend-name-input").value = friend?.name || "";
+    $("#friend-form-error").hidden = true;
+    $("#gender-picker").hidden = Boolean(friend);
+    $("#remove-friend").hidden = !friend;
+    $("#friend-modal-title").textContent = friend ? "MANAGE_LITTLE_FRIEND.EXE" : "NEW_LITTLE_FRIEND.EXE";
+    $("#friend-dialog-copy").textContent = friend ? "Rename your companion, or remove them from your party." : "Choose a study companion and give them a name.";
+    $("#friend-submit").textContent = friend ? "SAVE NAME" : "ADD FRIEND";
+    const gender = friend?.gender || "Boy";
+    $$(`input[name="friend-gender"]`).forEach(input => { input.checked = input.value === gender; });
+    $("#friend-modal").hidden = false;
+    document.body.style.overflow = "hidden";
+    setTimeout(() => $("#friend-name-input").focus(), 0);
+  }
+  function closeFriendModal() {
+    $("#friend-modal").hidden = true;
+    document.body.style.overflow = "";
+    if (friendLastFocused?.isConnected) friendLastFocused.focus();
+  }
+  $("#add-friend").addEventListener("click", () => openFriendModal());
+  $("#friend-cancel").addEventListener("click", closeFriendModal);
+  $("#friend-modal-close").addEventListener("click", closeFriendModal);
+  $("#friend-modal").addEventListener("click", event => { if (event.target === event.currentTarget) closeFriendModal(); });
+  $("#friend-stage").addEventListener("click", event => {
+    const button = event.target.closest("[data-friend-id]");
+    if (button) openFriendModal(button.dataset.friendId);
+  });
+  $("#friend-form").addEventListener("submit", event => {
+    event.preventDefault();
+    const name = $("#friend-name-input").value.trim();
+    if (!name) { $("#friend-form-error").hidden = false; $("#friend-name-input").focus(); return; }
+    const id = $("#friend-edit-id").value;
+    if (id) {
+      const friend = state.friends.find(item => item.id === id);
+      if (friend) friend.name = name;
+      toast("FRIEND RENAMED!", "sage");
+    } else {
+      if (state.friends.length >= 2) { closeFriendModal(); toast("PARTY FULL! MAXIMUM 2 FRIENDS", "brick"); return; }
+      const gender = $(`input[name="friend-gender"]:checked`)?.value === "Girl" ? "Girl" : "Boy";
+      state.friends.push({ id: uid(), gender, name, accessories: accessoriesForLevel(currentLevel()) });
+      toast(`${name.toUpperCase()} JOINED YOUR PARTY!`, "sage");
+    }
+    saveState();
+    closeFriendModal();
+    renderFriends();
+  });
+  $("#remove-friend").addEventListener("click", () => {
+    const id = $("#friend-edit-id").value;
+    const friend = state.friends.find(item => item.id === id);
+    if (!friend) return;
+    closeFriendModal();
+    openModal({
+      title: "REMOVE FRIEND?", message: `Say goodbye to ${friend.name}?\n\nYou can always add a new Little Friend later.`, confirmText: "REMOVE", danger: true,
+      onConfirm: () => { state.friends = state.friends.filter(item => item.id !== id); saveState(); renderFriends(); toast("FRIEND REMOVED", "brick"); }
+    });
+  });
+  $("#toggle-friends").addEventListener("click", () => {
+    state.friendsHidden = !state.friendsHidden;
+    saveState();
+    renderFriends();
+    toast(state.friendsHidden ? "FRIENDS HIDDEN" : "FRIENDS ARE BACK!", "sage");
+  });
+
+  let friendReaction = null;
+  let friendReactionTimer = null;
+  function reactFriends(type, duration = 2800) {
+    clearTimeout(friendReactionTimer);
+    friendReaction = type;
+    renderFriends();
+    friendReactionTimer = setTimeout(() => { friendReaction = null; renderFriends(); }, duration);
+  }
+
+  function friendMode() {
+    if (friendReaction === "done") return "done";
+    if (friendReaction === "level") return "level";
+    if (friendReaction === "break") return "break";
+    if (state.timer.running) return "reading";
+    if (hasActiveOverdue()) return "worried";
+    return "idle";
+  }
+
+  // Lumi (Girl) & Bram (Boy) sprite sheets. Accessory overlays use sheet pixel coords (viewBox crops y=16..80).
+  function friendSprite(friend) {
+    const isGirl = friend.gender === "Girl";
+    const acc = friend.accessories;
+    const back = acc.includes("backpack")
+      ? `<rect x="11" y="57" width="4" height="12" fill="#C0604D"/><rect x="33" y="57" width="4" height="12" fill="#C0604D"/>
+         <rect x="11" y="57" width="1" height="12" fill="#783D35"/><rect x="36" y="57" width="1" height="12" fill="#783D35"/>
+         <rect x="11" y="62" width="4" height="2" fill="#E8913A"/><rect x="33" y="62" width="4" height="2" fill="#E8913A"/>`
+      : "";
+    let front = "";
+    if (acc.includes("backpack")) {
+      front += `<rect x="17" y="58" width="2" height="7" fill="#783D35"/><rect x="29" y="58" width="2" height="7" fill="#783D35"/>`;
+    }
+    if (acc.includes("glasses")) {
+      front += isGirl
+        ? `<g fill="#2A1D27"><rect x="17" y="48" width="6" height="1"/><rect x="17" y="54" width="6" height="1"/><rect x="17" y="48" width="1" height="7"/><rect x="22" y="48" width="1" height="7"/>
+             <rect x="25" y="48" width="6" height="1"/><rect x="25" y="54" width="6" height="1"/><rect x="25" y="48" width="1" height="7"/><rect x="30" y="48" width="1" height="7"/>
+             <rect x="23" y="50" width="2" height="1"/></g>`
+        : `<g><rect x="18" y="49" width="4" height="3" fill="#2C2E33"/><rect x="26" y="49" width="4" height="3" fill="#2C2E33"/>
+             <rect x="18" y="49" width="1" height="1" fill="#FFF8E9"/><rect x="26" y="49" width="1" height="1" fill="#FFF8E9"/></g>`;
+    }
+    if (acc.includes("hat")) {
+      front += isGirl
+        ? `<rect x="19" y="31" width="10" height="4" fill="#E8913A"/><rect x="18" y="35" width="12" height="2" fill="#C0604D"/><rect x="23" y="29" width="2" height="2" fill="#FBE9E3"/>`
+        : `<rect x="16" y="33" width="16" height="4" fill="#E8913A"/><rect x="14" y="37" width="20" height="2" fill="#C0604D"/><rect x="23" y="31" width="2" height="2" fill="#FBE9E3"/>`;
+    }
+    return `<div class="friend-sprite" data-char="${isGirl ? "lumi" : "bram"}" aria-hidden="true">
+      ${back ? `<svg class="sprite-acc back" viewBox="0 16 48 64">${back}</svg>` : ""}
+      <span class="sprite-frames"></span>
+      ${front ? `<svg class="sprite-acc front" viewBox="0 16 48 64">${front}</svg>` : ""}
+    </div>`;
+  }
+
+  function confettiMarkup() {
+    return '<span class="pixel-confetti" aria-hidden="true"><i></i><i></i><i></i><i></i><i></i></span>';
+  }
+
+  function renderFriends() {
+    const floor = $("#friends-floor");
+    const stage = $("#friend-stage");
+    const mode = friendMode();
+    document.body.classList.toggle("friends-hidden", state.friendsHidden);
+    floor.hidden = state.friendsHidden;
+    floor.classList.toggle("is-empty", state.friends.length === 0);
+    floor.classList.toggle("focus-mode", mode === "reading");
+    floor.classList.toggle("high-five", mode === "level" && state.friends.length === 2);
+    $("#friend-count").textContent = `${state.friends.length} / 2`;
+    $("#add-friend").disabled = state.friends.length >= 2;
+    $("#toggle-friends").textContent = state.friendsHidden ? "SHOW FRIENDS" : "HIDE FRIENDS";
+    $("#toggle-friends").setAttribute("aria-pressed", String(state.friendsHidden));
+    if (!state.friends.length) {
+      stage.innerHTML = '<div class="floor-empty">ADD A LITTLE FRIEND FOR COMPANY!</div>';
+      return;
+    }
+    stage.innerHTML = state.friends.map((friend, index) => {
+      let reactionClass = "is-walking", speech = "";
+      if (mode === "reading") reactionClass = "is-reading";
+      if (mode === "done") { reactionClass = "is-jumping"; speech = "Nice one!"; }
+      if (mode === "break") { reactionClass = "is-breaking"; speech = "Take a break!"; }
+      if (mode === "level") { reactionClass = "is-jumping"; speech = state.friends.length === 2 ? (index === 0 ? "LEVEL UP!" : "HIGH FIVE!") : "NEW GEAR!"; }
+      if (mode === "worried") { reactionClass = "is-worried"; speech = "Eek! Overdue!"; }
+      return `<div class="friend" data-index="${index}" style="--walk-duration:${24 + index * 5}s">
+        ${speech ? `<span class="friend-speech">${speech}</span>` : ""}
+        <button class="friend-name" type="button" data-friend-id="${escapeHTML(friend.id)}" aria-label="Rename or remove ${escapeHTML(friend.name)}" title="Rename or remove ${escapeHTML(friend.name)}">${escapeHTML(friend.name)}</button>
+        <div class="friend-reaction ${reactionClass}">
+          ${friendSprite(friend)}
+          ${mode === "done" || mode === "level" ? confettiMarkup() : ""}
+        </div>
+      </div>`;
+    }).join("");
+    requestAnimationFrame(updateFriendRanges);
+  }
+
+  function updateFriendRanges() {
+    const floor = $("#friends-floor");
+    const width = floor.clientWidth;
+    $$(".friend", floor).forEach((friend, index, all) => {
+      const range = all.length === 1 ? Math.max(40, width - 150) : Math.max(36, width * .31);
+      friend.style.setProperty("--walk-range", `${range}px`);
+    });
+  }
+  window.addEventListener("resize", updateFriendRanges);
+
+  let audioContext;
+  function ensureAudio() {
+    try {
+      audioContext ||= new (window.AudioContext || window.webkitAudioContext)();
+      if (audioContext.state === "suspended") audioContext.resume();
+    } catch (error) { audioContext = null; }
+  }
+  function playChime(notes = [659, 784, 988]) {
+    try {
+      ensureAudio();
+      if (!audioContext) return;
+      notes.forEach((frequency, index) => {
+        const oscillator = audioContext.createOscillator();
+        const gain = audioContext.createGain();
+        const start = audioContext.currentTime + index * .13;
+        oscillator.type = "square";
+        oscillator.frequency.setValueAtTime(frequency, start);
+        gain.gain.setValueAtTime(.0001, start);
+        gain.gain.exponentialRampToValueAtTime(.07, start + .015);
+        gain.gain.exponentialRampToValueAtTime(.0001, start + .12);
+        oscillator.connect(gain); gain.connect(audioContext.destination);
+        oscillator.start(start); oscillator.stop(start + .13);
+      });
+    } catch (error) { /* Visual notification remains available when audio is blocked. */ }
+  }
+
+  function currentTimerSeconds() {
+    if (!state.timer.running || !state.timer.endAt) return Math.ceil(state.timer.remaining);
+    return Math.max(0, Math.ceil((state.timer.endAt - Date.now()) / 1000));
+  }
+  let lastDisplayedSecond = null;
+  function updateTimer(force = false) {
+    const seconds = currentTimerSeconds();
+    if (!force && seconds === lastDisplayedSecond) return;
+    lastDisplayedSecond = seconds;
+    const minutes = Math.floor(seconds / 60);
+    const display = `${String(minutes).padStart(2, "0")}:${String(seconds % 60).padStart(2, "0")}`;
+    $("#timer-display").textContent = display;
+    $("#timer-display").setAttribute("aria-label", `${minutes} minutes ${seconds % 60} seconds remaining`);
+    $("#timer-status").textContent = state.timer.running ? "FOCUS SESSION RUNNING" : seconds === 0 ? "SESSION COMPLETE!" : seconds === 1500 ? "25 MIN FOCUS PROTOCOL" : "SESSION PAUSED";
+    $("#timer-start").disabled = state.timer.running;
+    $("#timer-pause").disabled = !state.timer.running;
+    document.title = state.timer.running ? `${display} — Study Quest` : "Study Quest — Pixel Task Board";
+  }
+  function completeTimer() {
+    state.timer.remaining = 0; state.timer.running = false; state.timer.endAt = null;
+    saveState(); updateTimer(true); playChime(); toast("POMODORO COMPLETE! GREAT WORK!", "sage");
+    reactFriends("break", 7000);
+  }
+  $("#timer-start").addEventListener("click", () => {
+    ensureAudio();
+    if (currentTimerSeconds() <= 0) state.timer.remaining = 1500;
+    else state.timer.remaining = currentTimerSeconds();
+    state.timer.running = true;
+    state.timer.endAt = Date.now() + state.timer.remaining * 1000;
+    saveState(); updateTimer(true); renderFriends();
+  });
+  $("#timer-pause").addEventListener("click", () => {
+    state.timer.remaining = currentTimerSeconds(); state.timer.running = false; state.timer.endAt = null;
+    saveState(); updateTimer(true); renderFriends(); toast("TIMER PAUSED");
+  });
+  $("#timer-reset").addEventListener("click", () => {
+    state.timer = { remaining: 1500, running: false, endAt: null };
+    saveState(); updateTimer(true); renderFriends(); toast("TIMER RESET: 25:00");
+  });
+  setInterval(() => {
+    if (state.timer.running && currentTimerSeconds() <= 0) completeTimer();
+    else if (state.timer.running) updateTimer();
+  }, 250);
+
+  renderAll();
+  updateTimer(true);
+  if (!storageAvailable) setTimeout(() => toast("LOCAL SAVE UNAVAILABLE", "brick"), 300);
+})();
+</script>
+</body>
+</html>
