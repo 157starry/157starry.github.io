@@ -24,7 +24,8 @@
   const md = (text) => {
     if (!window.marked || !window.DOMPurify) return `<p>${esc(text)}</p>`;
     const html = window.marked.parse(String(text || ""), { breaks: true, gfm: true });
-    return window.DOMPurify.sanitize(html, { ADD_ATTR: ["target"] });
+    // Drop cap is opt-in: start a paragraph with ^ (e.g. "^Banyak dari kita…") to make its first letter big
+    return window.DOMPurify.sanitize(html, { ADD_ATTR: ["target"] }).replace(/<p>\^/g, '<p class="dropcap">');
   };
 
   // Which app a music/read link opens in
