@@ -15,10 +15,17 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    @media (min-width:900px){
+      #posts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;align-items:stretch}
+      #posts .card{margin:0}
+      #posts .card.feat{grid-column:1/-1}
+    }
+  </style>
 </head>
 <body>
   <!-- List view -->
-  <main class="page" id="listView" hidden>
+  <main class="page wide" id="listView" hidden>
     <a class="back" href="./">← back to the sky</a>
     <div class="mast"><div class="k">s(T☆R)light<br>journal</div><div class="k" style="text-align:right">analysis · essays<br>notes to self</div></div>
     <div class="head-row">
