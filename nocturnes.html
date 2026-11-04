@@ -14,12 +14,89 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
+  <style>
+    /* ===== hero: half vinyl, tonearm, staff line, twinkles ===== */
+    .hero{position:relative;overflow:hidden;margin:0 -16px;padding:4px 16px 2px;min-height:230px}
+    .hero .h1,.hero .lede,.hero .staff{position:relative;z-index:2}
+    .hero .lede{margin-bottom:0}
+    .bigvinyl{position:absolute;z-index:1;right:-170px;top:-24px;width:340px;height:340px;animation:spin 18s linear infinite}
+    .arm{position:absolute;z-index:1;right:40px;top:-4px;width:150px;height:190px;transform-origin:120px 20px;animation:arm 6s ease-in-out infinite}
+    @keyframes arm{0%,100%{transform:rotate(0)}50%{transform:rotate(2deg)}}
+    .staff{display:block;width:min(560px,100%);height:70px;margin:2px 0 6px}
+    .staff path.l{fill:none;stroke:#e7c6cf;stroke-width:1.6;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900;animation:draw 3s ease forwards .3s}
+    .staff .n{fill:#e7c6cf;opacity:0;animation:pop .6s ease forwards}
+    @keyframes draw{to{stroke-dashoffset:0}}
+    @keyframes pop{to{opacity:1}}
+    .tw{position:absolute;z-index:1;color:#e7c6cf;font-size:14px;opacity:.2;animation:tw 4s ease-in-out infinite}
+    @keyframes tw{0%,100%{opacity:.15;transform:scale(.9)}50%{opacity:.85;transform:scale(1.1)}}
+
+    /* ===== on repeat ===== */
+    .np .disc{position:relative;flex:none;width:120px;height:120px}
+    .np .disc .spin{width:120px;height:120px;animation:spin 6s linear infinite}
+    .np .needle{position:absolute;right:-16px;top:-6px;width:60px;height:78px}
+    .eq{display:inline-flex;gap:3px;align-items:flex-end;height:12px;margin-left:8px;vertical-align:-1px}
+    .eq i{width:3px;background:#e7b9c3;border-radius:2px;animation:eq 1s ease-in-out infinite}
+    .eq i:nth-child(2){animation-delay:.2s}.eq i:nth-child(3){animation-delay:.4s}
+    @keyframes eq{0%,100%{height:3px}50%{height:12px}}
+
+    @media (prefers-reduced-motion:reduce){
+      .bigvinyl,.arm,.tw,.np .disc .spin,.eq i{animation:none!important}
+      .staff path.l{stroke-dashoffset:0;animation:none}.staff .n{opacity:1;animation:none}
+    }
+    @media (max-width:600px){
+      .hero{min-height:200px}
+      .bigvinyl{width:240px;height:240px;right:-130px;top:-10px;opacity:.55}
+      .arm{display:none}
+      .np .disc,.np .disc .spin{width:92px;height:92px}
+      .np .needle{width:46px;height:60px;right:-12px}
+    }
+  </style>
 </head>
 <body class="dusk">
+  <!-- reusable vinyl record -->
+  <svg width="0" height="0" style="position:absolute" aria-hidden="true">
+    <defs>
+      <radialGradient id="shine" cx="35%" cy="30%" r="70%"><stop offset="0" stop-color="#3a3350"/><stop offset="1" stop-color="#121019"/></radialGradient>
+      <symbol id="vinyl" viewBox="0 0 200 200">
+        <circle cx="100" cy="100" r="98" fill="url(#shine)"/>
+        <g fill="none" stroke="#2b2638" stroke-width="1"><circle cx="100" cy="100" r="90"/><circle cx="100" cy="100" r="82"/><circle cx="100" cy="100" r="74"/><circle cx="100" cy="100" r="66"/><circle cx="100" cy="100" r="58"/><circle cx="100" cy="100" r="50"/></g>
+        <path d="M40 40 A85 85 0 0 1 100 15" stroke="rgba(255,255,255,.14)" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <path d="M160 160 A85 85 0 0 1 100 185" stroke="rgba(255,255,255,.08)" stroke-width="5" fill="none" stroke-linecap="round"/>
+        <circle cx="100" cy="100" r="34" fill="#e7c6cf"/>
+        <text x="100" y="92" text-anchor="middle" font-family="Georgia,serif" font-style="italic" font-size="9" fill="#5a3c48">s(T☆R)light</text>
+        <text x="100" y="116" text-anchor="middle" font-family="Helvetica,sans-serif" font-size="6" letter-spacing="1.5" fill="#5a3c48">NOCTURNES</text>
+        <circle cx="100" cy="100" r="3" fill="#272038"/>
+      </symbol>
+    </defs>
+  </svg>
+
   <main class="page">
     <a class="back" href="./">← back to the sky</a>
-    <h1 class="h1">Noc<i>turnes</i></h1>
-    <p class="lede">The soundtrack of my little universe.</p>
+
+    <section class="hero">
+      <svg class="bigvinyl" aria-hidden="true"><use href="#vinyl"/></svg>
+      <svg class="arm" viewBox="0 0 150 190" aria-hidden="true" fill="none" stroke="#cdb8c1" stroke-linecap="round">
+        <circle cx="120" cy="20" r="11" fill="#3a3350" stroke-width="2"/><circle cx="120" cy="20" r="3" fill="#cdb8c1"/>
+        <path d="M120 20 L96 150 L70 172" stroke-width="3"/>
+        <rect x="56" y="166" width="20" height="10" rx="2" transform="rotate(-38 66 171)" fill="#e7c6cf" stroke="none"/>
+      </svg>
+      <span class="tw" style="left:46%;top:14px">✦</span>
+      <span class="tw" style="left:62%;top:110px;animation-delay:1.2s;font-size:11px">♪</span>
+      <span class="tw" style="left:8%;top:2px;animation-delay:2s;font-size:10px">✧</span>
+      <span class="tw" style="left:55%;top:180px;animation-delay:.6s;font-size:12px">✧</span>
+      <span class="tw" style="left:38%;top:70px;animation-delay:2.8s;font-size:10px">♫</span>
+
+      <h1 class="h1">Noc<i>turnes</i></h1>
+      <p class="lede">The soundtrack of my little universe.</p>
+      <svg class="staff" viewBox="0 0 560 70" aria-hidden="true">
+        <path class="l" d="M4 48 C40 44 52 20 70 22 C86 24 80 58 62 54 C46 50 58 14 74 8 C82 6 84 30 78 46 C94 52 120 30 150 34 C180 38 186 56 214 50 C240 44 246 22 276 24 C306 26 300 52 330 52 C360 52 368 30 398 32 C430 34 440 50 470 46 C500 42 520 36 556 38"/>
+        <g class="n" style="animation-delay:1.4s"><ellipse cx="150" cy="34" rx="6" ry="4.5" transform="rotate(-20 150 34)"/><rect x="154.5" y="10" width="1.6" height="24"/></g>
+        <g class="n" style="animation-delay:1.8s"><ellipse cx="276" cy="24" rx="6" ry="4.5" transform="rotate(-20 276 24)"/><rect x="280.5" y="2" width="1.6" height="22"/></g>
+        <g class="n" style="animation-delay:2.2s"><ellipse cx="330" cy="52" rx="6" ry="4.5" transform="rotate(-20 330 52)"/><rect x="334.5" y="28" width="1.6" height="24"/><path d="M336 28 q10 6 6 16" stroke="#e7c6cf" stroke-width="1.6" fill="none"/></g>
+        <g class="n" style="animation-delay:2.6s"><ellipse cx="470" cy="46" rx="6" ry="4.5" transform="rotate(-20 470 46)"/><rect x="474.5" y="22" width="1.6" height="24"/></g>
+      </svg>
+    </section>
+
     <div class="chips" id="moods"></div>
     <div id="feat"></div>
     <div id="list"><div class="empty" style="color:#d9c3cb">Loading…</div></div>
@@ -32,30 +109,39 @@
   <script>
   (async function () {
     const { sb, esc, safeUrl, platform, tint } = SL;
-    let songs = [], mood = "All";
+    let songs = [], pick = "All";
     if (sb) {
       const { data } = await sb.from("star_songs").select("*")
         .order("position", { ascending: true }).order("created_at", { ascending: false });
       songs = data || [];
     }
-    const moodsOf = (s) => String(s.mood || "").split(",").map((m) => m.trim().toLowerCase()).filter(Boolean);
-    const moods = ["All", ...new Set(songs.flatMap(moodsOf))];
+    // Personal collections: type one of these names in a song's "Mood" field (comma-separated).
+    // They become the filter chips (in this order); every other mood is shown as small text only.
+    const COLLECTIONS = ["Ta's fav ♡", "core memory · T", "study w/ Ta"];
+    const norm = (t) => t.toLowerCase().replace(/[’`]/g, "'").replace(/\s+/g, " ").trim();
+    const COL = new Map(COLLECTIONS.map((c) => [norm(c), c]));
+    const tagsOf = (s) => String(s.mood || "").split(",").map((m) => m.trim()).filter(Boolean);
+    const colsOf = (s) => tagsOf(s).map(norm).filter((t) => COL.has(t)).map((t) => COL.get(t));
+    const moodsOf = (s) => tagsOf(s).filter((t) => !COL.has(norm(t))).map((t) => t.toLowerCase());
+    const present = new Set(songs.flatMap(colsOf));
+    const chips = ["All", ...COLLECTIONS.filter((c) => present.has(c))];
     const featured = songs.find((s) => s.featured);
 
     if (featured) {
       const u = safeUrl(featured.url);
       document.getElementById("feat").innerHTML =
         `<a class="np" ${u ? `href="${esc(u)}" target="_blank" rel="noopener"` : ""}>
-          <div class="vinyl" style="--c:${tint(featured.title)}"></div>
-          <div><div class="k">On repeat this week</div><h3>${esc(featured.title)}</h3>
+          <div class="disc"><svg class="spin" aria-hidden="true"><use href="#vinyl"/></svg>
+            <svg class="needle" viewBox="0 0 70 90" fill="none" stroke="#cdb8c1" stroke-linecap="round" aria-hidden="true"><circle cx="56" cy="10" r="6" fill="#3a3350" stroke-width="1.6"/><path d="M56 10 L44 66 L30 78" stroke-width="2.4"/></svg></div>
+          <div><div class="k">On repeat this week <span class="eq"><i></i><i></i><i></i></span></div><h3>${esc(featured.title)}</h3>
           <div class="a">${esc(featured.artist || "")}</div>${featured.note ? `<div class="why">${esc(featured.note)} ✧</div>` : ""}</div></a>`;
     }
 
     function render() {
-      document.getElementById("moods").innerHTML = moods.length > 1
-        ? moods.map((m) => `<button class="chip" aria-pressed="${m === mood}" data-m="${esc(m)}">${esc(m)}</button>`).join("") : "";
-      document.querySelectorAll("#moods .chip").forEach((b) => b.onclick = () => { mood = b.dataset.m; render(); });
-      const list = songs.filter((s) => mood === "All" || moodsOf(s).includes(mood));
+      document.getElementById("moods").innerHTML = chips.length > 1
+        ? chips.map((m) => `<button class="chip" aria-pressed="${m === pick}" data-m="${esc(m)}">${esc(m)}</button>`).join("") : "";
+      document.querySelectorAll("#moods .chip").forEach((b) => b.onclick = () => { pick = b.dataset.m; render(); });
+      const list = songs.filter((s) => pick === "All" || colsOf(s).includes(pick));
       if (!songs.length) {
         document.getElementById("list").innerHTML = `<div class="empty" style="color:#d9c3cb">The record player is warming up.<br><span class="scribble" style="color:#e7b9c3">first song soon ✧</span></div>`;
         return;
