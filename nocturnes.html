@@ -16,13 +16,20 @@
   <link rel="stylesheet" href="style.css">
   <style>
     /* ===== hero: half vinyl, tonearm, staff line, twinkles ===== */
-    .hero{position:relative;overflow:hidden;margin:0 -16px;padding:4px 16px 2px;min-height:230px}
+    html,body{overflow-x:clip}
+    .hero{position:relative;overflow:visible;margin:0 -16px;padding:4px 16px 2px;min-height:230px}
     .hero .h1,.hero .lede,.hero .staff{position:relative;z-index:2}
     .hero .lede{margin-bottom:0}
     .bigvinyl{position:absolute;z-index:1;right:-170px;top:-24px;width:340px;height:340px;animation:spin 18s linear infinite}
     .arm{position:absolute;z-index:1;right:40px;top:-4px;width:150px;height:190px;transform-origin:120px 20px;animation:arm 6s ease-in-out infinite}
     @keyframes arm{0%,100%{transform:rotate(0)}50%{transform:rotate(2deg)}}
     .staff{display:block;width:min(560px,100%);height:70px;margin:2px 0 6px}
+    @media (min-width:900px){
+      /* wide screens: let the record sit fully beside the column instead of being cut off */
+      .bigvinyl{right:-260px;top:-10px;width:380px;height:380px}
+      .arm{right:-60px;top:4px}
+      .staff{width:min(500px,100%)}
+    }
     .staff path.l{fill:none;stroke:#e7c6cf;stroke-width:1.6;stroke-linecap:round;stroke-dasharray:900;stroke-dashoffset:900;animation:draw 3s ease forwards .3s}
     .staff .n{fill:#e7c6cf;opacity:0;animation:pop .6s ease forwards}
     @keyframes draw{to{stroke-dashoffset:0}}
@@ -50,6 +57,20 @@
       .np .disc,.np .disc .spin{width:92px;height:92px}
       .np .needle{width:46px;height:60px;right:-12px}
     }
+    /* ===== songs: bigger vinyl icon; desktop = list in columns ===== */
+    #list .track .mini{width:56px;height:56px;box-shadow:0 6px 14px rgba(0,0,0,.35);transition:transform .4s ease}
+    #list .track:hover .mini{animation:spin 3s linear infinite}
+    @media (min-width:900px){
+      .page.wide .hero{min-height:290px}
+      .page.wide .bigvinyl{width:330px;height:330px;right:-165px;top:-30px}
+      .page.wide .arm{right:50px}
+      #list{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));column-gap:44px;margin-top:10px}
+      #list .track{padding:16px 6px;gap:16px}
+      #list .track .mini{width:78px;height:78px}
+      #list .track .tt{flex:1}
+      #list .track .tt b{font-size:19px;white-space:normal}
+    }
+    @media (prefers-reduced-motion:reduce){#list .track:hover .mini{animation:none}}
   </style>
 </head>
 <body class="dusk">
@@ -70,7 +91,7 @@
     </defs>
   </svg>
 
-  <main class="page">
+  <main class="page wide">
     <a class="back" href="./">← back to the sky</a>
 
     <section class="hero">
