@@ -128,8 +128,29 @@
       </div></article>`;
     };
 
+    // words of the day (genre VERBUM DIEI): small memo with washi tape + date stamp
+    const isMemo = (x) => !isLetter(x) && genresOf(x).includes("VERBUM DIEI");
+    const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    const memoHtml = (x) => {
+      const d = new Date(x.created_at || Date.now());
+      const lines = String(x.title || "").replace(/\r/g, "").split("\n").map((l) => l.trim()).filter(Boolean);
+      return `<article class="memo">
+        <div class="stamp"><b>${String(d.getDate()).padStart(2, "0")}</b>${MON[d.getMonth()]}<br>${d.getFullYear()}</div>
+        <div class="txt">${lines.map((l) => `<span>${esc(l)}</span>`).join("")}</div>
+        <div class="foot"><span class="gen">Verbum diei</span><span class="sign">— ${esc(x.note || "Tarry")}</span></div>
+      </article>`;
+    };
+
     const quoteHtml = (x) => isLetter(x) ? letterHtml(x) : `<div class="card quote">“${esc(x.title)}”
       ${x.author ? `<small>${esc(x.author)}</small>` : ""}${genHtml(x)}${x.note ? `<span class="why">${esc(x.note)}</span>` : ""}</div>`;
+    // render a list of quotes; memos that sit next to each other share one grid row
+    const quotesHtml = (list) => {
+      let out = "", run = [];
+      const flush = () => { if (run.length) out += `<div class="memos">${run.map(memoHtml).join("")}</div>`; run = []; };
+      list.forEach((x) => { if (isMemo(x)) run.push(x); else { flush(); out += quoteHtml(x); } });
+      flush();
+      return out;
+    };
     const bookHtml = (x) => {
       const img = safeUrl(x.image_url);
       const tag = safeUrl(x.url) ? "a" : "div";
