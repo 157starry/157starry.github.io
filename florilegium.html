@@ -18,6 +18,36 @@
     .link .gen,.quote .gen{display:block;font-family:var(--sans);font-style:normal;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--matcha);margin:3px 0 2px}
     .chip{text-transform:uppercase;letter-spacing:.06em}
     .seeall{display:inline-block;margin:14px 0 4px;background:none;border:0;padding:0;font:inherit;font-size:14px;color:#8F5864;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
+
+    /* ===== letter card (genre tskiesLettery) ===== */
+    .letter{--lp:#F6F0E4;--lp-ink:#3B2F2A;--lp-soft:#6B5A55;--torn:#E9C6C8;position:relative;display:block;margin:30px 18px 64px;isolation:isolate}
+    .letter::before{content:"";position:absolute;inset:-14px -10px -22px -18px;z-index:-1;background:var(--torn);transform:rotate(-2.2deg);transition:transform .4s ease;
+      clip-path:polygon(0% 4%,6% 1%,14% 3%,22% 0%,33% 2%,45% 0%,58% 3%,70% 1%,82% 2%,93% 0%,100% 3%,99% 18%,100% 35%,98% 52%,100% 70%,99% 88%,100% 97%,90% 100%,78% 97%,66% 100%,52% 98%,40% 100%,27% 97%,15% 100%,5% 98%,0% 100%,2% 82%,0% 64%,1% 45%,0% 26%)}
+    .letter .paper{position:relative;background-color:var(--lp);color:var(--lp-ink);padding:44px 44px 66px;transition:transform .4s ease;
+      background-image:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='160' height='160'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 .35  0 0 0 0 .3  0 0 0 0 .25  0 0 0 .07 0'/></filter><rect width='100%' height='100%' filter='url(%23n)'/></svg>");
+      clip-path:polygon(0 0,100% 0,100% 94%,96% 96%,91% 94.5%,86% 97%,80% 95%,74% 97.5%,68% 95.5%,61% 97%,55% 95%,48% 97.5%,42% 95.5%,35% 97%,29% 95%,22% 97.5%,16% 95.5%,10% 97%,4% 95%,0 96.5%)}
+    .letter .clip{position:absolute;top:-16px;right:64px;width:30px;height:78px;z-index:2}
+    .letter .flower{position:absolute;right:-30px;bottom:-40px;width:150px;height:150px;z-index:3;transform-origin:40% 60%;animation:sway 7s ease-in-out infinite}
+    @keyframes sway{0%,100%{transform:rotate(-12deg)}50%{transform:rotate(-6deg)}}
+    @media (hover:hover){.letter:hover .paper{transform:rotate(-.6deg) translateY(-2px)}.letter:hover::before{transform:rotate(-3deg)}}
+    @media (prefers-reduced-motion:reduce){.letter .flower{animation:none;transform:rotate(-12deg)}.letter .paper,.letter::before{transition:none}}
+    .letter h2{font-family:var(--serif-display);font-style:italic;font-weight:400;font-size:30px;line-height:1.2;margin:0 0 16px;padding-right:56px;color:var(--lp-ink)}
+    .letter .body{font-family:var(--serif);font-size:19px;line-height:1.6}
+    .letter .ln{display:block;margin-bottom:.45em}
+    .letter .gap{display:block;height:.6em}
+    .letter .songs{font-family:var(--serif);font-style:italic;font-size:15px;line-height:1.5;color:var(--lp-soft);margin:22px 0 0}
+    .letter .songs span{display:block}
+    .letter small{display:block;font-family:var(--sans);font-size:11px;letter-spacing:.12em;text-transform:uppercase;color:var(--lp-soft);margin-top:26px}
+    .letter .gen{display:block;font-family:var(--sans);font-size:10px;letter-spacing:.1em;text-transform:uppercase;color:var(--matcha);margin:4px 0 0}
+    .letter .sign{display:block;font-family:var(--hand);font-size:24px;color:var(--mauve);margin-top:10px}
+    @media (max-width:560px){
+      .letter{margin:24px 8px 56px}
+      .letter .paper{padding:34px 24px 58px}
+      .letter h2{font-size:25px}
+      .letter .body{font-size:17px}
+      .letter .clip{right:36px}
+      .letter .flower{width:92px;height:92px;right:-10px;bottom:-24px}
+    }
   </style>
 </head>
 <body>
@@ -55,7 +85,30 @@
     const genHtml = (x) => genresOf(x).length ? `<span class="gen">${esc(genresOf(x).join(" · "))}</span>` : "";
     const favColor = (u) => { const p = platform(u); return p === "Substack" ? "#e07a3c" : p === "Medium" ? "#2f2f2f" : "#B07A86"; };
 
-    const quoteHtml = (x) => `<div class="card quote">“${esc(x.title)}”
+    // letters (genre tskiesLettery): paper card, keeps line breaks, no automatic quote marks
+    const CLIP = `<svg class="clip" viewBox="0 0 30 78" fill="none" stroke="#4a4544" stroke-width="2.4" stroke-linecap="round" aria-hidden="true"><path d="M9 22 V62 a6 6 0 0 0 12 0 V10 a8 8 0 0 0 -16 0 V56"/></svg>`;
+    const PET = (o, w) => [0, 72, 144, 216, 288].map((r) => `<path d="M0 0 C-${w} -${o * .36} -${w * .6} -${o * .75} 0 -${o} C${w * .6} -${o * .75} ${w} -${o * .36} 0 0Z" transform="rotate(${r})"/>`).join("");
+    const FLOWER = `<svg class="flower" viewBox="0 0 120 120" aria-hidden="true"><path d="M58 70 C40 92 22 98 8 96 C22 86 36 74 58 70Z" fill="#8aa07a" opacity=".9"/><g transform="translate(62 58)"><g fill="#e8a9b8" stroke="#d48aa0" stroke-width=".8">${PET(46, 16)}</g><g fill="#fbe7ec" opacity=".8">${PET(30, 4)}</g><circle r="4" fill="#c9d08a"/><g stroke="#a88b4a" stroke-width="1.2" stroke-linecap="round"><path d="M0 0 L-9 -12"/><path d="M0 0 L-3 -14"/><path d="M0 0 L6 -12"/></g></g></svg>`;
+    const isLetter = (x) => genresOf(x).includes("TSKIESLETTERY");
+    const letterHtml = (x) => {
+      const lines = String(x.title || "").replace(/\r/g, "").split("\n").map((l) => l.trim());
+      while (lines.length && !lines[0]) lines.shift();
+      let head = "";
+      if (lines.length && (/^#+\s*/.test(lines[0]) || /^dear\s/i.test(lines[0]))) head = lines.shift().replace(/^#+\s*/, "");
+      const songAt = lines.findIndex((l) => /^(♬|♪|♫|🎵|🎶|listening to|sambil mendengarkan)/i.test(l));
+      const main = songAt < 0 ? lines : lines.slice(0, songAt);
+      const songs = songAt < 0 ? [] : lines.slice(songAt).filter(Boolean);
+      while (main.length && !main[main.length - 1]) main.pop();
+      const strip = (l) => l.replace(/^#+\s*/, "");
+      return `<article class="letter">${CLIP}${FLOWER}<div class="paper">
+        ${head ? `<h2>${esc(head)}</h2>` : ""}
+        <div class="body">${main.map((l) => l ? `<span class="ln">${esc(strip(l))}</span>` : `<span class="gap"></span>`).join("")}</div>
+        ${songs.length ? `<p class="songs">${songs.map((l) => `<span>${esc(l)}</span>`).join("")}</p>` : ""}
+        ${x.author ? `<small>${esc(x.author)}</small>` : ""}${genHtml(x)}${x.note ? `<span class="sign">${esc(x.note)}</span>` : ""}
+      </div></article>`;
+    };
+
+    const quoteHtml = (x) => isLetter(x) ? letterHtml(x) : `<div class="card quote">“${esc(x.title)}”
       ${x.author ? `<small>${esc(x.author)}</small>` : ""}${genHtml(x)}${x.note ? `<span class="why">${esc(x.note)}</span>` : ""}</div>`;
     const bookHtml = (x) => {
       const img = safeUrl(x.image_url);
