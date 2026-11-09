@@ -24,6 +24,22 @@
         { k: "published", label: "Published (visible to everyone)", type: "check", def: false },
       ],
     },
+    verbum: {
+      label: "Verbum Diei", table: "star_verbum", hint: "Short personal notes & letters in lect(o) › Verbum Diei. Newest date first.",
+      order: [["written_on", false], ["created_at", false]],
+      title: (r) => r.title || String(r.body || "").trim().split("\n")[0],
+      sub: (r) => [{ square: "Square", circle: "Circle", star: "Star", stamp: "Stamp", envelope: "Envelope" }[r.shape] || "", r.color, r.written_on ? fmtMonth(r.written_on + "T12:00:00") : "", r.signature].filter(Boolean).join(" · "),
+      fields: [
+        { k: "shape", label: "Shape", type: "select", def: "square", options: [["square", "Square note"], ["circle", "Circle"], ["star", "Star (3–8 words)"], ["stamp", "Postage stamp"], ["envelope", "Envelope (long letter)"]] },
+        { k: "title", label: "Title on the envelope", type: "text", max: 80, hint: "e.g. Dear November", showIf: (v) => v.shape === "envelope" },
+        { k: "body", label: "The words", type: "textarea", req: true, max: 8000, tall: true, hint: "Line breaks are kept. In a letter, lines starting with ♬ show as the songs you were listening to." },
+        { k: "color", label: "Paper colour", type: "select", def: "cream", options: [["cream", "Cream"], ["pink", "Light pink"], ["blue", "Light blue"], ["green", "Light green"]] },
+        { k: "written_on", label: "Date on the stamp", type: "date", today: true },
+        { k: "signature", label: "Signature", type: "text", max: 80, hint: "e.g. with ♡ve, Tarry · de Muse, Anice" },
+        { k: "context", label: "Mood / context (optional)", type: "text", max: 200, hint: "Shown small & italic, exactly as you write it." },
+        { k: "published", label: "Visible", type: "check", def: true },
+      ],
+    },
     flori: {
       label: "Florilegium", table: "star_flori", reorder: true, hint: "Drag ⠿ to change the order. ♡ = shown on the front of Florilegium.",
       title: (r) => r.title,
@@ -246,11 +262,11 @@
           + (f.suggest ? `<datalist id="dl_${f.k}">${(f.options || suggestions(f.k)).map((o) => `<option value="${esc(o)}">`).join("")}</datalist>` : "");
         break;
       case "textarea":
-        input = `<textarea id="${id}" class="field" ${f.max ? `maxlength="${f.max}"` : ""}>${esc(val ?? "")}</textarea>`; break;
+        input = `<textarea id="${id}" class="field" ${f.max ? `maxlength="${f.max}"` : ""} ${f.tall ? 'style="min-height:200px"' : ""}>${esc(val ?? "")}</textarea>`; break;
       case "select":
         input = `<select id="${id}" class="field">${f.options.map(([o, t]) => `<option value="${o}" ${(val ?? f.def) === o ? "selected" : ""}>${esc(t)}</option>`).join("")}</select>`; break;
       case "date": {
-        const d = val ? new Date(val) : (f.k === "published_at" ? new Date() : null);
+        const d = val ? new Date(String(val).length === 10 ? val + "T12:00:00" : val) : (f.k === "published_at" || f.today ? new Date() : null);
         const iso = d ? new Date(d.getTime() - d.getTimezoneOffset() * 60000).toISOString().slice(0, 10) : "";
         input = `<input id="${id}" class="field" type="date" value="${iso}">`; break;
       }
