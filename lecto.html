@@ -21,6 +21,98 @@
       #posts .card{margin:0}
       #posts .card.feat{grid-column:1/-1}
     }
+
+    /* ===== tabs: Scrip(Ta) | Verbum Diei ===== */
+    .ltabs{display:flex;gap:28px;border-bottom:1px solid var(--line);margin:0 0 16px}
+    .ltabs button{font-family:var(--serif-display);font-weight:700;font-size:21px;padding:0 0 8px;color:var(--muted);border-bottom:2px solid transparent;margin-bottom:-1px}
+    .ltabs button i{font-weight:400;color:var(--mauve)}
+    .ltabs button[aria-selected="true"]{color:var(--ink);border-bottom-color:var(--mauve)}
+
+    /* ===== Verbum Diei ===== */
+    .vlede{font-family:var(--hand);font-size:25px;color:var(--mauve);margin:2px 0 6px}
+    .vwall{position:relative;isolation:isolate;padding:34px 6px 50px}
+    .vwall::before{content:"";position:absolute;inset:-6px -14px;z-index:-1;opacity:.3;pointer-events:none;
+      background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='140' height='180'><g fill='none' stroke-width='2' stroke-linecap='round'><path d='M15 0q8 22.5 0 45t0 45t0 45t0 45' stroke='%23D9A5AE'/><path d='M50 0q-8 22.5 0 45t0 45t0 45t0 45' stroke='%23B07A86'/><path d='M85 0q8 22.5 0 45t0 45t0 45t0 45' stroke='%23A9B89A'/><path d='M120 0q-8 22.5 0 45t0 45t0 45t0 45' stroke='%23A9BED3'/></g><g fill='%23B07A86'><circle cx='33' cy='28' r='2'/><circle cx='103' cy='118' r='2'/></g><g fill='%23A9BED3'><circle cx='68' cy='152' r='2.2'/><circle cx='133' cy='64' r='1.8'/></g><g fill='%23A9B89A'><circle cx='32' cy='104' r='1.8'/></g><path d='M68 50l2.4 4.9 5.4.8-3.9 3.8.9 5.4-4.8-2.5-4.8 2.5.9-5.4-3.9-3.8 5.4-.8z' fill='%23D9A5AE'/><path d='M104 160l1.6 3.2 3.5.5-2.5 2.5.6 3.5-3.2-1.7-3.2 1.7.6-3.5-2.5-2.5 3.5-.5z' fill='%23B07A86'/></svg>") 0 0/140px 180px;
+      -webkit-mask-image:radial-gradient(ellipse at center,#000 45%,transparent 78%);mask-image:radial-gradient(ellipse at center,#000 45%,transparent 78%)}
+    .notes{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:46px 30px;align-items:start;justify-items:center}
+    .note{position:relative;width:100%;max-width:310px;transform:rotate(var(--r,0deg));transition:transform .3s ease}
+    @media (hover:hover){.note:hover{transform:rotate(0) translateY(-3px)}}
+    .nb{position:relative;background:var(--nc);color:var(--ink);padding:42px 24px 22px;
+      box-shadow:0 1px 2px rgba(58,42,46,.10),0 12px 24px -12px rgba(58,42,46,.34)}
+    .note .txt{font-family:var(--hand);font-size:26px;line-height:1.2;padding-right:46px}
+    .note .txt span{display:block}
+    .note .ctx{font-family:var(--serif);font-style:italic;font-size:12.5px;line-height:1.45;color:var(--muted);margin-top:14px}
+    .note .sign{display:block;font-family:var(--hand);font-size:21px;color:var(--mauve);margin-top:10px;text-align:right}
+    .dstamp{position:absolute;top:12px;right:12px;z-index:4;width:54px;height:54px;border:1.5px solid var(--mauve);border-radius:50%;
+      display:flex;flex-direction:column;align-items:center;justify-content:center;color:var(--mauve);transform:rotate(12deg);
+      font-family:var(--sans);font-size:8.5px;line-height:1.2;letter-spacing:.12em;text-transform:uppercase;text-align:center}
+    .dstamp b{font-family:var(--serif-display);font-size:17px;letter-spacing:0}
+    /* washi tape */
+    .washi{position:absolute;top:-12px;left:50%;width:104px;height:24px;z-index:5;opacity:.9;transform:translateX(-50%) rotate(var(--wr,-3deg));
+      clip-path:polygon(3% 0,97% 0,100% 20%,97% 40%,100% 60%,97% 80%,100% 100%,3% 100%,0 80%,3% 60%,0 40%,3% 20%)}
+    .washi.w0{background:repeating-linear-gradient(45deg,#E4C1C7 0 7px,#F4E2E4 7px 14px)}
+    .washi.w1{background:radial-gradient(circle,#C99AA4 1.7px,transparent 2.2px) 0 0/10px 10px,#F5E6E8}
+    .washi.w2{background:url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' width='16' height='16'><path d='M8 3l1.3 2.7 3 .4-2.2 2.1.5 3-2.6-1.4-2.6 1.4.5-3-2.2-2.1 3-.4z' fill='%23C99AA4'/></svg>") 0 4px/16px 16px,#E6EDF3}
+    .washi.w3{background:repeating-linear-gradient(90deg,#C3D5E2 0 8px,#F1D8DD 8px 16px)}
+    /* shapes */
+    .s-circle .nb{border-radius:50%;aspect-ratio:1;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center;padding:40px 34px}
+    .s-circle .txt{font-size:23px;padding:0}
+    .s-circle .sign{text-align:center}
+    .s-circle .dstamp,.s-star .dstamp{top:-6px;right:2px;background:rgba(251,244,243,.75)}
+    .s-star{filter:drop-shadow(0 1px 1px rgba(58,42,46,.12)) drop-shadow(0 10px 10px rgba(58,42,46,.18))}
+    .s-star .nb{box-shadow:none;aspect-ratio:1;display:flex;align-items:center;justify-content:center;text-align:center;padding:24% 24% 20%;
+      clip-path:polygon(50% 2%,63% 33%,97% 36%,71% 59%,79% 94%,50% 77%,21% 94%,29% 59%,3% 36%,37% 33%)}
+    .s-star .txt{font-size:22px;padding:0;line-height:1.1}
+    .s-star .washi{top:8px}
+    .s-star .after{text-align:center;margin-top:4px}
+    .s-star .after .sign{text-align:center}
+    .s-stamp{filter:drop-shadow(0 1px 1px rgba(58,42,46,.12)) drop-shadow(0 10px 10px rgba(58,42,46,.18))}
+    .s-stamp .nb{--h:6px;box-shadow:none;padding:calc(2*var(--h));
+      -webkit-mask:radial-gradient(var(--h) at var(--h) var(--h),#0000 97%,#000) calc(-1*var(--h)) calc(-1*var(--h))/calc(3*var(--h)) calc(3*var(--h)) round,linear-gradient(#000 0 0) content-box;
+      mask:radial-gradient(var(--h) at var(--h) var(--h),#0000 97%,#000) calc(-1*var(--h)) calc(-1*var(--h))/calc(3*var(--h)) calc(3*var(--h)) round,linear-gradient(#000 0 0) content-box}
+    .s-stamp .nb::after{content:"";position:absolute;inset:calc(2*var(--h) + 6px);border:1px dashed rgba(176,122,134,.45);pointer-events:none}
+    .s-stamp .nb>*{margin-left:16px;margin-right:16px}
+    .s-stamp .txt{margin-top:28px}
+    .s-stamp .sign{margin-bottom:12px}
+    .s-stamp .dstamp{top:24px;right:24px}
+    /* envelope */
+    .s-envelope{cursor:pointer}
+    .env{position:relative;aspect-ratio:3/2;background:var(--nc);overflow:hidden;
+      box-shadow:0 1px 2px rgba(58,42,46,.10),0 12px 24px -12px rgba(58,42,46,.34)}
+    .env::before{content:"";position:absolute;inset:0;
+      background:linear-gradient(to top right,transparent calc(50% - .7px),rgba(58,42,46,.10) 50%,transparent calc(50% + .7px)) left bottom/50% 100% no-repeat,
+                 linear-gradient(to top left,transparent calc(50% - .7px),rgba(58,42,46,.10) 50%,transparent calc(50% + .7px)) right bottom/50% 100% no-repeat}
+    .env .flap{position:absolute;inset:0 0 auto 0;height:58%;background:var(--nc);filter:brightness(.965);clip-path:polygon(0 0,100% 0,50% 100%);
+      box-shadow:inset 0 -1px 0 rgba(58,42,46,.08)}
+    .env .ttl{position:absolute;left:0;right:0;bottom:16%;text-align:center;font-family:var(--hand);font-size:32px;color:var(--ink);padding:0 16px}
+    .env .open{position:absolute;left:0;right:0;bottom:6%;text-align:center;font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+    .s-envelope:focus-visible{outline:2px solid var(--mauve);outline-offset:6px}
+    /* opened letter */
+    .vmodal{position:fixed;inset:0;z-index:80;display:flex;align-items:center;justify-content:center;padding:16px}
+    .vmodal[hidden]{display:none}
+    .vm-back{position:absolute;inset:0;background:rgba(58,42,46,.42)}
+    .vm-box{position:relative;width:min(560px,100%);max-height:calc(100vh - 32px);overflow-y:auto;perspective:900px;padding:18px 4px 8px}
+    .vm-x{position:sticky;top:0;float:right;z-index:6;width:36px;height:36px;border-radius:50%;background:var(--paper);color:var(--ink);font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
+    .vm-env{position:absolute;left:50%;top:60px;width:min(340px,86%);aspect-ratio:3/2;transform:translateX(-50%);background:var(--nc);pointer-events:none;
+      box-shadow:0 14px 30px -12px rgba(0,0,0,.35);animation:envOut .45s ease .75s forwards}
+    .vm-env .vm-flap{position:absolute;inset:0 0 auto 0;height:58%;background:var(--nc);filter:brightness(.95);clip-path:polygon(0 0,100% 0,50% 100%);
+      transform-origin:top;animation:flapOpen .6s ease .1s forwards}
+    @keyframes flapOpen{to{transform:rotateX(180deg)}}
+    @keyframes envOut{to{opacity:0;transform:translateX(-50%) translateY(40px) scale(.94)}}
+    .vm-letter{position:relative;background:#FBF7EF;color:var(--ink);padding:44px 30px 30px;margin:24px 8px 8px;opacity:0;animation:letterUp .55s ease .9s forwards;
+      box-shadow:0 1px 2px rgba(58,42,46,.10),0 16px 30px -14px rgba(58,42,46,.4)}
+    @keyframes letterUp{from{opacity:0;transform:translateY(46px)}to{opacity:1;transform:none}}
+    .vm-letter h2{font-family:var(--hand);font-weight:600;font-size:36px;line-height:1.1;margin-bottom:14px}
+    .vm-letter .body{font-family:var(--hand);font-size:24px;line-height:1.35}
+    .vm-letter .ln{display:block;margin-bottom:.3em}
+    .vm-letter .gap{display:block;height:.55em}
+    .vm-letter .songs{font-family:var(--serif);font-style:italic;font-size:14px;line-height:1.5;color:var(--muted);margin-top:18px}
+    .vm-letter .songs span{display:block}
+    .vm-letter .ctx{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--muted);margin-top:18px}
+    .vm-letter .sign{display:block;font-family:var(--hand);font-size:25px;color:var(--mauve);margin-top:10px;text-align:right}
+    .vm-letter .dstamp{top:14px;right:16px}
+    .vm-letter h2{padding-right:56px}
+    @media (prefers-reduced-motion:reduce){.note{transition:none}.vm-env{display:none}.vm-letter{animation:none;opacity:1}}
   </style>
 </head>
 <body>
@@ -32,9 +124,25 @@
       <div><h1 class="h1">lect<i>(o)</i></h1><p class="lede">Things I learn, written slowly.</p></div>
       <span class="scribble circle" style="margin-top:14px">same curiosity,<br>new questions</span>
     </div>
-    <div class="chips" id="cats"></div>
-    <div id="posts"><div class="empty">Loading…</div></div>
+    <div class="ltabs" role="tablist">
+      <button role="tab" aria-selected="true" data-v="scripta">Scrip<i>(Ta)</i></button>
+      <button role="tab" aria-selected="false" data-v="verbum">Verbum Diei</button>
+    </div>
+    <section id="scriptaView">
+      <div class="chips" id="cats"></div>
+      <div id="posts"><div class="empty">Loading…</div></div>
+    </section>
+    <section id="verbumView" hidden>
+      <p class="vlede">Little thoughts, left unpolished.</p>
+      <div class="vwall"><div class="notes" id="notes"><div class="empty">Loading…</div></div></div>
+    </section>
   </main>
+
+  <!-- Verbum Diei: opened envelope -->
+  <div class="vmodal" id="vmodal" hidden role="dialog" aria-modal="true" aria-label="Letter">
+    <div class="vm-back" data-close></div>
+    <div class="vm-box" id="vmBox"></div>
+  </div>
 
   <!-- Article view -->
   <main class="page" id="postView" hidden>
@@ -107,6 +215,95 @@
       }).join("");
     }
     renderCats(); renderPosts();
+
+    // ---------- Scrip(Ta) | Verbum Diei ----------
+    const { hash } = SL;
+    const COLORS = { cream: "#F8F1E3", pink: "#F7E3E5", blue: "#E3ECF3", green: "#E7EEDD" };
+    const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+    let verbum = null;
+    const $ = (id) => document.getElementById(id);
+
+    const dateOf = (x) => x.written_on ? new Date(x.written_on + "T12:00:00") : new Date(x.created_at || Date.now());
+    const stampHtml = (x) => { const d = dateOf(x); return `<span class="dstamp"><b>${String(d.getDate()).padStart(2, "0")}</b>${MON[d.getMonth()]}<br>${d.getFullYear()}</span>`; };
+    const washiHtml = (x) => `<span class="washi w${Math.floor(hash(x.id + "w") * 4) % 4}" style="--wr:${(hash(x.id + "t") * 8 - 4).toFixed(1)}deg"></span>`;
+    const tail = (x) => `${x.context ? `<p class="ctx">${esc(x.context)}</p>` : ""}${x.signature ? `<span class="sign">${esc(x.signature)}</span>` : ""}`;
+    // envelope: title from the field, or the first "Dear …" line of the text
+    const splitLetter = (x) => {
+      const lines = String(x.body || "").replace(/\r/g, "").split("\n").map((l) => l.trim());
+      while (lines.length && !lines[0]) lines.shift();
+      let title = (x.title || "").trim();
+      if (!title && lines.length && (/^#+\s*/.test(lines[0]) || /^dear\s/i.test(lines[0]))) title = lines.shift().replace(/^#+\s*/, "");
+      else if (title && lines.length && lines[0].replace(/^#+\s*/, "").toLowerCase() === title.toLowerCase()) lines.shift();
+      return { title: title || "a letter", lines };
+    };
+
+    function noteHtml(x) {
+      const shape = x.shape || "square";
+      const style = `--nc:${COLORS[x.color] || COLORS.cream};--r:${(hash(x.id) * 4 - 2).toFixed(1)}deg`;
+      if (shape === "envelope") {
+        const { title } = splitLetter(x);
+        return `<article class="note s-envelope" style="${style}" tabindex="0" role="button" aria-label="Open letter: ${esc(title)}" data-open="${esc(x.id)}">
+          ${washiHtml(x)}<div class="env"><div class="flap"></div>${stampHtml(x)}<div class="ttl">${esc(title)}</div><div class="open">tap to open</div></div></article>`;
+      }
+      const lines = String(x.body || "").replace(/\r/g, "").split("\n").map((l) => l.trim()).filter(Boolean);
+      const txt = `<div class="txt">${lines.map((l) => `<span>${esc(l)}</span>`).join("")}</div>`;
+      if (shape === "star") return `<article class="note s-star" style="${style}">${washiHtml(x)}${stampHtml(x)}<div class="nb">${txt}</div><div class="after">${tail(x)}</div></article>`;
+      return `<article class="note s-${esc(shape)}" style="${style}">${washiHtml(x)}${stampHtml(x)}<div class="nb">${txt}${tail(x)}</div></article>`;
+    }
+
+    function openLetter(x) {
+      const { title, lines } = splitLetter(x);
+      const songAt = lines.findIndex((l) => /^(♬|♪|♫|🎵|🎶|listening to|sambil mendengarkan)/i.test(l));
+      const main = songAt < 0 ? lines : lines.slice(0, songAt);
+      const songs = songAt < 0 ? [] : lines.slice(songAt).filter(Boolean);
+      while (main.length && !main[main.length - 1]) main.pop();
+      const nc = COLORS[x.color] || COLORS.cream;
+      $("vmBox").innerHTML = `<button class="vm-x" data-close aria-label="Close">×</button>
+        <div class="vm-env" style="--nc:${nc}"><div class="vm-flap"></div></div>
+        <article class="vm-letter">${washiHtml(x)}${stampHtml(x)}
+          <h2>${esc(title)}</h2>
+          <div class="body">${main.map((l) => l ? `<span class="ln">${esc(l.replace(/^#+\s*/, ""))}</span>` : `<span class="gap"></span>`).join("")}</div>
+          ${songs.length ? `<p class="songs">${songs.map((l) => `<span>${esc(l)}</span>`).join("")}</p>` : ""}
+          ${tail(x)}
+        </article>`;
+      $("vmodal").hidden = false;
+      document.body.style.overflow = "hidden";
+      $("vmBox").scrollTop = 0;
+      $("vmBox").querySelector(".vm-x").focus();
+    }
+    function closeLetter() {
+      if ($("vmodal").hidden) return;
+      $("vmodal").hidden = true; $("vmBox").innerHTML = "";
+      document.body.style.overflow = "";
+      if (closeLetter.from) closeLetter.from.focus();
+    }
+    $("vmodal").addEventListener("click", (e) => { if (e.target.closest("[data-close]")) closeLetter(); });
+    document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLetter(); });
+
+    async function loadVerbum() {
+      if (verbum) return;
+      const { data, error } = await sb.from("star_verbum").select("*").eq("published", true)
+        .order("written_on", { ascending: false, nullsFirst: false }).order("created_at", { ascending: false });
+      if (error) { $("notes").innerHTML = `<div class="empty">Couldn't load right now.</div>`; return; }
+      verbum = data || [];
+      $("notes").innerHTML = verbum.length ? verbum.map(noteHtml).join("")
+        : `<div class="empty">No little thoughts yet.<br><span class="scribble">soon ✧</span></div>`;
+      $("notes").querySelectorAll("[data-open]").forEach((el) => {
+        const go = () => { closeLetter.from = el; openLetter(verbum.find((x) => x.id === el.dataset.open)); };
+        el.onclick = go;
+        el.onkeydown = (e) => { if (e.key === "Enter" || e.key === " ") { e.preventDefault(); go(); } };
+      });
+    }
+
+    function setView(v) {
+      document.querySelectorAll(".ltabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.v === v)));
+      $("scriptaView").hidden = v !== "scripta";
+      $("verbumView").hidden = v !== "verbum";
+      history.replaceState(null, "", v === "verbum" ? "#verbum" : location.pathname + location.search);
+      if (v === "verbum") loadVerbum();
+    }
+    document.querySelectorAll(".ltabs button").forEach((b) => b.onclick = () => setView(b.dataset.v));
+    if (location.hash === "#verbum") setView("verbum");
   })();
   </script>
 </body>
