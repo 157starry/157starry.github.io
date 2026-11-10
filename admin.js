@@ -51,8 +51,10 @@
         { k: "title", label: "The quote, book title, or article title", type: "textarea", req: true, max: 600 },
         { k: "author", label: "Author / source", type: "text", max: 120 },
         { k: "genre", label: "Genre", type: "text", max: 40, suggest: true, upper: true, options: ["PHILOSOPHY", "PSYCHOLOGY", "SELF-GROWTH", "SCIENCE", "HISTORY", "SOCIETY", "FICTION", "ROMANCE"], hint: "Up to 2, separated by commas: PHILOSOPHY, PSYCHOLOGY, SELF-GROWTH, SCIENCE, HISTORY, SOCIETY, FICTION, ROMANCE" },
-        { k: "note", label: "Your little note (shows in handwriting)", type: "text", max: 200 },
-        { k: "url", label: "Link", type: "url", hint: "Needed for reads. Optional for books.", showIf: (v) => v.kind !== "quote" },
+        { k: "note", label: "Your little note (shows in handwriting)", type: "text", max: 300,
+          labelIf: (v) => v.kind === "quote" ? "Source / edition (small footnote under the quote)" : "Your little note (shows in handwriting)" },
+        { k: "url", label: "Link", type: "url", hint: "Needed for reads. Optional for books.",
+          labelIf: (v) => v.kind === "quote" ? "Link to the source (optional, makes the footnote clickable)" : "Link" },
         { k: "image_url", label: "Book cover (optional)", type: "image", folder: "covers", showIf: (v) => v.kind === "book" },
         { k: "featured", label: "♡ Recommend: show this book on the front (All tab)", type: "check", def: false, showIf: (v) => v.kind === "book" },
         { k: "published", label: "Visible", type: "check", def: true },
@@ -329,6 +331,7 @@
   function applyShowIf() {
     const v = currentValues();
     SECTIONS[cur].fields.forEach((f) => {
+      if (f.labelIf) { const lb = document.querySelector(`.fw[data-k="${f.k}"] label.lb`); if (lb) lb.textContent = f.labelIf(v) + (f.req ? " *" : ""); }
       if (!f.showIf) return;
       const w = document.querySelector(`.fw[data-k="${f.k}"]`);
       if (w) w.hidden = !f.showIf(v);
