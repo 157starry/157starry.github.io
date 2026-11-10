@@ -56,8 +56,13 @@
     const genHtml = (x) => genresOf(x).length ? `<span class="gen">${esc(genresOf(x).join(" · "))}</span>` : "";
     const favColor = (u) => { const p = platform(u); return p === "Substack" ? "#e07a3c" : p === "Medium" ? "#2f2f2f" : "#B07A86"; };
 
-    const quoteHtml = (x) => `<div class="card quote">“${esc(x.title)}”
-      ${x.author ? `<small>${esc(x.author)}</small>` : ""}${genHtml(x)}${x.note ? `<span class="why">${esc(x.note)}</span>` : ""}</div>`;
+    // quotes: line breaks kept; the note is the source/edition, shown as a footnote (a link if one is given)
+    const srcHtml = (x) => {
+      const u = safeUrl(x.url);
+      if (u) return `<a class="src" href="${esc(u)}" target="_blank" rel="noopener">${esc(x.note || "source")} ↗</a>`;
+      return x.note ? `<span class="src">${esc(x.note)}</span>` : "";
+    };
+    const quoteHtml = (x) => `<div class="card quote">“<span class="qt">${esc(String(x.title || "").trim())}</span>”${x.author ? `<small>${esc(x.author)}</small>` : ""}${genHtml(x)}${srcHtml(x)}</div>`;
     const quotesHtml = (list) => list.map(quoteHtml).join("");
     const bookHtml = (x) => {
       const img = safeUrl(x.image_url);
