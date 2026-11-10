@@ -70,13 +70,12 @@
 
     // tiny stars: one per published entry, scattered around its star
     if (!sb) return;
-    const tables = { lecto: "star_posts", florilegium: "star_flori", nocturnes: "star_songs", lieux: "star_places", lab: "star_projects" };
+    const tables = { lecto: ["star_posts", "star_verbum"], florilegium: "star_flori", nocturnes: "star_songs", lieux: "star_places", lab: "star_projects" };
     const sky = document.getElementById("sky");
     stars.forEach(async (s) => {
-      const t = tables[s.key];
-      if (!t) return;
-      const { data } = await sb.from(t).select("id").limit(14);
-      (data || []).forEach((row) => {
+      if (!tables[s.key]) return;
+      const res = await Promise.all([].concat(tables[s.key]).map((t) => sb.from(t).select("id").limit(14)));
+      res.flatMap((r) => r.data || []).slice(0, 14).forEach((row) => {
         const a = hash(row.id) * Math.PI * 2;
         const r = 7 + hash(row.id + "r") * 7; // % of width
         const el = document.createElement("span");
