@@ -188,7 +188,7 @@
     .pf .ln{display:block}.pf .gap{display:block;height:.6em}
     .pf .ctx{font-family:var(--serif);font-style:italic;font-size:13px;color:var(--muted);margin-top:16px}
     .pf .sign{display:block;font-family:var(--hand);font-size:24px;color:var(--mauve);margin-top:8px;text-align:right}
-    .pf .pn{position:absolute;bottom:14px;left:0;right:0;text-align:center;font-family:var(--serif);font-style:italic;font-size:12px;color:var(--muted)}
+    .leaf .pn{position:absolute;z-index:2;-webkit-backface-visibility:hidden;backface-visibility:hidden;bottom:14px;left:0;right:0;text-align:center;font-family:var(--serif);font-style:italic;font-size:12px;color:var(--muted)}
     .bm-nav{display:flex;align-items:center;gap:16px}
     .bm-nav button{width:40px;height:40px;border-radius:50%;background:var(--paper);color:var(--ink);font-size:20px;box-shadow:0 2px 8px rgba(0,0,0,.15)}
     .bm-nav button:disabled{opacity:.35}
@@ -313,7 +313,7 @@
 
     // ---------- Scrip(Ta) | Verbum Diei ----------
     const { hash } = SL;
-    const COLORS = { cream: "#F8F1E3", pink: "#F7E3E5", blue: "#E3ECF3", green: "#E7EEDD" };
+    const COLORS = { cream: "#F8F1E3", pink: "#EDD3D9", lilac: "#E6E1F1", blue: "#E3ECF3", green: "#E7EEDD" };
     const MON = ["Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
     let verbum = null;
     const $ = (id) => document.getElementById(id);
@@ -327,7 +327,7 @@
     const bodyLines = (t) => String(t || "").replace(/\r/g, "").split("\n").map((l) => l.trim());
     const linesHtml = (ls) => { const a = ls.slice(); while (a.length && !a[0]) a.shift(); while (a.length && !a[a.length - 1]) a.pop();
       return a.map((l) => l ? `<span class="ln">${esc(l)}</span>` : `<span class="gap"></span>`).join(""); };
-    const pagesOf = (x) => String(x.body || "").replace(/\r/g, "").split(/\n\s*-{3,}\s*\n/).map((p) => p.trim()).filter(Boolean);
+    const pagesOf = (x) => String(x.body || "").replace(/\r/g, "").split(/\n[ \t]*(?:-{3,}|[—–][—–-]*|-+[—–][—–-]*)[ \t]*\n/).map((p) => p.trim()).filter(Boolean);
     // envelope: title from the field, or the first "Dear …" line of the text
     const splitLetter = (x) => {
       const lines = String(x.body || "").replace(/\r/g, "").split("\n").map((l) => l.trim());
@@ -404,9 +404,14 @@
       const ps = pagesOf(x), t = (x.title || "").trim();
       pages = ps.map((p, i) => `${i === 0 && t ? `<h2>${esc(t)}</h2>` : ""}<div class="body">${linesHtml(bodyLines(p))}</div>${i === ps.length - 1 ? tail(x) : ""}`);
       if (!pages.length) pages = [`${t ? `<h2>${esc(t)}</h2>` : ""}${tail(x)}`];
-      $("book").innerHTML = pages.map((p, i) => `<div class="leaf" style="z-index:${pages.length - i}">${i === 0 ? washiHtml(x) : ""}<div class="pf"><div class="pgin">${p}</div><span class="pn">${i + 1} / ${pages.length}</span></div><div class="pb"></div></div>`).join("");
+      $("book").innerHTML = pages.map((p, i) => `<div class="leaf" style="z-index:${pages.length - i}">${i === 0 ? washiHtml(x) : ""}<div class="pf"><div class="pgin">${p}</div></div><span class="pn">${i + 1} / ${pages.length}</span><div class="pb"></div></div>`).join("");
       $("bDots").innerHTML = pages.map(() => "<i></i>").join("");
       openBook.from = from; turn(0);
+      $("bm").hidden = false;
+      $("book").querySelectorAll(".pf").forEach((pf) => {
+        const body = pf.querySelector(".body"); if (!body) return;
+        let fs = 24; while (pf.scrollHeight > pf.clientHeight + 1 && fs > 16) { fs -= 1; body.style.fontSize = fs + "px"; }
+      });
       $("bm").hidden = false; document.body.style.overflow = "hidden";
       $("bm").querySelector(".bm-x").focus();
     }
