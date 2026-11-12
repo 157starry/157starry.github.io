@@ -149,6 +149,8 @@
     .s-flip .face .nb{flex:1}
     .s-flip .fb{transform:rotateY(180deg)}
     .s-flip .fb .nb{background-color:#FBF7EF}
+    .s-flip .face *{-webkit-backface-visibility:hidden;backface-visibility:hidden}
+    .s-flip .fb .txt{padding-right:0}
     .s-flip .front .nb{min-height:190px;display:flex;flex-direction:column;justify-content:center;align-items:center;text-align:center}
     .s-flip .front .nb::after{content:"";position:absolute;inset:10px;border:1px dashed rgba(176,122,134,.45);pointer-events:none}
     .s-flip .word{font-family:var(--hand);font-weight:600;font-size:50px;line-height:1;padding:0 10px}
@@ -172,7 +174,7 @@
     .leaf.turned{transform:rotateY(-178deg);opacity:0;transition:transform .75s cubic-bezier(.3,.7,.2,1),opacity 0s linear .72s}
     .leaf .pf{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;background-color:#FBF7EF;border-radius:2px 8px 8px 2px;
       padding:40px 30px 44px 38px;overflow:auto;box-shadow:inset 14px 0 18px -14px rgba(58,42,46,.35),0 18px 34px -16px rgba(0,0,0,.45);
-      background-image:radial-gradient(circle,rgba(176,122,134,.26) 1px,transparent 1.4px);background-size:13px 13px;background-position:6px 6px}
+      }
     .leaf .pb{position:absolute;inset:0;-webkit-backface-visibility:hidden;backface-visibility:hidden;transform:rotateY(180deg);background:#F1EADF;border-radius:8px 2px 2px 8px}
     .pf h2{font-family:var(--hand);font-weight:600;font-size:36px;line-height:1.1;margin-bottom:18px}
     .pf .body{font-family:var(--hand);font-size:24px;line-height:1.4}
@@ -341,7 +343,7 @@
       if (shape === "flip") {
         return `<article class="note s-flip" style="${style}" tabindex="0" role="button" aria-pressed="false" aria-label="Flip card: ${title}" data-flip>
           <div class="fi"><div class="face front">${washiHtml(x)}${stampHtml(x)}<div class="nb"><div class="word">${title || "✧"}</div><div class="hintx">tap to flip</div></div></div>
-          <div class="face fb" aria-hidden="true"><div class="nb dotty"><div class="txt">${bodyLines(x.body).filter(Boolean).map((l) => `<span>${esc(l)}</span>`).join("")}</div>${tail(x)}</div></div></div></article>`;
+          <div class="face fb" aria-hidden="true">${washiHtml({ id: x.id + "b" })}<div class="nb"><div class="txt">${bodyLines(x.body).filter(Boolean).map((l) => `<span>${esc(l)}</span>`).join("")}</div>${tail(x)}</div></div></div></article>`;
       }
       if (shape === "booklet") {
         const n = pagesOf(x).length;
