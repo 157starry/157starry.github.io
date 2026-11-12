@@ -427,7 +427,7 @@
 
     // ---------- columns: keep date order (newest top-left) ----------
     function layout(force) {
-      const box = $("notes"), items = [...box.querySelectorAll(".note")];
+      const box = $("notes"), items = [...box.querySelectorAll(".note")].sort((a, b) => a.dataset.i - b.dataset.i);
       if (!items.length || $("verbumView").hidden) return;
       const n = Math.max(1, Math.floor(box.clientWidth / 280));
       if (!force && box.dataset.n == n) return;
@@ -445,7 +445,7 @@
         .order("written_on", { ascending: false, nullsFirst: false }).order("created_at", { ascending: false });
       if (error) { $("notes").innerHTML = `<div class="empty">Couldn't load right now.</div>`; return; }
       verbum = data || [];
-      $("notes").innerHTML = verbum.length ? verbum.map(noteHtml).join("")
+      $("notes").innerHTML = verbum.length ? verbum.map((x, i) => noteHtml(x).replace("<article ", `<article data-i="${i}" `)).join("")
         : `<div class="empty">No little thoughts yet.<br><span class="scribble">soon ✧</span></div>`;
       $("notes").querySelectorAll("[data-flip]").forEach((el) => {
         const t = () => { const on = el.classList.toggle("flipped"); el.setAttribute("aria-pressed", String(on));
