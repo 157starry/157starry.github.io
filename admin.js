@@ -36,7 +36,7 @@
         { k: "body", label: "The words", type: "textarea", req: true, max: 8000, tall: true, hint: "Line breaks are kept. In a letter, lines starting with ♬ show as the songs you were listening to.",
           labelIf: (v) => ({ circle: "The words (about 3–12 words fit best)", star: "The words (3–8 words fit best)", cloud: "The words (about 3–10 words fit best)", heart: "The words (about 3–8 words fit best)",
             flip: "The words on the back", booklet: "Pages: put a line with only --- between pages" }[v.shape] || "The words") },
-        { k: "color", label: "Paper colour", type: "select", def: "cream", options: [["cream", "Cream"], ["pink", "Light pink"], ["blue", "Light blue"], ["green", "Light green"]] },
+        { k: "color", label: "Paper colour", type: "select", def: "cream", options: [["cream", "Cream"], ["pink", "Dusty rose"], ["lilac", "Lilac"], ["blue", "Light blue"], ["green", "Light green"]] },
         { k: "written_on", label: "Date on the stamp", type: "date", today: true },
         { k: "signature", label: "Signature", type: "text", max: 80, hint: "e.g. with ♡ve, Tarry · de Muse, Anice" },
         { k: "context", label: "Mood / context (optional)", type: "text", max: 200, hint: "Shown small & italic, exactly as you write it." },
