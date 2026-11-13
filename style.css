@@ -31,16 +31,19 @@ img { max-width: 100%; display: block; }
 
 /* ---------------- Home: night sky ---------------- */
 body.sky-page {
-  background: radial-gradient(ellipse at 50% 0%, #2c3354 0%, #161a2e 55%, #0e1120 100%) fixed;
+  background: radial-gradient(ellipse at 50% 0%, var(--sky-a, #2c3354) 0%, var(--sky-b, #161a2e) 55%, var(--sky-c, #0e1120) 100%) fixed;
   color: #F5E3E2; font-family: var(--sans); overflow-x: hidden;
 }
 .stars-bg { position: fixed; inset: 0; pointer-events: none; }
 .stars-bg i { position: absolute; border-radius: 50%; background: #fff; animation: twinkle 4s ease-in-out infinite; }
 @keyframes twinkle { 50% { opacity: .15; } }
-.sky { position: relative; width: min(100vw, 480px); margin: 0 auto; min-height: 100vh; aspect-ratio: 360 / 780; max-height: 1040px; }
+.sky { position: relative; z-index: 1; width: min(100vw, 480px); margin: 0 auto; min-height: 100vh; aspect-ratio: 360 / 780; max-height: 1040px; }
 .sky-head { position: absolute; top: 5.5%; width: 100%; text-align: center; padding: 0 16px; z-index: 3; }
-.sky-title { font-family: "Bagel Fat One", var(--sans); font-weight: 400; font-size: clamp(34px, 11vw, 46px); color: #F5E3E2; letter-spacing: .5px; }
-.sky-sub { font-size: 13px; color: #c9c3d8; margin-top: 8px; font-style: italic; }
+.sky-title { font-family: var(--serif-display); font-weight: 900; font-size: clamp(38px, 12vw, 50px); color: #F6E6E8; letter-spacing: -.5px; line-height: 1; }
+.sky-title .acc { font-style: italic; font-weight: 400; color: #d9a7b4; letter-spacing: 0; }
+.sky-sub { font-family: var(--serif-display); font-size: 14px; color: #d3cce0; margin-top: 10px; font-style: italic; }
+.sky-sign { font-family: var(--hand); font-size: 22px; color: #c9a3b2; margin: 6px 0 0; }
+.sky-sign a { color: inherit; text-decoration: none; border-bottom: 1px dotted currentColor; }
 .sky svg { position: absolute; inset: 0; width: 100%; height: 100%; z-index: 1; }
 .star { position: absolute; transform: translate(-50%, -50%); text-align: center; text-decoration: none; z-index: 3; padding: 6px; }
 .star .s { display: inline-block; font-size: 28px; filter: drop-shadow(0 0 8px rgba(245,227,226,.8)); transition: transform .3s; }
@@ -201,3 +204,37 @@ body.dusk .chip[aria-pressed="true"] { background: #F6E9E9; color: #3b2c45; bord
 
 /* wide pages on desktop: bigger titles */
 @media (min-width: 900px) { .page.wide .h1 { font-size: clamp(64px, 6.2vw, 92px); } }
+
+/* ---------------- Home: living sky ---------------- */
+.sky-hz { position: fixed; left: 0; right: 0; bottom: 0; height: 45vh; pointer-events: none; background: linear-gradient(to top, var(--sky-hz, transparent), transparent); transition: background 1.2s; }
+.wx { position: fixed; inset: 0; pointer-events: none; opacity: 0; transition: opacity 1.5s; }
+.wx-clouds i { position: absolute; left: 0; border-radius: 50%; background: radial-gradient(closest-side, rgba(190,190,215,.5), rgba(190,190,215,0)); filter: blur(10px); animation: wx-drift linear infinite; }
+@keyframes wx-drift { from { transform: translateX(-35vw); } to { transform: translateX(135vw); } }
+.wx-rain { background-image: repeating-linear-gradient(105deg, rgba(215,220,255,0) 0 22px, rgba(215,220,255,.16) 22px 23px, rgba(215,220,255,0) 23px 52px); background-size: 300px 300px; animation: wx-rain .6s linear infinite; }
+@keyframes wx-rain { from { background-position: 0 0; } to { background-position: -60px 300px; } }
+.wx-dim { background: #090a18; }
+body[data-wx="cloudy"] .wx-clouds { opacity: .75; }
+body[data-wx="cloudy"] .wx-dim { opacity: .1; }
+body[data-wx="cloudy"] .stars-bg, body[data-wx="cloudy"] .birth { opacity: .5; }
+body[data-wx="rain"] .wx-clouds { opacity: .9; }
+body[data-wx="rain"] .wx-rain { opacity: 1; }
+body[data-wx="rain"] .wx-dim { opacity: .22; }
+body[data-wx="rain"] .stars-bg, body[data-wx="rain"] .birth { opacity: .3; }
+.stars-bg, .birth { transition: opacity 1.2s; }
+
+.birth { position: absolute; right: 3%; top: 16.5%; width: 68px; height: 62px; z-index: 3; background: none; border: 0; padding: 0; cursor: pointer; }
+.sky .birth svg { position: static; width: 100%; height: 100%; overflow: visible; }
+.birth .moon { filter: drop-shadow(0 0 10px rgba(240,200,130,.55)); }
+.birth .venus { filter: drop-shadow(0 0 7px rgba(245,215,150,.95)); }
+.birth .venus-core { animation: twinkle 4s ease-in-out infinite; }
+.sky svg.cancer { position: absolute; inset: auto; left: 4%; top: 72%; width: 22%; height: auto; aspect-ratio: 200 / 260; z-index: 2; cursor: pointer; overflow: visible; }
+.cancer .c { opacity: .26; transition: opacity .5s; }
+.cancer:hover .c, .cancer.on .c { opacity: .75; }
+.sky-tip { position: fixed; z-index: 30; max-width: 240px; padding: 9px 13px; border-radius: 12px; background: rgba(243,228,230,.96); color: #3a2a33; font-family: var(--serif-display); font-style: italic; font-size: 14px; line-height: 1.45; pointer-events: none; opacity: 0; transform: translateY(4px); transition: .25s; }
+.sky-tip.on { opacity: 1; transform: none; }
+.shoot { position: fixed; height: 2px; width: 140px; z-index: 5; pointer-events: none; opacity: 0; border-radius: 2px; transform-origin: 100% 50%; background: linear-gradient(90deg, rgba(255,255,255,0), rgba(255,244,236,.95)); filter: drop-shadow(0 0 6px rgba(255,235,225,.9)); }
+.whisper { position: absolute; transform: translate(-50%, -100%); z-index: 4; white-space: nowrap; font-family: var(--serif-display); font-style: italic; font-size: 12px; color: #ffe3ea; text-decoration: none; opacity: 0; pointer-events: none; transition: opacity .6s; }
+.whisper.on { opacity: 1; pointer-events: auto; }
+.star.flash .s { animation: star-flash 1.2s ease-out; }
+@keyframes star-flash { 0% { transform: scale(2); } 100% { transform: scale(1); } }
+@media (prefers-reduced-motion: reduce) { .wx-clouds i, .wx-rain, .birth .venus-core { animation: none; } }
