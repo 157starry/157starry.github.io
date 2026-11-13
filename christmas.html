@@ -1,0 +1,261 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Merry Christmas · s(T☆R)light</title>
+<meta name="description" content="a little Christmas card from s(T☆R)light">
+<meta name="theme-color" content="#07080f">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Merry Christmas ✧">
+<meta property="og:description" content="a little card from s(T☆R)light · tap Santa to open">
+<meta property="og:url" content="https://157starry.github.io/christmas.html">
+<meta property="og:image" content="https://157starry.github.io/assets/christmas-og.png">
+<meta property="og:image:width" content="1200">
+<meta property="og:image:height" content="630">
+<meta name="twitter:card" content="summary_large_image">
+<link rel="icon" type="image/png" href="assets/favicon.png">
+<link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
+<style>
+  html, body { margin: 0; height: 100%; background: #07080f; overflow: hidden; overscroll-behavior: none; }
+  body { -webkit-tap-highlight-color: transparent; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+  canvas { display: block; touch-action: manipulation; position: fixed; inset: 0; }
+  .back { position: fixed; top: calc(12px + env(safe-area-inset-top)); left: calc(16px + env(safe-area-inset-left)); z-index: 2; font: 12px Menlo, Consolas, monospace; color: #8f8aa6; text-decoration: none; letter-spacing: .03em; }
+  .back:hover { color: #f5e3e2; }
+</style>
+</head>
+<body>
+<a class="back" href="lab.html">← back to the lab</a>
+<canvas id="c" aria-label="A waving Santa made of letters. Tap him to open a Christmas greeting."></canvas>
+<script>
+(() => {
+  const COLS = 64, ROWS = 81, MID = 32;
+  const cv = document.getElementById("c"), ctx = cv.getContext("2d");
+  const reduce = matchMedia("(prefers-reduced-motion: reduce)").matches;
+  let W, H, cw, ch, ox, oy, fullCols, fullRows, FONT_N, FONT_B;
+
+  function resize() {
+    const d = devicePixelRatio || 1;
+    const vv = window.visualViewport; W = Math.round(vv ? vv.width : innerWidth); H = Math.round(vv ? vv.height : innerHeight);
+    cv.width = W * d; cv.height = H * d; cv.style.width = W + "px"; cv.style.height = H + "px";
+    ctx.setTransform(d, 0, 0, d, 0, 0);
+    ch = Math.min(H / ROWS, W / (COLS * 0.6)); cw = ch * 0.6;
+    ox = (W - COLS * cw) / 2; oy = (H - ROWS * ch) / 2;
+    fullCols = Math.ceil(W / cw) + 1; fullRows = Math.ceil(H / ch) + 1;
+    FONT_N = `${Math.round(ch * 0.95)}px Menlo, Consolas, "DejaVu Sans Mono", "Courier New", monospace`;
+    FONT_B = `bold ${Math.round(ch * 1.08)}px Menlo, Consolas, "DejaVu Sans Mono", "Courier New", monospace`;
+    ctx.font = FONT_N;
+    ctx.textAlign = "center"; ctx.textBaseline = "middle";
+    // background stars: work out once, not every frame
+    bgStars = [];
+    for (let y = 0; y < fullRows; y++) for (let x = 0; x < fullCols; x++) { const r = h(x, y, 7); if (r < .03) bgStars.push([x, y, r]); }
+  }
+  let bgStars = [];
+  addEventListener("resize", resize); if (window.visualViewport) visualViewport.addEventListener("resize", resize);
+
+  const h = (a, b, c = 0) => { const x = Math.sin(a * 127.1 + b * 311.7 + c * 74.7) * 43758.5453; return x - Math.floor(x); };
+  const pick = (arr, r) => arr[Math.floor(r * arr.length) % arr.length];
+  const glyph = (set, x, y, t, speed = .7) => pick(set, h(x, y, Math.floor(t * speed + h(x, y, 9) * 5)));
+  resize();
+  const ease = (p) => p < .5 ? 2 * p * p : 1 - Math.pow(-2 * p + 2, 2) / 2;
+  const clamp = (v) => Math.max(0, Math.min(1, v));
+  const lerp = (a, b, p) => a + (b - a) * p;
+
+  function put(x, y, c, color, a = 1) { ctx.globalAlpha = a; ctx.fillStyle = color; ctx.fillText(c, ox + (x + .5) * cw, oy + (y + .5) * ch); }
+  function putFull(x, y, c, color, a = 1) { ctx.globalAlpha = a; ctx.fillStyle = color; ctx.fillText(c, (x + .5) * cw, (y + .5) * ch); }
+  const text = (y, s, color, a = 1) => { const x0 = Math.round(MID - s.length / 2); [...s].forEach((c, i) => c !== " " && put(x0 + i, y, c, color, a)); };
+
+  // ---------- full-body Santa (original letter-art) ----------
+  // R red · W white · S skin · E eye · C cheek · N nose · M moustache · K black · G gold buckle
+  const BODY = [
+    "                 WW       ",
+    "                WWWW      ",
+    "             RRRWWW       ",
+    "          RRRRRRR         ",
+    "        RRRRRRRRR         ",
+    "       RRRRRRRRRRR        ",
+    "      WWWWWWWWWWWWWW      ",
+    "      WWWWWWWWWWWWWW      ",
+    "       SSSSSSSSSSSS       ",
+    "       SSEESSSSEESS       ",
+    "       SCSSSNNSSSCS       ",
+    "      WWSSSNNNNSSSWW      ",
+    "      WWMMMMMMMMMMWW      ",
+    "      WWWWWMMMMWWWWW      ",
+    "       WWWWWWWWWWWW       ",
+    "        WWWWWWWWWW        ",
+    "      RRRRWWWWWWRRRR      ",
+    "     RRRRRRWWWWRRRRRR     ",
+    "    RRRRRRRRWWRRRRRRR     ",
+    "   RRRRRRRRRWWRRRRRR      ",
+    "   RRR RRRRRWWRRRRR       ",
+    "   RRR RRRRRWWRRRRR       ",
+    "   RRR RRRRRWWRRRRR       ",
+    "   WWW KKKKKGGKKKKK       ",
+    "   KKK KKKKKGGKKKKK       ",
+    "       RRRRRWWRRRRR       ",
+    "      RRRRRRWWRRRRRR      ",
+    "      WWWWWWWWWWWWWW      ",
+    "       RRRR    RRRR       ",
+    "       RRRR    RRRR       ",
+    "       RRRR    RRRR       ",
+    "       WWWW    WWWW       ",
+    "      KKKKK    KKKKK      ",
+    "     KKKKKK    KKKKKK     ",
+  ];
+  // waving arm frames, placed at body col 19, rows 9–17
+  const ARM = {
+    L: ["  KK   ", "  KK   ", "  WW   ", "  RR   ", "  RR   ", " RR    ", " RR    ", "RR     ", "RR     "],
+    M: ["    KK ", "    KK ", "   WW  ", "   RR  ", "  RR   ", "  RR   ", " RR    ", "RR     ", "RR     "],
+    R: ["       ", "     KK", "     KK", "    WW ", "   RR  ", "  RR   ", " RR    ", "RR     ", "RR     "],
+  };
+  const WAVE = ["L", "M", "R", "M"];
+  const SW = 26, SH = BODY.length, POM = { dx: 17, dy: 0 };
+  const SET = { R: "#%&@WM8&", W: "@#%&*o0O8", S: "%&#@o*", C: "%&@o", N: "@&%", M: "=~-*#%", K: "#@%&", G: "@#$" };
+  const COL = { R: ["#e2434f", "#f05a5f", "#c93641"], W: ["#f6efef", "#e8e1ea", "#ffffff"], S: ["#f2c4a4", "#e9b391"], C: ["#f29bb0"], N: ["#ee8b86"],
+                M: ["#ddd6df", "#f1ebf0"], K: ["#3a3140", "#4a3f52"], G: ["#ffc45a"] };
+  const cells = (rows, ox0 = 0, oy0 = 0) => { const out = []; rows.forEach((r, dy) => [...r].forEach((k, dx) => k !== " " && out.push({ dx: dx + ox0, dy: dy + oy0, k }))); return out; };
+  const bodyCells = cells(BODY), armCells = Object.fromEntries(Object.entries(ARM).map(([k, v]) => [k, cells(v, 19, 9)]));
+
+  function drawSanta(x0, top, t, wave, flash) {
+    const blink = (t % 4.2) < .14;
+    const list = bodyCells.concat(armCells[wave]);
+    for (const c of list) {
+      const x = x0 + c.dx, y = top + c.dy;
+      if (c.k === "E") { put(x, y, blink ? "-" : "@", "#2a1f2a"); continue; }
+      const isPom = c.dy <= 2 && c.k === "W" && c.dx >= 15;
+      if (isPom && flash) { put(x, y, glyph(SET.W, c.dx, c.dy, t, 6), "#ffd36b"); continue; }
+      put(x, y, glyph(SET[c.k], c.dx, c.dy, t), pick(COL[c.k], h(c.dx, c.dy, 3)), .95);
+    }
+  }
+
+  // ---------- small Christmas tree ----------
+  const LIGHTS = ["#ffc45a", "#ff6b6b", "#ff9ec4", "#7ab8ff", "#fff3d6", "#b99cff"];
+  const LEAF = "#%&@*xXoO=+~^vW", GREENS = ["#3f9d5c", "#5cbf72", "#2f7f4c", "#79d18a"];
+  const TREE = { cx: 46, top: 44, tiers: [[0, 6, 1, 5], [7, 14, 2, 8], [15, 22, 3, 11]] };
+  const treeCells = [];
+  for (const [rs, re, hs, he] of TREE.tiers) for (let r = rs; r <= re; r++) {
+    const hw = Math.round(hs + (he - hs) * (r - rs) / (re - rs));
+    for (let dx = -hw; dx <= hw; dx++) treeCells.push({ x: TREE.cx + dx, r, lit: h(dx, r, 1) < .16, edge: Math.abs(dx) === hw, col: pick(LIGHTS, h(dx, r, 2)), ph: h(dx, r, 4) * 6.28 });
+  }
+  for (let r = 23; r <= 25; r++) for (let dx = -2; dx <= 2; dx++) treeCells.push({ x: TREE.cx + dx, r, trunk: true });
+  const TREE_ROWS = 26;
+
+  function drawTree(rows, t, since) {
+    for (const c of treeCells) {
+      if (c.r >= rows) continue;
+      const y = TREE.top + c.r;
+      if (c.trunk) { put(c.x, y, glyph("#|H%", c.x, c.r, t), "#9a6744"); continue; }
+      if (c.lit) { put(c.x, y, glyph("o@*0", c.x, c.r, t, 1.5), c.col, Math.max(.25, .45 + .55 * Math.sin(t * 3 + c.ph))); continue; }
+      put(c.x, y, c.edge ? glyph("^/\\*", c.x, c.r, t) : glyph(LEAF, c.x, c.r, t), pick(GREENS, h(c.x, c.r, 5)), .92);
+    }
+    if (rows > 0) {
+      const pulse = .7 + .3 * Math.sin(t * 2.4), pop = 1 + 2 * Math.max(0, 1 - since * 2);
+      ctx.save(); ctx.shadowColor = "#ffc45a"; ctx.shadowBlur = 10 * pulse * pop; put(TREE.cx, TREE.top - 2, "★", "#ffd36b"); ctx.restore();
+      [[-1, -2, "-"], [1, -2, "-"], [0, -3, "|"], [0, -1, "|"]].forEach(([dx, dy, c]) => put(TREE.cx + dx, TREE.top + dy, c, "#ffd36b", .55 * pulse));
+    }
+  }
+
+  // ---------- big MERRY CHRISTMAS (5×7 pixel letters made of glyphs) ----------
+  const FONT = {
+    M: ["10001", "11011", "10101", "10101", "10001", "10001", "10001"],
+    E: ["11111", "10000", "10000", "11110", "10000", "10000", "11111"],
+    R: ["11110", "10001", "10001", "11110", "10100", "10010", "10001"],
+    Y: ["10001", "10001", "01010", "00100", "00100", "00100", "00100"],
+    C: ["01111", "10000", "10000", "10000", "10000", "10000", "01111"],
+    H: ["10001", "10001", "10001", "11111", "10001", "10001", "10001"],
+    I: ["11111", "00100", "00100", "00100", "00100", "00100", "11111"],
+    S: ["01111", "10000", "10000", "01110", "00001", "00001", "11110"],
+    T: ["11111", "00100", "00100", "00100", "00100", "00100", "00100"],
+    A: ["01110", "10001", "10001", "11111", "10001", "10001", "10001"],
+  };
+  const TEXT_COLORS = ["#ff6b6b", "#ffc45a", "#79d18a", "#ff9ec4", "#7ab8ff"];
+  const BIG = [];
+  [["MERRY", 7], ["CHRISTMAS", 17]].forEach(([word, y]) => {
+    const x0 = Math.round(MID - (word.length * 6 - 1) / 2);
+    [...word].forEach((c, i) => {
+      const px = [];
+      FONT[c].forEach((row, dy) => [...row].forEach((b, dx) => b === "1" && px.push({ x: x0 + i * 6 + dx, y: y + dy, o: h(dx, dy, i) })));
+      BIG.push({ c, cx: x0 + i * 6 + 2, cy: y + 3, px, i: BIG.length });
+    });
+  });
+  BIG.forEach((L, k) => L.launch = .35 + k * .12);
+  const FLY = .75;
+
+  // ---------- timeline ----------
+  let t0 = null;
+  const santaPos = (e) => { const p = e == null ? 0 : ease(clamp((e - .9) / 1.3)); return { x: Math.round(lerp(19, 4, p)), top: Math.round(lerp(22, 40, p)) }; };
+  const snow = [];
+  function startSnow() {
+    snow.length = 0;
+    for (let i = 0, n = Math.round(fullCols * .45); i < n; i++) snow.push({ x: Math.random() * fullCols, y: -Math.random() * fullRows, v: 3 + Math.random() * 5, c: pick("*.+·", Math.random()), p: Math.random() * 6.28 });
+  }
+
+  let last = 0;
+  function frame(now) {
+    requestAnimationFrame(frame);
+    if (now - last < 31) return; last = now;
+    const t = now / 1000, e = t0 == null ? null : t - t0;
+    ctx.globalAlpha = 1; ctx.fillStyle = "#07080f"; ctx.fillRect(0, 0, W, H);
+
+    for (const [x, y, r] of bgStars) putFull(x, y, r < .008 ? "+" : r < .016 ? "*" : ".", "#c9c3d8", .15 + .45 * (.5 + .5 * Math.sin(t * (1 + r * 40) + r * 900)));
+    if (e != null) for (const s of snow) {
+      s.y += s.v / 30; if (s.y > fullRows) { s.y = -1; s.x = Math.random() * fullCols; }
+      putFull(Math.round(s.x + Math.sin(t + s.p) * .8), Math.round(s.y), s.c, "#f2eef6", .7);
+    }
+
+    const wavingNow = e == null || e < 2.4 || (e % 6) < 1.6;
+    const wave = wavingNow ? WAVE[Math.floor(t * 5) % 4] : "L";
+    const sp = santaPos(e);
+
+    if (e == null) {
+      drawSanta(sp.x, sp.top, t, wave, false);
+      text(11, "a little card from s(T☆R)light", "#8f8aa6", .8);
+      text(61, "tap santa ✧", "#f5e3e2", .45 + .45 * Math.sin(t * 2.5));
+    } else {
+      const treeSince = e - 2.6;
+      drawTree(Math.floor(clamp(treeSince / 2) * TREE_ROWS), t, treeSince);
+      drawSanta(sp.x, sp.top, t, wave, e < .6);
+
+      for (const L of BIG) {
+        const le = e - L.launch;
+        if (le < 0) continue;
+        const col = TEXT_COLORS[(L.i + Math.floor(t * 1.2)) % TEXT_COLORS.length];
+        if (le < FLY) {                                  // a spark flies out of the pom-pom
+          const p = ease(le / FLY), s = santaPos(L.launch);
+          const sx = s.x + POM.dx, sy = s.top + POM.dy, cx = (sx + L.cx) / 2 + 4, cy = Math.min(sy, L.cy) - 8;
+          const x = (1 - p) ** 2 * sx + 2 * (1 - p) * p * cx + p * p * L.cx, y = (1 - p) ** 2 * sy + 2 * (1 - p) * p * cy + p * p * L.cy;
+          put(Math.round(x), Math.round(y), "✦", "#ffd36b");
+          continue;
+        }
+        const bloom = (le - FLY) / .3;                   // then blooms into the big letter
+        ctx.font = FONT_B; ctx.save(); ctx.shadowColor = col; ctx.shadowBlur = ch * .6;
+        for (const q of L.px) {
+          if (q.o > bloom) continue;
+          const fresh = bloom - q.o < .4;
+          put(q.x, q.y, glyph("#@&8%$B", q.x, q.y, t, 1.2), fresh ? "#fff6e0" : col, 1);
+        }
+        ctx.restore(); ctx.font = FONT_N;
+      }
+      if (e > 4.4) text(27, "· 2 0 2 6 ·", "#b0a8c4", clamp((e - 4.4) / 1));
+      if (e > 5.2) text(77, "with love, STarry ✧", "#d9a7b4", clamp((e - 5.2) / 1));
+      if (e > 6.5) text(79, "tap anywhere to replay", "#6f6a86", .5 * clamp((e - 6.5) / 1));
+    }
+    ctx.globalAlpha = 1;
+  }
+  requestAnimationFrame(frame);
+
+  // ---------- interaction ----------
+  const toGrid = (ev) => ({ x: (ev.clientX - ox) / cw, y: (ev.clientY - oy) / ch });
+  const onSanta = (g) => g.x >= 13 && g.x <= 51 && g.y >= 17 && g.y <= 64;
+  function open() { t0 = performance.now() / 1000 - (reduce ? 10 : 0); startSnow(); }
+  cv.addEventListener("pointermove", (ev) => { cv.style.cursor = (t0 == null ? onSanta(toGrid(ev)) : true) ? "pointer" : "default"; });
+  cv.addEventListener("pointerup", (ev) => {
+    if (t0 == null) { if (onSanta(toGrid(ev))) open(); }
+    else if (performance.now() / 1000 - t0 > 5.5) t0 = null;
+  });
+  addEventListener("keydown", (ev) => { if ((ev.key === "Enter" || ev.key === " ") && t0 == null) open(); });
+})();
+</script>
+</body>
+</html>
