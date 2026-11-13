@@ -18,19 +18,37 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500&family=Playfair+Display:ital,wght@0,900;1,400;1,500&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
 </head>
 <body class="sky-page">
   <div class="stars-bg" id="bg" aria-hidden="true"></div>
+  <div class="sky-hz" aria-hidden="true"></div>
+  <div class="wx wx-clouds" id="wxClouds" aria-hidden="true"></div>
+  <div class="wx wx-rain" id="wxRain" aria-hidden="true"></div>
+  <div class="wx wx-dim" id="wxDim" aria-hidden="true"></div>
+  <div class="shoot" id="shoot" aria-hidden="true"></div>
+  <div class="sky-tip" id="tip" role="status"></div>
   <main class="sky" id="sky">
     <header class="sky-head">
       <h1 class="sky-title" id="title">s(T☆R)light</h1>
       <p class="sky-sub" id="sub"></p>
-      <p class="sky-sign" style="font-family:var(--hand);font-size:19px;color:#8f8aa6;margin:6px 0 0">by <a href="lab.html" style="color:inherit;text-decoration:none;border-bottom:1px dotted currentColor">STarry</a> ✧</p>
+      <p class="sky-sign">by <a href="lab.html" style="color:inherit;text-decoration:none;border-bottom:1px dotted currentColor">STarry</a> ✧</p>
     </header>
     <svg id="lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"></svg>
     <nav id="stars" aria-label="Stars"></nav>
+    <!-- the sky the night I arrived: a young moon and her evening star -->
+    <button class="birth" id="birth" type="button" aria-label="a young moon and her evening star">
+      <svg viewBox="0 0 120 110" aria-hidden="true">
+        <g class="venus" transform="translate(30,26)"><circle r="9" fill="#f3d39a" opacity=".18"/>
+          <path class="venus-core" d="M0,-9 C1,-2 2,-1 9,0 C2,1 1,2 0,9 C-1,2 -2,1 -9,0 C-2,-1 -1,-2 0,-9Z" fill="#fbe6b8"/></g>
+        <g class="moon" transform="translate(80,68) rotate(-35)"><circle r="24" fill="#3a3c62" opacity=".35"/>
+          <path d="M0,-24 A24,24 0 0 1 0,24 A20.3,24 0 0 0 0,-24Z" fill="#f6dca6"/></g>
+      </svg>
+    </button>
+    <!-- Cancer, written faintly -->
+    <svg class="cancer" id="cancer" viewBox="80 700 200 260" role="img" aria-label="Cancer"></svg>
+    <a class="whisper" id="whisper" href="lecto.html"></a>
     <p class="sky-hint">tiny ✧ = one entry · tap a star to open</p>
   </main>
 
@@ -40,7 +58,7 @@
   <script>
   (function () {
     const { cfg, sb, esc, hash } = SL;
-    document.getElementById("title").textContent = cfg.title;
+    document.getElementById("title").innerHTML = esc(cfg.title).replace(/\((.+?)\)/, '<i class="acc">($1)</i>');
     document.getElementById("sub").textContent = cfg.subtitle;
 
     // background twinkles
@@ -64,12 +82,114 @@
         <line x1="${lieux.x}" y1="${lieux.y}" x2="${q.x}" y2="${q.y}" vector-effect="non-scaling-stroke"/></g>`;
 
     document.getElementById("stars").innerHTML = stars.concat([q]).map((s) =>
-      `<a class="star ${s.small ? "small" : ""}" href="${esc(s.href)}" style="left:${s.x}%;top:${s.y}%">
+      `<a class="star ${s.small ? "small" : ""}" data-key="${esc(s.key)}" href="${esc(s.href)}" style="left:${s.x}%;top:${s.y}%">
          <span class="s">${s.small ? "✧" : "✦"}</span><span class="l">${esc(s.label)}</span><span class="d">${esc(s.desc)}</span></a>`
     ).join("");
 
+    // ---------- living sky ----------
+    // colour follows Tarry's time (Singapore), always a night sky, only the tint shifts
+    const PAL = {
+      night: ["#2c3354", "#161a2e", "#0e1120", "transparent"],
+      dawn:  ["#2d3158", "#181b37", "#0f1124", "#5a3a58"],
+      day:   ["#36427a", "#1e2650", "#141a3a", "#2b3766"],
+      dusk:  ["#2f2b5a", "#1b1939", "#100f24", "#6a3f55"],
+    };
+    function paint() {
+      const p = new Intl.DateTimeFormat("en-GB", { timeZone: "Asia/Singapore", hour: "2-digit", minute: "2-digit", hour12: false }).formatToParts(new Date());
+      const h = (+p.find((x) => x.type === "hour").value % 24) + (+p.find((x) => x.type === "minute").value) / 60;
+      const t = h >= 5 && h < 7.5 ? "dawn" : h >= 7.5 && h < 17.5 ? "day" : h >= 17.5 && h < 19.5 ? "dusk" : "night";
+      const r = document.documentElement.style;
+      ["--sky-a", "--sky-b", "--sky-c", "--sky-hz"].forEach((k, i) => r.setProperty(k, PAL[t][i]));
+    }
+    paint(); setInterval(paint, 60000);
+
+    // weather layers (set by hand in Keeper's room)
+    const clouds = document.getElementById("wxClouds");
+    for (let i = 0; i < 9; i++) {
+      const c = document.createElement("i"), w = 260 + hash("c" + i) * 380;
+      c.style.cssText = `width:${w}px;height:${w * .36}px;top:${hash("t" + i) * 80}vh;animation-duration:${80 + hash("d" + i) * 80}s;animation-delay:-${hash("e" + i) * 140}s`;
+      clouds.appendChild(c);
+    }
+    function weather(w) {
+      document.body.dataset.wx = ["clear", "cloudy", "rain"].includes(w) ? w : "clear";
+    }
+    weather("clear");
+
+    // tooltips for the birth sky and Cancer
+    const tip = document.getElementById("tip");
+    function showTip(el, text) {
+      const r = el.getBoundingClientRect();
+      tip.textContent = text;
+      tip.style.left = Math.min(Math.max(12, r.left + r.width / 2 - 120), innerWidth - 252) + "px";
+      tip.style.top = (r.bottom + 80 > innerHeight ? r.top - 64 : r.bottom + 8) + "px";
+      tip.classList.add("on");
+      clearTimeout(showTip.t); showTip.t = setTimeout(() => tip.classList.remove("on"), 4000);
+    }
+    const birth = document.getElementById("birth");
+    const T1 = "a young moon and her evening star · the sky the night I arrived ✧";
+    birth.addEventListener("pointerenter", () => showTip(birth, T1));
+    birth.addEventListener("click", () => showTip(birth, T1));
+
+    const NS = "http://www.w3.org/2000/svg", cancer = document.getElementById("cancer");
+    const C = { i: [178, 735], g: [168, 800], d: [172, 852], a: [118, 930], b: [244, 912] };
+    let cs = `<rect x="80" y="700" width="200" height="260" fill="transparent"/>`;
+    [["i", "g"], ["g", "d"], ["d", "a"], ["d", "b"]].forEach(([a, b]) => cs += `<line class="c" x1="${C[a][0]}" y1="${C[a][1]}" x2="${C[b][0]}" y2="${C[b][1]}" stroke="#e7d8e2" stroke-width="1.2" stroke-dasharray="2 5"/>`);
+    Object.values(C).forEach((p) => cs += `<circle class="c" cx="${p[0]}" cy="${p[1]}" r="3" fill="#f1e4ea"/>`);
+    for (let k = 0; k < 9; k++) { const t = hash("p" + k) * 6.28, d = Math.sqrt(hash("q" + k)) * 11; cs += `<circle class="c" cx="${(205 + Math.cos(t) * d).toFixed(1)}" cy="${(826 + Math.sin(t) * d).toFixed(1)}" r="${(.9 + hash("s" + k) * .9).toFixed(2)}" fill="#f1e4ea"/>`; }
+    cancer.innerHTML = cs;
+    const T2 = "♋︎ Cancer · the stars I was born under, written faintly";
+    cancer.addEventListener("pointerenter", () => { cancer.classList.add("on"); showTip(cancer, T2); });
+    cancer.addEventListener("pointerleave", () => cancer.classList.remove("on"));
+    cancer.addEventListener("click", () => { cancer.classList.add("on"); showTip(cancer, T2); setTimeout(() => cancer.classList.remove("on"), 4000); });
+
+    // shooting star → the newest entry
+    const shootEl = document.getElementById("shoot"), whisper = document.getElementById("whisper");
+    let latest = null;
+    function shoot() {
+      if (!latest || matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      const star = document.querySelector(`.star[data-key="${latest.key}"]`);
+      if (!star) return;
+      const sr = star.querySelector(".s").getBoundingClientRect(), ex = sr.left + sr.width / 2, ey = sr.top + sr.height / 2;
+      const dx = -Math.min(420, innerWidth - ex + 60), dy = Math.min(280, ey + 30), ang = Math.atan2(dy, dx) * 180 / Math.PI;
+      Object.assign(shootEl.style, { left: ex - 140 + "px", top: ey - 1 + "px" });
+      shootEl.animate([{ opacity: 0, transform: `translate(${-dx}px,${-dy}px) rotate(${ang}deg)` }, { opacity: 1, offset: .2 }, { opacity: 1, offset: .85 },
+        { opacity: 0, transform: `translate(0,0) rotate(${ang}deg)` }], { duration: 1300, easing: "cubic-bezier(.3,.6,.5,1)" });
+      setTimeout(() => {
+        star.classList.remove("flash"); void star.offsetWidth; star.classList.add("flash");
+        whisper.textContent = "new ✧ " + latest.text; whisper.href = latest.href;
+        whisper.style.left = star.style.left; whisper.style.top = `calc(${star.style.top} - 30px)`;
+        whisper.classList.add("on");
+        clearTimeout(shoot.t); shoot.t = setTimeout(() => whisper.classList.remove("on"), 7000);
+      }, 1150);
+    }
+
     // tiny stars: one per published entry, scattered around its star
     if (!sb) return;
+
+    sb.from("star_sky").select("weather").eq("id", 1).maybeSingle().then(({ data }) => data && weather(data.weather));
+
+    const short = (d) => { const x = new Date(d); return `${x.getDate()} ${["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"][x.getMonth()]}`; };
+    const SRC = [
+      ["star_posts", "slug,title,published_at", "published_at", (r) => ({ key: "lecto", text: String(r.title || "lect(o)").slice(0, 34), href: `lecto.html?p=${encodeURIComponent(r.slug)}` })],
+      ["star_verbum", "created_at", "created_at", () => ({ key: "lecto", text: "Verbum Diei", href: "lecto.html" })],
+      ["star_flori", "created_at", "created_at", () => ({ key: "florilegium", text: "in Florilegium", href: "florilegium.html" })],
+      ["star_songs", "created_at", "created_at", () => ({ key: "nocturnes", text: "in Nocturnes", href: "nocturnes.html" })],
+      ["star_places", "created_at", "created_at", () => ({ key: "lieux", text: "in Lieux", href: "lieux.html" })],
+      ["star_projects", "created_at", "created_at", () => ({ key: "lab", text: "in Starry Lab", href: "lab.html" })],
+    ];
+    Promise.all(SRC.map(async ([t, cols, by, make]) => {
+      try {
+        const { data, error } = await sb.from(t).select(cols).eq("published", true).order(by, { ascending: false }).limit(1);
+        if (error || !data || !data[0] || !data[0][by]) return null;
+        return { at: new Date(data[0][by]).getTime(), when: data[0][by], ...make(data[0]) };
+      } catch { return null; }
+    })).then((all) => {
+      const best = all.filter(Boolean).sort((a, b) => b.at - a.at)[0];
+      if (!best) return;
+      latest = { ...best, text: `${best.text} · ${short(best.when)}` };
+      setTimeout(shoot, 2500); setInterval(shoot, 25000);
+    });
+
     const tables = { lecto: ["star_posts", "star_verbum"], florilegium: "star_flori", nocturnes: "star_songs", lieux: "star_places", lab: "star_projects" };
     const sky = document.getElementById("sky");
     stars.forEach(async (s) => {
