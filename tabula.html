@@ -1,0 +1,248 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>(Ta)bula · s(T☆R)light</title>
+  <meta name="description" content="A hand-drawn study timer: three focus hours, water reminders and a little ledger.">
+  <meta name="theme-color" content="#FBF6EE">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Patrick+Hand&display=swap" rel="stylesheet">
+  <style>
+    :root{--paper:#FBF6EE;--dot:#D9CDBE;--ink:#4A3B33;--ink-2:#7A6A5F;--sage:#8FA382;--sage-l:#E4EBDC;--pink:#D9909E;--pink-l:#F6DDE2;--water:#8DB3C9;--water-l:#DCEAF2;--hand:"Caveat",cursive;--write:"Patrick Hand","Comic Sans MS",cursive;
+      --wob:255px 18px 225px 18px/18px 225px 18px 255px;--wob2:18px 225px 18px 255px/255px 18px 225px 18px}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{min-height:100vh;color:var(--ink);font-family:var(--write);font-size:18px;background:var(--paper) radial-gradient(var(--dot) 1.2px,transparent 1.6px) 0 0/22px 22px}
+    button,input{font:inherit;color:inherit}
+    button{cursor:pointer;background:none;border:0}
+    button:focus-visible,input:focus-visible,a:focus-visible{outline:2px dashed var(--pink);outline-offset:4px}
+    .page{position:relative;max-width:760px;margin:0 auto;padding:22px 18px 60px}
+    .back{font-family:var(--hand);font-size:22px;color:var(--ink-2);text-decoration:none}
+    .back:hover{color:var(--ink)}
+    /* header */
+    header{position:relative;text-align:center;margin:10px 0 26px}
+    h1{font-family:var(--hand);font-weight:700;font-size:clamp(64px,16vw,104px);line-height:.9;letter-spacing:-1px}
+    h1 i{font-style:normal;color:var(--pink)}
+    .slogan{display:inline-block;position:relative;font-family:var(--hand);font-size:28px;color:var(--ink-2);margin-top:6px}
+    .slogan svg{position:absolute;left:-4%;bottom:-10px;width:108%;height:14px}
+    .doodle{position:absolute;pointer-events:none}
+    .d-bunny{right:-6px;top:-8px;width:96px;transform:rotate(8deg)}
+    .d-flower{left:4px;top:4px;width:70px;transform:rotate(-12deg)}
+    @media (max-width:560px){.d-bunny{width:66px;right:-4px;top:-16px}.d-flower{width:48px;left:-4px;top:-10px}}
+    /* boxes */
+    .box{position:relative;background:#FFFDF8;border:2px solid var(--ink);border-radius:var(--wob);padding:24px 24px 26px;box-shadow:3px 4px 0 rgba(74,59,51,.12)}
+    .tape{position:absolute;top:-13px;left:50%;width:110px;height:26px;transform:translateX(-50%) rotate(-3deg);background:repeating-linear-gradient(45deg,rgba(217,144,158,.55) 0 8px,rgba(246,221,226,.75) 8px 16px);opacity:.9}
+    .label{font-family:var(--hand);font-size:24px;color:var(--ink-2)}
+    /* timer */
+    .timer{text-align:center}
+    .time{position:relative;display:inline-block;font-family:var(--hand);font-weight:700;font-size:clamp(78px,20vw,132px);line-height:1;margin:2px 0 8px;font-variant-numeric:tabular-nums}
+    .time::after{content:"";position:absolute;left:4%;right:4%;bottom:12%;height:22%;background:var(--pink-l);z-index:-1;transform:rotate(-1.5deg);border-radius:6px}
+    .pair{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:16px;margin:10px 0 22px}
+    @media (max-width:560px){.pair{grid-template-columns:1fr}}
+    .mini{display:flex;align-items:center;gap:14px;text-align:left;padding:14px 16px;border:2px dashed var(--ink-2);border-radius:var(--wob2);background:var(--paper)}
+    .mini svg{flex:none;width:52px;height:60px}
+    .mini b{display:block;font-family:var(--hand);font-size:23px;font-weight:700;line-height:1.05}
+    .mini span{color:var(--ink-2);font-size:17px}
+    /* progress */
+    .prog{position:relative;height:40px;margin:4px 6px 0}
+    .prog svg{width:100%;height:100%;overflow:visible}
+    .stars{display:flex;justify-content:space-between;margin:6px 0 0;padding:0 4px}
+    .stars svg{width:34px;height:34px;transition:transform .4s}
+    .stars svg.on{transform:rotate(-12deg) scale(1.12)}
+    .stars svg path{fill:transparent;stroke:var(--ink);stroke-width:1.6;stroke-linejoin:round;transition:fill .4s}
+    .stars svg.on path{fill:#F2CF7A}
+    /* buttons */
+    .controls{display:flex;justify-content:center;gap:16px;flex-wrap:wrap;margin:26px 0 24px}
+    .btn{font-family:var(--hand);font-weight:700;font-size:28px;min-height:56px;padding:4px 30px;border:2px solid var(--ink);border-radius:var(--wob);box-shadow:3px 4px 0 var(--ink);transition:transform .12s,box-shadow .12s}
+    .btn:active{transform:translate(3px,4px);box-shadow:0 0 0 var(--ink)}
+    .btn.go{background:var(--sage-l)}
+    .btn.quit{background:#FFFDF8}
+    /* sticky note */
+    .note{position:relative;max-width:440px;margin:0 auto 34px;background:var(--note,#FFF3B8);padding:22px 22px 18px;text-align:center;font-family:var(--hand);font-size:28px;line-height:1.15;transform:rotate(-1.2deg);box-shadow:0 10px 18px -12px rgba(74,59,51,.5)}
+    .note .tape{width:90px;top:-12px}
+    /* ledger */
+    .ledger h2{font-family:var(--hand);font-size:40px;line-height:1;margin-bottom:12px}
+    .ledger h2 svg{width:30px;height:30px;vertical-align:-4px;margin-right:4px}
+    .lines{background:repeating-linear-gradient(transparent 0 37px,rgba(141,179,201,.45) 37px 38px);line-height:38px;font-size:19px}
+    .row{display:flex;gap:10px;align-items:baseline;flex-wrap:wrap}
+    .row .k{color:var(--ink-2)}
+    .row input{flex:1 1 180px;min-width:0;border:0;border-bottom:2px dashed var(--ink-2);background:transparent;font-family:var(--hand);font-size:26px;line-height:1;padding:0 4px}
+    .row .v{font-family:var(--hand);font-size:27px;font-weight:700}
+    .ticks{display:inline-flex;gap:6px;vertical-align:middle}
+    .ticks svg{width:24px;height:24px}
+    .bloom{font-family:var(--hand);font-size:25px;color:var(--sage);margin-top:4px}
+    .bread{display:flex;align-items:center;justify-content:flex-end;gap:10px;margin-top:22px;font-family:var(--hand);font-size:22px;color:var(--ink-2)}
+    .bread svg{width:40px;height:40px;transform:rotate(-8deg)}
+    .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+    @media (prefers-reduced-motion:reduce){.stars svg,.btn{transition:none}}
+  </style>
+</head>
+<body>
+  <main class="page">
+    <a class="back" href="lab.html">← Starry Lab</a>
+
+    <header>
+      <!-- gardenia doodle -->
+      <svg class="doodle d-flower" viewBox="0 0 80 80" aria-hidden="true" fill="none" stroke="#4A3B33" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M40 40c-6-10-4-22 2-26 6 5 7 16-2 26z" fill="#F6DDE2"/><path d="M40 40c10-6 22-4 26 2-5 6-16 7-26-2z" fill="#F6DDE2"/>
+        <path d="M40 40c6 10 4 22-2 26-6-5-7-16 2-26z" fill="#F6DDE2"/><path d="M40 40c-10 6-22 4-26-2 5-6 16-7 26 2z" fill="#F6DDE2"/>
+        <path d="M40 40c-9-3-15-11-14-17 7 0 13 8 14 17zM40 40c3-9 11-15 17-14 0 7-8 13-17 14zM40 40c9 3 15 11 14 17-7 0-13-8-14-17zM40 40c-3 9-11 15-17 14 0-7 8-13 17-14z"/>
+        <circle cx="40" cy="40" r="3.5" fill="#F2CF7A"/>
+      </svg>
+      <!-- bunny doodle -->
+      <svg class="doodle d-bunny" viewBox="0 0 100 110" aria-hidden="true" fill="none" stroke="#4A3B33" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+        <path d="M36 44C30 28 30 8 37 6c7-1 9 20 7 36"/><path d="M60 42c2-16 4-35 11-34 7 2 5 22-3 37"/>
+        <path d="M38 14c1 8 2 16 3 24M66 16c-1 8-3 16-4 23" stroke="#D9909E"/>
+        <path d="M24 72c0-18 12-30 28-30s28 12 28 30-12 26-28 26-28-8-28-26z" fill="#FFFDF8"/>
+        <circle cx="41" cy="68" r="2.6" fill="#4A3B33"/><circle cx="63" cy="68" r="2.6" fill="#4A3B33"/>
+        <path d="M50 75l2 2 2-2M52 77v3M48 82c2 2 6 2 8 0"/>
+        <path d="M32 76c3 0 5 1 6 2M72 76c-3 0-5 1-6 2" stroke="#D9909E" stroke-width="3"/>
+      </svg>
+      <h1><i>(Ta)</i>bula</h1>
+      <p class="slogan">study. hydrate. bloom.
+        <svg viewBox="0 0 200 14" preserveAspectRatio="none" aria-hidden="true"><path d="M2 9c20-6 40 4 60-1s40-5 60 0 40 4 76-3" fill="none" stroke="#8FA382" stroke-width="3" stroke-linecap="round"/></svg></p>
+    </header>
+
+    <section class="box timer" aria-labelledby="sessionLbl">
+      <span class="tape" aria-hidden="true"></span>
+      <div class="label" id="sessionLbl">a three-hour focus session</div>
+      <div class="time" id="timer" role="timer" aria-live="off">03:00:00</div>
+
+      <div class="pair">
+        <div class="mini">
+          <svg viewBox="0 0 52 60" aria-hidden="true">
+            <defs><clipPath id="glass"><path d="M8 8h36l-4 46H12z"/></clipPath></defs>
+            <rect id="waterFill" x="0" y="54" width="52" height="0" fill="#8DB3C9" opacity=".75" clip-path="url(#glass)"/>
+            <path d="M8 8h36l-4 46H12z" fill="none" stroke="#4A3B33" stroke-width="2.2" stroke-linejoin="round"/>
+            <path d="M14 18c4-1 8 1 12 0s8-1 12 0" fill="none" stroke="#4A3B33" stroke-width="1.4" stroke-dasharray="3 3" opacity=".5"/>
+          </svg>
+          <div><b>next sip</b><span id="water">in 30 mins</span></div>
+        </div>
+        <div class="mini">
+          <svg viewBox="0 0 52 60" aria-hidden="true" fill="none" stroke="#4A3B33" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+            <path d="M8 26h30v14c0 8-6 13-15 13S8 48 8 40z" fill="#F6DDE2"/><path d="M38 30c7 0 9 3 9 6s-3 6-9 6"/>
+            <path d="M16 20c-2-4 2-6 0-10M24 20c-2-4 2-6 0-10M32 20c-2-4 2-6 0-10" id="steam" opacity=".6"/>
+          </svg>
+          <div><b>stretch break</b><span id="brk">in 60 mins · 10 min rest</span></div>
+        </div>
+      </div>
+
+      <div class="label" style="text-align:left">progress</div>
+      <div class="prog">
+        <svg viewBox="0 0 600 40" preserveAspectRatio="none" aria-hidden="true">
+          <path d="M4 22c40-10 80 8 120 0s80-10 120 0 80 8 120 0 80-10 120 0 70 6 112-2" fill="none" stroke="#D9CDBE" stroke-width="3" stroke-linecap="round" stroke-dasharray="2 8"/>
+          <path id="ink" d="M4 22c40-10 80 8 120 0s80-10 120 0 80 8 120 0 80-10 120 0 70 6 112-2" fill="none" stroke="#8FA382" stroke-width="5" stroke-linecap="round"/>
+        </svg>
+        <span class="sr" id="progSr">0% done</span>
+      </div>
+      <div class="stars" id="stars" aria-hidden="true"></div>
+    </section>
+
+    <div class="controls">
+      <button class="btn go" id="startBtn">start focus</button>
+      <button class="btn quit" id="quitBtn">quit</button>
+    </div>
+
+    <div class="note" id="status" role="status"><span class="tape" aria-hidden="true"></span><span id="statusTxt">Starry, keep it up ✧</span></div>
+
+    <section class="box ledger" aria-labelledby="ledgerH">
+      <h2 id="ledgerH"><svg viewBox="0 0 30 30" aria-hidden="true" fill="none" stroke="#4A3B33" stroke-width="2" stroke-linecap="round"><path d="M6 4h16l3 3v19H6z" fill="#FFFDF8"/><path d="M10 11h11M10 16h11M10 21h7"/></svg>the blooming ledger</h2>
+      <div class="lines">
+        <div class="row"><label class="k" for="who">your name:</label><input id="who" placeholder="Starry" maxlength="24" autocomplete="given-name"></div>
+        <div class="row"><label class="k" for="subject">today's session:</label><input id="subject" placeholder="Koinós" maxlength="60"></div>
+        <div class="row"><span class="k">total focus today:</span><span class="v" id="total">0 min</span></div>
+        <div class="row"><span class="k">sessions finished:</span><span class="ticks" id="ticks"><span class="v">–</span></span></div>
+      </div>
+      <p class="bloom" id="bloom">let's bloom, Starry!</p>
+      <p class="bread"><svg viewBox="0 0 40 40" aria-hidden="true" fill="none" stroke="#4A3B33" stroke-width="2" stroke-linejoin="round"><path d="M8 18c-4 0-5-8 1-10 5-2 9-3 11-3s6 1 11 3c6 2 5 10 1 10v15H8z" fill="#F3DDB4"/><path d="M11 20c0 0 0 10 0 11h18V20" fill="#FFF6E6" stroke="none"/></svg>first built with a slice of gardenia bread ✧</p>
+    </section>
+  </main>
+
+  <script>
+  (function () {
+    const TOTAL = 3 * 3600, WATER = 1800, BREAK = 3600;
+    const SPEED = /[?&]demo\b/.test(location.search) ? 60 : 1; // ?demo = 60× faster preview
+    const $ = (id) => document.getElementById(id);
+    const today = () => new Date().toISOString().slice(0, 10);
+    const store = { get(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : JSON.parse(v); } catch { return d; } },
+      set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} } };
+
+    // stars
+    const STAR = '<svg viewBox="0 0 34 34"><path d="M17 3l4 9.5 10 .8-7.6 6.6 2.4 9.9L17 24.6 8.2 29.8l2.4-9.9L3 13.3l10-.8z"/></svg>';
+    $("stars").innerHTML = STAR.repeat(5);
+    const stars = [...$("stars").querySelectorAll("svg")];
+    const ink = $("ink"), len = ink.getTotalLength ? ink.getTotalLength() : 600;
+    ink.style.strokeDasharray = len; ink.style.strokeDashoffset = len;
+
+    let elapsed = 0, running = false, lastTick = 0, timer = null, loggedSec = 0;
+    const fmt = (s) => [Math.floor(s / 3600), Math.floor((s % 3600) / 60), s % 60].map((n) => String(n).padStart(2, "0")).join(":");
+    const mins = (s) => Math.max(0, Math.ceil(s / 60));
+    const MSG = {
+      keep: (n) => `${n}, keep it up ✧`, focus: (n) => `focus mode on. you've got this, ${n}!`, pause: (n) => `paused. take a breath, ${n} ✧`,
+      water: (n) => `time for a sip of water, ${n} 💧`, brk: (n) => `break time, ${n}! stand up and stretch for 10 minutes`,
+      done: (n) => `session done! you did beautifully, ${n} 🌸`,
+    };
+    function note(key, color) { lastNote = [key, color]; $("statusTxt").textContent = MSG[key]($("who") ? who() : "Starry"); $("status").style.setProperty("--note", color || "#FFF3B8"); }
+
+    // ledger (per day, kept in this browser)
+    function ledger() { const L = store.get("tabula_ledger", {}); return L[today()] || { sec: 0, done: 0 }; }
+    function saveLedger(d) { const L = store.get("tabula_ledger", {}); L[today()] = d; store.set("tabula_ledger", L); }
+    function renderLedger() {
+      const d = ledger(), m = Math.floor(d.sec / 60);
+      $("total").textContent = m < 60 ? `${m} min` : `${Math.floor(m / 60)} h ${m % 60} min`;
+      $("ticks").innerHTML = d.done ? Array.from({ length: d.done }, () => '<svg viewBox="0 0 24 24" fill="none" stroke="#8FA382" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"><path d="M4 13c3 2 4 4 5 6 3-7 7-11 11-14"/></svg>').join("") : '<span class="v">–</span>';
+    }
+    // name: used in every little message
+    const who = () => ($("who").value.trim() || "Starry");
+    $("who").value = store.get("tabula_name", "");
+    let lastNote = ["keep", null];
+    function renderName() { $("bloom").textContent = `let's bloom, ${who()}!`; if (lastNote) note(lastNote[0], lastNote[1]); }
+    $("who").addEventListener("input", (e) => { store.set("tabula_name", e.target.value); renderName(); });
+    $("subject").value = store.get("tabula_subject", "");
+    $("subject").addEventListener("input", (e) => store.set("tabula_subject", e.target.value));
+
+    function draw() {
+      const left = TOTAL - elapsed, p = elapsed / TOTAL;
+      $("timer").textContent = fmt(left);
+      document.title = running ? `${fmt(left)} · (Ta)bula` : "(Ta)bula · s(T☆R)light";
+      ink.style.strokeDashoffset = len * (1 - p);
+      $("progSr").textContent = `${Math.floor(p * 100)}% done`;
+      stars.forEach((s, i) => s.classList.toggle("on", i < Math.floor(p * 5)));
+      const w = WATER - (elapsed % WATER);
+      $("water").textContent = `in ${mins(w)} min${mins(w) === 1 ? "" : "s"}`;
+      const fill = ((elapsed % WATER) / WATER) * 46;
+      $("waterFill").setAttribute("y", 54 - fill); $("waterFill").setAttribute("height", fill);
+      $("brk").textContent = `in ${mins(BREAK - (elapsed % BREAK))} mins · 10 min rest`;
+    }
+    function tick() {
+      const now = Date.now(), step = Math.floor(((now - lastTick) / 1000) * SPEED);
+      if (step < 1) return;
+      lastTick += (step / SPEED) * 1000;
+      for (let i = 0; i < step && elapsed < TOTAL; i++) {
+        elapsed++;
+        if (elapsed % WATER === 0 && elapsed % BREAK !== 0 && elapsed < TOTAL) note("water", "#DCEAF2");
+        if (elapsed % BREAK === 0 && elapsed < TOTAL) note("brk", "#F6DDE2");
+      }
+      const d = ledger(); d.sec += elapsed - loggedSec; loggedSec = elapsed; saveLedger(d);
+      if (elapsed >= TOTAL) { d.done++; saveLedger(d); stop(); $("startBtn").textContent = "start again"; note("done", "#E4EBDC"); elapsed = TOTAL; }
+      draw(); renderLedger();
+    }
+    function start() {
+      if (elapsed >= TOTAL) reset(true);
+      running = true; lastTick = Date.now(); timer = setInterval(tick, 250);
+      $("startBtn").textContent = "pause"; note("focus", "#E4EBDC"); draw();
+    }
+    function stop() { running = false; clearInterval(timer); timer = null; if (elapsed < TOTAL) { $("startBtn").textContent = "resume"; } draw(); }
+    function reset(silent) {
+      stop(); elapsed = 0; loggedSec = 0; $("startBtn").textContent = "start focus";
+      if (!silent) note("keep"); draw();
+    }
+    $("startBtn").onclick = () => (running ? (stop(), note("pause")) : start());
+    $("quitBtn").onclick = () => reset(false);
+    draw(); renderLedger(); renderName();
+  })();
+  </script>
+</body>
+</html>
