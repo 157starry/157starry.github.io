@@ -128,7 +128,8 @@
       title: (r) => r.name, sub: (r) => r.tags || "", thumb: (r) => r.image_url,
       fields: [
         { k: "name", label: "Project name", type: "text", req: true, max: 80 },
-        { k: "description", label: "What it is, and why you made it", type: "textarea", max: 500 },
+        { k: "description", label: "What it is (one or two lines)", type: "textarea", max: 500 },
+        { k: "why", label: "Why I made it (back of the card, optional)", type: "textarea", max: 400 },
         { k: "url", label: "Link", type: "url" },
         { k: "tags", label: "Tags (separate with commas)", type: "text", max: 120 },
         { k: "image_url", label: "Picture", type: "image", folder: "projects" },
