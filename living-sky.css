@@ -1,0 +1,34 @@
+/* ---------------- Home: living sky v2 · depth + a constellation that wakes up ---------------- */
+/* depth: --px / --py run from -1 to 1; nearer layers travel further */
+.stars-bg { inset: -40px; }
+.stars-bg.far  { translate: calc(var(--px, 0) * -5px)  calc(var(--py, 0) * -5px); }
+#bg            { translate: calc(var(--px, 0) * -12px) calc(var(--py, 0) * -12px); }
+.stars-bg.near { translate: calc(var(--px, 0) * -24px) calc(var(--py, 0) * -24px); }
+.wx-clouds     { inset: -60px; translate: calc(var(--px, 0) * -34px) calc(var(--py, 0) * -20px); }
+.sky .birth    { translate: calc(var(--px, 0) * -16px) calc(var(--py, 0) * -16px); }
+.sky svg.cancer{ translate: calc(var(--px, 0) * -9px)  calc(var(--py, 0) * -9px); }
+#lines, #stars, .tiny, .whisper, .spark { translate: calc(var(--px, 0) * -6px) calc(var(--py, 0) * -6px); }
+#stars { position: absolute; inset: 0; z-index: 3; pointer-events: none; } #stars .star { pointer-events: auto; } /* translate makes a stacking layer: keep stars above the lines */
+.sky-head      { translate: calc(var(--px, 0) * 3px)   calc(var(--py, 0) * 3px); }
+
+.stars-bg.far i  { background: #dfe2ff; animation-duration: 7s; }
+.stars-bg.near i { background: #fff6f3; box-shadow: 0 0 6px 1px rgba(255,240,236,.7); animation-duration: 5s; }
+
+/* the constellation wakes up */
+#lines g.lit { filter: drop-shadow(0 0 3px rgba(255,236,232,.95)); }
+#lines g.lit line { transition: opacity 1.4s ease; }
+#lines g.lit line.out { opacity: 0; }
+.star .s, .star .l, .star .d { transition: opacity .7s ease, transform .3s, filter .4s; }
+body.waking .star .s { opacity: .25; filter: none; }
+body.waking .star .l, body.waking .star .d { opacity: 0; }
+body.waking .star.woke .s { opacity: 1; filter: drop-shadow(0 0 8px rgba(245,227,226,.8)); }
+body.waking .star.woke .l, body.waking .star.woke .d { opacity: 1; }
+.star.woke .s { animation: star-flash 1.1s ease-out; }
+.star.near .s { filter: drop-shadow(0 0 14px rgba(255,236,232,1)); transform: scale(1.12); }
+
+/* a little light that walks the constellation now and then */
+.spark { position: absolute; z-index: 2; width: 5px; height: 5px; margin: -2.5px 0 0 -2.5px; border-radius: 50%; background: #fff7f2; box-shadow: 0 0 8px 3px rgba(255,232,226,.75); pointer-events: none; opacity: 0; transition: opacity .8s; }
+.spark.on { opacity: .9; }
+
+
+@media (prefers-reduced-motion: reduce) { .stars-bg.far i, .stars-bg.near i { animation: none; } }
