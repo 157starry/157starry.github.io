@@ -43,6 +43,38 @@
         { k: "published", label: "Visible", type: "check", def: true },
       ],
     },
+    lumina: {
+      label: "Lumina(Ry)", table: "star_lumina", reorder: true,
+      hint: "Theory cards in lect(o) › Lumina(Ry). Drag ⠿ to change the card order. ☆ = a faint star on the map (not written yet).",
+      title: (r) => r.name,
+      sub: (r) => [{ comm: "Communication", mind: "Mind & Brain", philo: "Philosophy" }[r.disc],
+        { culture: "Culture", inter: "Interpersonal", org: "Organizational", models: "Models", mass: "Mass Media", psych: "Psychology", neuro: "Neuroscience" }[r.sub],
+        [r.who, r.year].filter(Boolean).join(", ")].filter(Boolean).join(" · "),
+      badge: (r) => (r.planned ? "☆ not written yet" : ""),
+      fields: [
+        { k: "name", label: "Theory (original term)", type: "text", req: true, max: 120, hint: "e.g. High & Low Context" },
+        { k: "name_id", label: "Nama dalam Bahasa Indonesia", type: "text", max: 120, hint: "e.g. Konteks Tinggi & Rendah (shown in ID mode)" },
+        { k: "disc", label: "Field", type: "select", def: "comm", options: [["comm", "Communication"], ["mind", "Mind & Brain"], ["philo", "Philosophy"]] },
+        { k: "sub", label: "Sub-field", type: "select", def: "culture", options: [["culture", "Communication · Culture"], ["inter", "Communication · Interpersonal"], ["org", "Communication · Organizational"], ["models", "Communication · Models"], ["mass", "Communication · Mass Media"], ["psych", "Mind & Brain · Psychology"], ["neuro", "Mind & Brain · Neuroscience"], ["", "None (Philosophy)"]],
+          hint: "Pick one that matches the field above." },
+        { k: "planned", label: "☆ Not written yet: show only as a faint star on the map", type: "check", def: false },
+        { k: "who", label: "Coined by", type: "text", max: 160, hint: "e.g. Edward T. Hall" },
+        { k: "year", label: "Year", type: "text", max: 30, hint: "e.g. 1976 or c. 375 BCE" },
+        { k: "work", label: "Key work", type: "text", max: 200, hint: "e.g. Beyond Culture" },
+        { k: "one_en", label: "One line (EN)", type: "text", max: 300 },
+        { k: "one_id", label: "Satu kalimat (ID)", type: "text", max: 300 },
+        { k: "exp_en", label: "Explanation (EN)", type: "textarea", max: 3000 },
+        { k: "exp_id", label: "Penjelasan (ID)", type: "textarea", max: 3000 },
+        { k: "analogy_en", label: "Analogy (EN, shows in handwriting)", type: "textarea", max: 600 },
+        { k: "analogy_id", label: "Analogi (ID)", type: "textarea", max: 600 },
+        { k: "saw_en", label: "Where I saw it (EN, optional)", type: "textarea", max: 600, hint: "A moment from your own life. The box is hidden while it's empty." },
+        { k: "saw_id", label: "Di mana aku melihatnya (ID, optional)", type: "textarea", max: 600 },
+        { k: "source", label: "Source", type: "text", max: 200, hint: "e.g. Komunikasi Bisnis · Modul 3, or the class / book" },
+        { k: "map_x", label: "Map position: left → right (0–100, optional)", type: "text", max: 6, hint: "Leave both empty and the star finds its own spot in its constellation." },
+        { k: "map_y", label: "Map position: top → bottom (0–100, optional)", type: "text", max: 6 },
+        { k: "published", label: "Visible", type: "check", def: true },
+      ],
+    },
     flori: {
       label: "Florilegium", table: "star_flori", reorder: true, hint: "Drag ⠿ to change the order. ♡ = shown on the front of Florilegium.",
       title: (r) => r.title,
@@ -531,6 +563,14 @@
       if (f.type === "url" && val && !/^https?:\/\//i.test(val)) { $("formErr").textContent = "Links must start with https://"; return; }
       if (f.type === "date") { out[f.k] = val ? (f.k === "published_at" ? new Date(val + "T12:00:00").toISOString() : val) : (f.k === "published_at" ? new Date().toISOString() : null); continue; }
       out[f.k] = val === "" ? null : val;
+    }
+    if (cur === "lumina") {
+      for (const k of ["map_x", "map_y"]) {
+        if (out[k] == null) continue;
+        const n = parseFloat(String(out[k]).replace(",", "."));
+        if (isNaN(n) || n < 0 || n > 100) { $("formErr").textContent = "Map position must be a number from 0 to 100 (or empty)."; return; }
+        out[k] = n;
+      }
     }
     if (cur === "lecto") {
       if (out.body == null) out.body = "";
