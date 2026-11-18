@@ -13,7 +13,7 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Courier+Prime:wght@400;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
   <style>
     .h1{font-size:clamp(40px,10vw,64px)}
@@ -117,6 +117,36 @@
     .gcat b{font-family:var(--serif-display);font-size:18px}
     .gcat .n{font-family:var(--sans);font-size:11px;color:var(--muted);float:right;margin-top:4px}
     .gcat p{font-size:14px;color:var(--muted);margin-top:4px;line-height:1.5}
+
+    /* ===== lab notebook skin ===== */
+    :root{--mono:"Courier Prime","Courier New",monospace;--stamp:#A8485A}
+    body{background-color:#F6ECEA;background-image:linear-gradient(rgba(176,122,134,.11) 1px,transparent 1px),linear-gradient(90deg,rgba(176,122,134,.11) 1px,transparent 1px);background-size:24px 24px;background-attachment:fixed}
+    .back,.mast .k,.fk,.count,.chip,.seg,.box .lb,.qhead,.qcard .ask,.search,.dact .try,.dact .try button,.hit .open,.gcat .n{font-family:var(--mono)!important}
+    .mast .k{letter-spacing:.12em}
+    .ftabs button{font-family:var(--mono);font-weight:700;font-size:16px;letter-spacing:.14em;text-transform:uppercase;padding-bottom:10px}
+    .flede{font-size:24px}
+    /* folders */
+    .fgrid{gap:26px 18px;padding-top:12px}
+    .fcard{position:relative;border-radius:2px 14px 14px 14px;border:1px solid #E6D3D6;background:#FFFBF8;box-shadow:0 1px 0 #EADADC,0 3px 0 -1px #F6ECEA,0 4px 0 -1px #E6D3D6;padding-top:20px}
+    .fcard::before{content:"";position:absolute;left:-1px;top:-11px;width:96px;height:12px;background:var(--c);border-radius:8px 8px 0 0;opacity:.85;clip-path:polygon(0 100%,10% 0,90% 0,100% 100%)}
+    .fcard::after{content:"";position:absolute;left:0;right:0;top:0;height:3px;background:var(--c);opacity:.55;border-radius:2px 14px 0 0}
+    .fcard:hover{transform:translateY(-3px) rotate(-.4deg)}
+    .fk .case{border:1.5px solid var(--stamp);color:var(--stamp);border-radius:4px;padding:2px 6px;transform:rotate(4deg);font-weight:700;letter-spacing:.12em}
+    .fcard h3{margin-top:2px}
+    /* case file sheet */
+    .fsheet{border-radius:4px 22px 22px 22px;border-top:6px solid var(--c);background:#FFFBF8 repeating-linear-gradient(transparent 0 31px,rgba(176,122,134,.10) 31px 32px)}
+    .fsheet .fk{color:var(--stamp)}
+    .box{border-radius:6px;position:relative}
+    .box.bad::after,.box.good::after{position:absolute;top:12px;right:14px;font-family:var(--mono);font-weight:700;font-size:11px;letter-spacing:.16em;padding:3px 8px;border:2px solid;border-radius:4px;transform:rotate(-6deg);opacity:.85}
+    .box.bad::after{content:"FLAWED";color:var(--stamp)}
+    .box.good::after{content:"SOUND";color:#4F6A3A}
+    /* quiz index card */
+    .qcard{border-radius:4px;background:#FFFBF8 repeating-linear-gradient(transparent 0 35px,rgba(110,127,163,.16) 35px 36px);border-top:3px solid #C97C8B}
+    .opt{border-radius:6px;font-family:var(--mono);font-size:14px}
+    /* detector: lined paper */
+    .din{border-radius:4px;background:#FFFBF8 repeating-linear-gradient(transparent 0 25px,rgba(110,127,163,.18) 25px 26px);line-height:26px;padding-top:8px}
+    .hit{border-radius:6px;border-left:0;border-top:3px solid var(--stamp)}
+    .gsec,.gcat{border-radius:6px}
     @media (prefers-reduced-motion:reduce){.fcard,.bar i{transition:none}}
   </style>
 </head>
@@ -414,8 +444,8 @@ const RULES = [
       const list = FALLACIES.map((f, i) => ({ f, i })).filter(({ f }) => (S.cat === "all" || f.cat === S.cat) &&
         (!q || [f.name.en, f.name.id, f.desc.en, f.desc.id].join(" ").toLowerCase().includes(q)));
       $("count").textContent = t.count(list.length);
-      $("grid").innerHTML = list.length ? list.map(({ f, i }) => `<button class="fcard" data-o="${i}">
-        <span class="fk"><span><span class="dot" style="background:${CATS[f.cat].dot}"></span>${esc(L(CATS[f.cat]))}</span><span>No. ${pad2(i + 1)}</span></span>
+      $("grid").innerHTML = list.length ? list.map(({ f, i }) => `<button class="fcard" data-o="${i}" style="--c:${CATS[f.cat].dot}">
+        <span class="fk"><span><span class="dot" style="background:${CATS[f.cat].dot}"></span>${esc(L(CATS[f.cat]))}</span><span class="case">case ${pad2(i + 1)}</span></span>
         <h3>${esc(f.name.en)}</h3>${altName(f) ? `<span class="alt">${esc(altName(f))}</span>` : ""}<p>${esc(L(f.desc))}</p></button>`).join("")
         : `<div class="empty">${esc(t.none)}</div>`;
     }
@@ -423,7 +453,8 @@ const RULES = [
     function renderSheet() {
       const t = T(), f = FALLACIES[S.open];
       $("modal").setAttribute("aria-label", f.name.en);
-      $("sheet").innerHTML = `<div class="fshd"><span class="fk"><span><span class="dot" style="background:${CATS[f.cat].dot}"></span>No. ${pad2(S.open + 1)} · ${esc(L(CATS[f.cat]))}</span></span>
+      $("sheet").style.setProperty("--c", CATS[f.cat].dot);
+      $("sheet").innerHTML = `<div class="fshd"><span class="fk"><span><span class="dot" style="background:${CATS[f.cat].dot}"></span>case file ${pad2(S.open + 1)} · ${esc(L(CATS[f.cat]))}</span></span>
         <div class="fnav"><button data-nav="-1" aria-label="${esc(t.prev)}">←</button><button data-nav="1" aria-label="${esc(t.next)}">→</button><button class="x" data-close aria-label="${esc(t.close)}">✕</button></div></div>
         <h2>${esc(f.name.en)}</h2>${altName(f) ? `<div class="alt">${esc(altName(f))}</div>` : ""}
         <p class="def">${esc(L(f.desc))}</p>
