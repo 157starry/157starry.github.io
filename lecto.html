@@ -216,7 +216,8 @@
     .lm-card{display:flex;flex-direction:column;gap:7px;text-align:left;width:100%;background:var(--card);border:1px solid #EADADC;border-radius:18px;padding:18px 18px 20px;min-height:200px;transition:transform .15s,box-shadow .15s}
     .lm-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(58,42,46,.08)}
     .lm-card:focus-visible,.lm-star:focus-visible,.lm-const:focus-visible{outline:2px solid var(--mauve);outline-offset:3px}
-    .lm-k{display:flex;justify-content:space-between;gap:8px;font-family:var(--sans);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+    .lm-k{display:flex;justify-content:space-between;align-items:flex-start;gap:8px;font-family:var(--sans);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+    .lm-k>span:last-child{white-space:nowrap}
     .lm-k .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:0}
     .lm-card h3{font-family:var(--serif-display);font-weight:700;font-size:21px;line-height:1.15}
     .lm-card .alt{font-style:italic;font-size:13.5px;color:var(--mauve-d);margin-top:-4px}
@@ -250,6 +251,7 @@
     .lm-legend{position:absolute;right:16px;bottom:12px;font-family:var(--sans);font-size:11px;color:#C9B6BE}
     .lm-hint{display:none;font-family:var(--sans);font-size:11px;color:var(--muted);margin-top:8px;text-align:center}
     @media (max-width:860px){.lm-hint{display:block}}
+    .lm-hint[hidden]{display:none}
     /* specimen sheet */
     .lm-modal{position:fixed;inset:0;z-index:85;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
     .lm-modal[hidden]{display:none}
