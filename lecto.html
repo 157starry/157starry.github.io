@@ -197,6 +197,87 @@
     .bm-hint{font-family:var(--sans);font-size:11px;color:#f3e3e6;letter-spacing:.06em}
     @media (prefers-reduced-motion:reduce){.s-flip .fi,.leaf{transition:none}}
     @media (prefers-reduced-motion:reduce){.note{transition:none}.vm-env{display:none}.vm-letter{animation:none;opacity:1}}
+
+    /* ===== Lumina(Ry): theory cards + constellation map ===== */
+    @media (max-width:440px){.ltabs{gap:16px}.ltabs button{font-size:18px}}
+    .lm-top{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px 16px;margin:2px 0 12px}
+    .lm-top .vlede{margin:0}
+    .lm-ctl{display:flex;gap:8px;flex-wrap:wrap}
+    .seg{display:inline-flex;background:var(--paper-2);border:1px solid var(--line);border-radius:999px;padding:3px;font-family:var(--sans);font-size:12px}
+    .seg button{border-radius:999px;padding:0 14px;min-height:34px;color:var(--ink)}
+    .seg button[aria-pressed="true"]{background:var(--ink);color:#fff}
+    .seg.lang button{font-weight:700;letter-spacing:.08em}
+    .chip .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:1px}
+    .lm-subs{display:flex;gap:6px;flex-wrap:wrap;align-items:center;margin:-4px 0 14px}
+    .lm-subs .arr{color:var(--mauve);font-size:13px;margin-right:2px}
+    .lm-subs .chip{border-style:dashed}
+    .lm-subs .chip[aria-pressed="true"]{background:var(--mauve-l);color:var(--ink);border-color:var(--mauve-d)}
+    .lm-grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:14px}
+    .lm-card{display:flex;flex-direction:column;gap:7px;text-align:left;width:100%;background:var(--card);border:1px solid #EADADC;border-radius:18px;padding:18px 18px 20px;min-height:200px;transition:transform .15s,box-shadow .15s}
+    .lm-card:hover{transform:translateY(-2px);box-shadow:0 8px 20px rgba(58,42,46,.08)}
+    .lm-card:focus-visible,.lm-star:focus-visible,.lm-const:focus-visible{outline:2px solid var(--mauve);outline-offset:3px}
+    .lm-k{display:flex;justify-content:space-between;gap:8px;font-family:var(--sans);font-size:10.5px;letter-spacing:.13em;text-transform:uppercase;color:var(--muted)}
+    .lm-k .dot{display:inline-block;width:8px;height:8px;border-radius:50%;margin-right:6px;vertical-align:0}
+    .lm-card h3{font-family:var(--serif-display);font-weight:700;font-size:21px;line-height:1.15}
+    .lm-card .alt{font-style:italic;font-size:13.5px;color:var(--mauve-d);margin-top:-4px}
+    .lm-card p{font-size:13.5px;line-height:1.5;color:var(--muted)}
+    .lm-card .by{font-family:var(--sans);font-size:11px;color:var(--muted);margin-top:auto;padding-top:4px}
+    /* the sky */
+    .lm-sky{position:relative;border-radius:22px;overflow:hidden;color:#F5E3E2;background:linear-gradient(180deg,#2c3354 0%,#161a2e 60%,#0e1120 100%)}
+    .lm-over{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:12px;padding:16px}
+    .lm-const{display:flex;flex-direction:column;align-items:center;gap:4px;padding:14px 12px 16px;border:1px solid rgba(245,227,226,.12);border-radius:18px;color:#F5E3E2;transition:border-color .2s,background .2s}
+    .lm-const:hover{border-color:rgba(245,227,226,.45);background:rgba(245,227,226,.04)}
+    .lm-const svg{width:100%;aspect-ratio:1;max-height:300px}
+    .lm-const .n{font-family:var(--serif-display);font-style:italic;font-size:24px}
+    .lm-const .c{font-family:var(--sans);font-size:12px;color:#D8C6CC}
+    .lm-const .go{font-family:var(--hand);font-size:19px;color:#E9C9CF}
+    @media (max-width:640px){.lm-over{grid-template-columns:1fr}.lm-const svg{max-height:200px}}
+    .lm-zoom{position:relative;height:clamp(480px,58vw,620px);overflow-x:auto;overflow-y:hidden;-webkit-overflow-scrolling:touch}
+    .lm-zin{position:relative;height:100%;min-width:820px}
+    .lm-zin svg.lines{position:absolute;inset:0;width:100%;height:100%;pointer-events:none}
+    .lm-zbar{position:absolute;left:0;right:0;top:0;z-index:4;display:flex;justify-content:space-between;align-items:center;gap:10px;padding:14px 16px 0;pointer-events:none}
+    .lm-zbar>*{pointer-events:auto}
+    .lm-back{min-height:40px;padding:0 14px;border-radius:999px;border:1px solid rgba(245,227,226,.35);background:rgba(14,17,32,.45);color:#F5E3E2;font-family:var(--sans);font-size:13px}
+    .lm-zt{font-family:var(--serif-display);font-style:italic;font-size:24px}
+    .lm-sl{position:absolute;font-family:var(--hand);font-size:21px;color:#E9C9CF;white-space:nowrap}
+    .lm-star{position:absolute;transform:translate(-50%,-11px);display:flex;flex-direction:column;align-items:center;gap:5px;padding:4px;min-width:44px;min-height:44px;color:#F5E3E2;text-align:center}
+    .lm-star svg{filter:drop-shadow(0 0 6px rgba(245,227,226,.7));transition:transform .3s}
+    button.lm-star:hover svg{transform:scale(1.25) rotate(15deg)}
+    .lm-star .nm{font-family:var(--sans);font-size:12px;line-height:1.3;white-space:nowrap}
+    .lm-star .sb{display:block;font-size:10.5px;color:#C9B6BE}
+    .lm-star.faint{opacity:.5;pointer-events:none}
+    .lm-star.faint svg{filter:none}
+    .lm-legend{position:absolute;right:16px;bottom:12px;font-family:var(--sans);font-size:11px;color:#C9B6BE}
+    .lm-hint{display:none;font-family:var(--sans);font-size:11px;color:var(--muted);margin-top:8px;text-align:center}
+    @media (max-width:860px){.lm-hint{display:block}}
+    /* specimen sheet */
+    .lm-modal{position:fixed;inset:0;z-index:85;display:flex;align-items:flex-start;justify-content:center;padding:16px;overflow-y:auto}
+    .lm-modal[hidden]{display:none}
+    .lm-mback{position:fixed;inset:0;background:rgba(58,42,46,.42)}
+    .lm-sheet{position:relative;width:min(900px,100%);margin:auto 0;background:var(--paper-2);border-radius:22px;padding:30px 32px 32px;box-shadow:0 24px 60px rgba(14,17,32,.25)}
+    @media (max-width:560px){.lm-sheet{padding:22px 18px 24px}}
+    .lm-shd{display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px}
+    .lm-nav{display:flex;gap:8px}
+    .lm-nav button{width:40px;height:40px;border-radius:50%;border:1px solid var(--line);background:#fff;color:var(--ink);font-size:17px}
+    .lm-nav button.x{background:var(--ink);color:var(--paper-2);border-color:var(--ink)}
+    .lm-sheet h2{font-family:var(--serif-display);font-weight:900;font-size:clamp(32px,7vw,50px);line-height:1.05;letter-spacing:-.5px;margin-top:16px}
+    .lm-sheet .alt{font-family:var(--serif-display);font-style:italic;font-size:21px;color:var(--mauve-d);margin-top:4px}
+    .lm-sheet .one{font-style:italic;font-size:18px;line-height:1.5;color:#4E3D42;margin-top:12px}
+    .lm-boxes{display:flex;flex-wrap:wrap;gap:14px;margin-top:24px}
+    .lm-box{flex:1 1 220px;background:#fff;border:1px solid #EADADC;border-radius:16px;padding:18px 20px}
+    .lm-box.w{flex:2 1 400px}
+    .lm-box .lb{font-family:var(--sans);font-size:10.5px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--mauve-d)}
+    .lm-box p{font-size:15.5px;line-height:1.7;margin-top:8px}
+    .lm-box .who{font-family:var(--serif-display);font-weight:700;font-size:22px;line-height:1.2;margin-top:8px}
+    .lm-box .yr{font-family:var(--sans);font-size:13px;color:var(--muted);margin-top:4px}
+    .lm-box .wk{font-style:italic;font-size:14.5px;margin-top:6px}
+    .lm-box.ana{background:var(--matcha-l);border-color:transparent;transform:rotate(-.5deg)}
+    .lm-box.ana .lb{color:#4F6A3A}
+    .lm-box.ana p,.lm-box.saw p{font-family:var(--hand);font-size:27px;line-height:1.25}
+    .lm-box.saw{background:transparent;border:1.5px dashed #C9A9B0}
+    .lm-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-top:20px;padding-top:14px;border-top:1px solid var(--line);font-family:var(--sans);font-size:12.5px;color:var(--muted)}
+    .lm-foot b{color:var(--ink)}
+    @media (prefers-reduced-motion:reduce){.lm-card,.lm-star svg{transition:none}}
   </style>
 </head>
 <body>
@@ -211,6 +292,7 @@
     <div class="ltabs" role="tablist">
       <button role="tab" aria-selected="true" data-v="scripta">Scrip<i>(Ta)</i></button>
       <button role="tab" aria-selected="false" data-v="verbum">Verbum Diei</button>
+      <button role="tab" aria-selected="false" data-v="lumina">Lumina<i>(Ry)</i></button>
     </div>
     <section id="scriptaView">
       <div class="chips" id="cats"></div>
@@ -219,6 +301,24 @@
     <section id="verbumView" hidden>
       <p class="vlede">Little thoughts, left unpolished.</p>
       <div class="vwall"><div class="notes" id="notes"><div class="empty">Loading…</div></div></div>
+    </section>
+    <section id="luminaView" hidden>
+      <div class="lm-top">
+        <p class="vlede" id="lmLede">Theories I learn, one card at a time.</p>
+        <div class="lm-ctl">
+          <div class="seg" role="group" aria-label="View"><button data-lv="cards" aria-pressed="true" id="lmCardsBtn">Cards</button><button data-lv="map" aria-pressed="false" id="lmMapBtn">Map</button></div>
+          <div class="seg lang" role="group" aria-label="Language"><button data-ll="en" aria-pressed="true">EN</button><button data-ll="id" aria-pressed="false">ID</button></div>
+        </div>
+      </div>
+      <div id="lmCardsView">
+        <div class="chips" id="lmChips"></div>
+        <div class="lm-subs" id="lmSubs" hidden></div>
+        <div class="lm-grid" id="lmGrid"><div class="empty">Loading…</div></div>
+      </div>
+      <div id="lmMapView" hidden>
+        <div class="lm-sky" id="lmSky"></div>
+        <p class="lm-hint" id="lmHint" hidden>swipe sideways to see the whole constellation</p>
+      </div>
     </section>
   </main>
 
@@ -237,6 +337,12 @@
   <div class="vmodal" id="vmodal" hidden role="dialog" aria-modal="true" aria-label="Letter">
     <div class="vm-back" data-close></div>
     <div class="vm-box" id="vmBox"></div>
+  </div>
+
+  <!-- Lumina(Ry): specimen sheet -->
+  <div class="lm-modal" id="lmModal" hidden role="dialog" aria-modal="true" aria-label="Theory">
+    <div class="lm-mback" data-lclose></div>
+    <div class="lm-sheet" id="lmSheet"></div>
   </div>
 
   <!-- Article view -->
@@ -474,15 +580,200 @@
       });
     }
 
+    // ---------- Lumina(Ry): theory cards + constellation map ----------
+    const DISC = {
+      comm: { dot: "#B07A86", en: "Communication", id: "Komunikasi", sh: { en: "Comm", id: "Kom" }, subs: ["culture", "inter", "org", "models", "mass"] },
+      mind: { dot: "#8E6FA8", en: "Mind & Brain", id: "Pikiran & Otak", sh: { en: "Mind", id: "Pikiran" }, subs: ["psych", "neuro"] },
+      philo: { dot: "#4F8A8B", en: "Philosophy", id: "Filsafat", subs: [] },
+    };
+    const SUB = {
+      culture: { en: "Culture", id: "Budaya" }, inter: { en: "Interpersonal", id: "Antarpribadi" }, org: { en: "Organizational", id: "Organisasi" },
+      models: { en: "Models", id: "Model" }, mass: { en: "Mass Media", id: "Media Massa" },
+      psych: { en: "Psychology", id: "Psikologi" }, neuro: { en: "Neuroscience", id: "Neurosains" },
+    };
+    // where stars without a saved position go, inside their constellation (x0, y0, x1, y1 in %)
+    const REGION = {
+      culture: [6, 22, 28, 60], inter: [36, 18, 62, 52], org: [70, 22, 94, 50], models: [6, 74, 36, 90], mass: [44, 62, 82, 90],
+      psych: [10, 20, 44, 72], neuro: [56, 30, 86, 76], philo: [12, 24, 88, 84],
+    };
+    const LUI = {
+      en: { lede: "Theories I learn, one card at a time.", cards: "Cards", map: "Map", all: "All",
+        exp: "Explanation", coined: "Coined by", work: "Key work", ana: "Analogy", saw: "Where I saw it", src: "Source",
+        prev: "Previous theory", next: "Next theory", close: "Close", back: "all constellations", explore: "tap to explore",
+        written: "written", toCome: "to come", notYet: "not written yet", legend: "bright star = written · faint star = not written yet",
+        empty: "The first card is still being written.", none: "Nothing here yet.", hint: "swipe sideways to see the whole constellation" },
+      id: { lede: "Teori-teori yang aku pelajari, satu kartu demi satu kartu.", cards: "Kartu", map: "Peta", all: "Semua",
+        exp: "Penjelasan", coined: "Dicetuskan oleh", work: "Karya kunci", ana: "Analogi", saw: "Di mana aku melihatnya", src: "Sumber",
+        prev: "Teori sebelumnya", next: "Teori berikutnya", close: "Tutup", back: "semua rasi", explore: "ketuk untuk menjelajah",
+        written: "ditulis", toCome: "menyusul", notYet: "belum ditulis", legend: "bintang terang = sudah ditulis · bintang redup = belum ditulis",
+        empty: "Kartu pertama masih ditulis.", none: "Belum ada di sini.", hint: "geser ke samping untuk melihat seluruh rasi" },
+    };
+    const STAR = (s) => `<svg width="${s}" height="${s}" viewBox="0 0 24 24" aria-hidden="true"><path d="M12 0 L14.2 9.8 L24 12 L14.2 14.2 L12 24 L9.8 14.2 L0 12 L9.8 9.8 Z" fill="#F5E3E2"/></svg>`;
+    const lm = { rows: null, lang: "en", view: "cards", disc: "all", sub: "all", zoom: "", open: -1, from: null };
+    try { lm.lang = localStorage.getItem("sl_lumina_lang") === "id" ? "id" : "en"; } catch {}
+    const T = () => LUI[lm.lang];
+    const other = () => (lm.lang === "en" ? "id" : "en");
+    const tx = (x, k) => x[k + "_" + lm.lang] || x[k + "_" + other()] || "";
+    const pad2 = (n) => String(n).padStart(2, "0");
+    const written = () => lm.rows.filter((x) => !x.planned);
+    const label = (x) => { const d = DISC[x.disc] || DISC.comm; return x.sub && SUB[x.sub] ? `${d.sh ? d.sh[lm.lang] : d[lm.lang]} · ${SUB[x.sub][lm.lang]}` : d[lm.lang]; };
+    function pos(x) {
+      const n = (v) => (v === null || v === undefined || v === "" || isNaN(+v) ? null : Math.min(96, Math.max(4, +v)));
+      const r = REGION[x.sub] || REGION[x.disc === "philo" ? "philo" : (DISC[x.disc] && DISC[x.disc].subs[0]) || "philo"];
+      const px = n(x.map_x), py = n(x.map_y);
+      return { x: px != null ? px : r[0] + hash(x.id + "x") * (r[2] - r[0]), y: py != null ? py : r[1] + hash(x.id + "y") * (r[3] - r[1]) };
+    }
+    // constellation lines: a chain through each group (left → right), plus a dashed bridge between psychology & neuroscience
+    function linesOf(disc) {
+      const st = lm.rows.filter((x) => x.disc === disc).map((x) => ({ x, p: pos(x) }));
+      const groups = {}; st.forEach((s) => (groups[s.x.sub || "_"] = groups[s.x.sub || "_"] || []).push(s));
+      const out = [];
+      Object.values(groups).forEach((g) => { g.sort((a, b) => a.p.x - b.p.x); for (let i = 1; i < g.length; i++) out.push([g[i - 1].p, g[i].p, false]); });
+      if (disc === "mind" && groups.psych && groups.neuro) {
+        let best = null;
+        groups.psych.forEach((a) => groups.neuro.forEach((b) => { const d = Math.hypot(a.p.x - b.p.x, a.p.y - b.p.y); if (!best || d < best[2]) best = [a.p, b.p, d]; }));
+        if (best) out.push([best[0], best[1], true]);
+      }
+      return out;
+    }
+    const lineSvg = (ls, op) => ls.map(([a, b, dash]) => `<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" vector-effect="non-scaling-stroke"${dash ? ' stroke-dasharray="4 4"' : ""}/>`).join("");
+
+    function renderLumina() {
+      const t = T();
+      $("lmLede").textContent = t.lede;
+      $("lmCardsBtn").textContent = t.cards; $("lmMapBtn").textContent = t.map;
+      document.querySelectorAll("[data-lv]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.lv === lm.view)));
+      document.querySelectorAll("[data-ll]").forEach((b) => b.setAttribute("aria-pressed", String(b.dataset.ll === lm.lang)));
+      $("lmCardsView").hidden = lm.view !== "cards";
+      $("lmMapView").hidden = lm.view !== "map";
+      if (!lm.rows) return;
+      if (lm.view === "cards") renderCards(); else renderSky();
+      if (lm.open >= 0) renderSheet();
+    }
+
+    function renderCards() {
+      const t = T(), all = written();
+      $("lmChips").innerHTML = ["all", "comm", "mind", "philo"].map((k) => `<button class="chip" aria-pressed="${lm.disc === k}" data-ld="${k}">${k === "all" ? "" : `<span class="dot" style="background:${DISC[k].dot}"></span>`}${esc(k === "all" ? t.all : DISC[k][lm.lang])}</button>`).join("");
+      const subs = lm.disc !== "all" ? DISC[lm.disc].subs : [];
+      $("lmSubs").hidden = !subs.length;
+      $("lmSubs").innerHTML = subs.length ? `<span class="arr" aria-hidden="true">↳</span>` + ["all", ...subs].map((k) => `<button class="chip" aria-pressed="${lm.sub === k}" data-ls="${k}">${esc(k === "all" ? t.all : SUB[k][lm.lang])}</button>`).join("") : "";
+      const list = all.filter((x) => lm.disc === "all" || (x.disc === lm.disc && (lm.sub === "all" || x.sub === lm.sub)));
+      if (!all.length) { $("lmGrid").innerHTML = `<div class="empty">${esc(t.empty)}<br><span class="scribble">soon ✧</span></div>`; return; }
+      if (!list.length) { $("lmGrid").innerHTML = `<div class="empty">${esc(t.none)}<br><span class="scribble">soon ✧</span></div>`; return; }
+      $("lmGrid").innerHTML = list.map((x) => {
+        const i = all.indexOf(x), d = DISC[x.disc] || DISC.comm;
+        return `<button class="lm-card" data-lo="${i}">
+          <span class="lm-k"><span><span class="dot" style="background:${d.dot}"></span>${esc(label(x))}</span><span>No. ${pad2(i + 1)}</span></span>
+          <h3>${esc(x.name)}</h3>${lm.lang === "id" && x.name_id && x.name_id !== x.name ? `<span class="alt">${esc(x.name_id)}</span>` : ""}
+          ${tx(x, "one") ? `<p>${esc(tx(x, "one"))}</p>` : ""}
+          <span class="by">${esc([x.who, x.year].filter(Boolean).join(" · "))}</span></button>`;
+      }).join("");
+    }
+
+    function renderSky() {
+      const t = T();
+      $("lmHint").hidden = !lm.zoom;
+      $("lmHint").textContent = t.hint;
+      if (!lm.zoom) {
+        $("lmSky").innerHTML = `<div class="lm-over">${Object.keys(DISC).map((k) => {
+          const rs = lm.rows.filter((x) => x.disc === k), w = rs.filter((x) => !x.planned).length;
+          const dots = rs.map((x) => { const p = pos(x); return x.planned ? `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="1.1" fill="#F5E3E2" fill-opacity=".45"/>` : `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="2.2" fill="#F5E3E2"/>`; }).join("");
+          return `<button class="lm-const" data-lz="${k}"><svg viewBox="0 0 100 100" aria-hidden="true"><g stroke="#F5E3E2" stroke-opacity=".4" stroke-width="1" fill="none">${lineSvg(linesOf(k))}</g>${dots}</svg>
+            <span class="n">${esc(DISC[k][lm.lang])}</span><span class="c">${w} ${esc(t.written)} · ${rs.length - w} ${esc(t.toCome)}</span><span class="go">${esc(t.explore)} →</span></button>`;
+        }).join("")}</div><div class="lm-legend" style="position:static;text-align:right;padding:0 16px 12px">${esc(t.legend)}</div>`;
+        return;
+      }
+      const all = written(), d = DISC[lm.zoom];
+      const subsUsed = [...new Set(lm.rows.filter((x) => x.disc === lm.zoom && x.sub).map((x) => x.sub))];
+      const subLabels = subsUsed.map((s) => { const r = REGION[s]; return r ? `<span class="lm-sl" style="left:${r[0]}%;top:${Math.max(9, r[1] - 12)}%">${esc(SUB[s][lm.lang].toLowerCase())}</span>` : ""; }).join("");
+      const stars = lm.rows.filter((x) => x.disc === lm.zoom).map((x) => {
+        const p = pos(x), st = `left:${p.x.toFixed(1)}%;top:${p.y.toFixed(1)}%`;
+        if (x.planned) return `<span class="lm-star faint" style="${st}">${STAR(12)}<span class="nm">${esc(x.name)}<span class="sb">${esc(t.notYet)}</span></span></span>`;
+        const surname = String(x.who || "").split(/\s*&\s*|,\s*/)[0].trim().split(/\s+/).pop() || "";
+        return `<button class="lm-star" style="${st}" data-lo="${all.indexOf(x)}" aria-label="${esc(x.name)}${x.who ? ` (${esc(x.who)})` : ""}">${STAR(22)}<span class="nm">${esc(x.name)}<span class="sb">${esc([surname, x.year].filter(Boolean).join(" · "))}</span></span></button>`;
+      }).join("");
+      $("lmSky").innerHTML = `<div class="lm-zoom"><div class="lm-zin">
+        <svg class="lines" viewBox="0 0 100 100" preserveAspectRatio="none" aria-hidden="true"><g stroke="#F5E3E2" stroke-opacity=".35" stroke-width="1" fill="none">${lineSvg(linesOf(lm.zoom))}</g></svg>
+        ${subLabels}${stars}</div></div>
+        <div class="lm-zbar"><button class="lm-back" data-lz="">← ${esc(t.back)}</button><span class="lm-zt">${esc(d[lm.lang])}</span></div>
+        <div class="lm-legend">${esc(t.legend)}</div>`;
+    }
+
+    function renderSheet() {
+      const t = T(), all = written(), x = all[lm.open];
+      if (!x) return closeSheet();
+      const d = DISC[x.disc] || DISC.comm;
+      const exp = tx(x, "exp"), ana = tx(x, "analogy"), saw = tx(x, "saw");
+      $("lmModal").setAttribute("aria-label", x.name);
+      $("lmSheet").innerHTML = `<div class="lm-shd"><span class="lm-k" style="justify-content:flex-start"><span><span class="dot" style="background:${d.dot}"></span>No. ${pad2(lm.open + 1)} · ${esc(label(x))}</span></span>
+        <div class="lm-nav"><button data-lnav="-1" aria-label="${esc(t.prev)}">←</button><button data-lnav="1" aria-label="${esc(t.next)}">→</button><button class="x" data-lclose aria-label="${esc(t.close)}">✕</button></div></div>
+        <h2>${esc(x.name)}</h2>${lm.lang === "id" && x.name_id && x.name_id !== x.name ? `<div class="alt">${esc(x.name_id)}</div>` : ""}
+        ${tx(x, "one") ? `<p class="one">${esc(tx(x, "one"))}</p>` : ""}
+        <div class="lm-boxes">
+          ${exp ? `<div class="lm-box w"><div class="lb">${esc(t.exp)}</div><p>${esc(exp)}</p></div>` : ""}
+          ${x.who || x.year || x.work ? `<div class="lm-box"><div class="lb">${esc(t.coined)}</div>${x.who ? `<div class="who">${esc(x.who)}</div>` : ""}${x.year ? `<div class="yr">${esc(x.year)}</div>` : ""}
+            ${x.work ? `<div class="lb" style="margin-top:14px">${esc(t.work)}</div><div class="wk">${esc(x.work)}</div>` : ""}</div>` : ""}
+          ${ana ? `<div class="lm-box w ana"><div class="lb">${esc(t.ana)}</div><p>${esc(ana)}</p></div>` : ""}
+          ${saw ? `<div class="lm-box saw"><div class="lb">${esc(t.saw)}</div><p>${esc(saw)}</p></div>` : ""}
+        </div>
+        <div class="lm-foot"><span>${x.source ? `<b>${esc(t.src)}:</b> ${esc(x.source)}` : ""}</span><span>s(T☆R)light · lect(o)</span></div>`;
+    }
+    function openSheet(i, from) {
+      lm.open = i; lm.from = from || document.activeElement;
+      renderSheet();
+      $("lmModal").hidden = false; document.body.style.overflow = "hidden";
+      $("lmModal").scrollTop = 0;
+      const x = $("lmSheet").querySelector(".x"); if (x) x.focus();
+    }
+    function closeSheet() {
+      if ($("lmModal").hidden) return;
+      $("lmModal").hidden = true; $("lmSheet").innerHTML = ""; lm.open = -1; document.body.style.overflow = "";
+      if (lm.from && document.body.contains(lm.from)) lm.from.focus();
+    }
+    function stepSheet(n) { const k = written().length; if (!k) return; lm.open = (lm.open + n + k) % k; renderSheet(); const b = $("lmSheet").querySelector(`[data-lnav="${n}"]`); if (b) b.focus(); }
+
+    $("luminaView").addEventListener("click", (e) => {
+      const b = e.target.closest("button"); if (!b) return;
+      if (b.dataset.lv) { lm.view = b.dataset.lv; renderLumina(); }
+      else if (b.dataset.ll) { lm.lang = b.dataset.ll; try { localStorage.setItem("sl_lumina_lang", lm.lang); } catch {} renderLumina(); }
+      else if (b.dataset.ld) { lm.disc = b.dataset.ld; lm.sub = "all"; renderCards(); }
+      else if (b.dataset.ls) { lm.sub = b.dataset.ls; renderCards(); }
+      else if (b.dataset.lz !== undefined) { lm.zoom = b.dataset.lz; renderSky(); const f = $("lmSky").querySelector(lm.zoom ? ".lm-back" : `[data-lz]`); if (f) f.focus(); }
+      else if (b.dataset.lo !== undefined) openSheet(+b.dataset.lo, b);
+    });
+    $("lmModal").addEventListener("click", (e) => {
+      if (e.target.closest("[data-lclose]")) return closeSheet();
+      const n = e.target.closest("[data-lnav]"); if (n) stepSheet(+n.dataset.lnav);
+    });
+    document.addEventListener("keydown", (e) => {
+      if ($("lmModal").hidden) return;
+      if (e.key === "Escape") closeSheet();
+      else if (e.key === "ArrowRight") stepSheet(1);
+      else if (e.key === "ArrowLeft") stepSheet(-1);
+    });
+
+    async function loadLumina() {
+      renderLumina();
+      if (lm.rows) return;
+      const { data, error } = await sb.from("star_lumina").select("*").eq("published", true)
+        .order("position", { ascending: true }).order("created_at", { ascending: true });
+      if (error) { $("lmGrid").innerHTML = `<div class="empty">Couldn't load right now.</div>`; $("lmSky").innerHTML = ""; return; }
+      lm.rows = (data || []).filter((x) => DISC[x.disc]);
+      renderLumina();
+    }
+
     function setView(v) {
       document.querySelectorAll(".ltabs button").forEach((b) => b.setAttribute("aria-selected", String(b.dataset.v === v)));
       $("scriptaView").hidden = v !== "scripta";
       $("verbumView").hidden = v !== "verbum";
-      history.replaceState(null, "", v === "verbum" ? "#verbum" : location.pathname + location.search);
+      $("luminaView").hidden = v !== "lumina";
+      history.replaceState(null, "", v === "verbum" ? "#verbum" : v === "lumina" ? "#lumina" : location.pathname + location.search);
       if (v === "verbum") { loadVerbum(); layout(); }
+      if (v === "lumina") loadLumina();
     }
     document.querySelectorAll(".ltabs button").forEach((b) => b.onclick = () => setView(b.dataset.v));
     if (location.hash === "#verbum") setView("verbum");
+    if (location.hash === "#lumina") setView("lumina");
   })();
   </script>
 </body>
