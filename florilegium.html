@@ -14,6 +14,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css?v=20261110b">
+  <link rel="stylesheet" href="flori-v2.css">
   <style>
     .link .gen,.quote .gen{display:block;font-family:var(--sans);font-style:normal;font-size:10px;letter-spacing:.08em;text-transform:uppercase;color:var(--matcha);margin:3px 0 2px}
     .chip{text-transform:uppercase;letter-spacing:.06em}
@@ -39,6 +40,7 @@
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
   <script src="common.js"></script>
+  <script src="flori-v2.js"></script>
   <script>
   (async function () {
     const { sb, esc, safeUrl, platform, tint } = SL;
@@ -71,12 +73,29 @@
         <div class="cover" style="${img ? `background-image:url('${esc(img)}')` : `background:linear-gradient(160deg,${tint(x.title)},#8F5864)`}">${img ? "" : esc(x.title)}</div>
         <b>${esc(x.title)}</b>${x.author ? `<span class="by">${esc(x.author)}</span>` : ""}${genHtml(x)}${x.note ? `<span class="why clamp">${esc(x.note)}</span>` : ""}</${tag}>`;
     };
+    // reads: your note comes first, the article second, a pressed flower for its topic
+    const BLOOMS = window.FLORI_BLOOMS || {};
+    const bloomOf = (x) => BLOOMS[genresOf(x).find((g) => BLOOMS[g])] || BLOOMS.PHILOSOPHY || "";
     const readHtml = (x) => {
       const u = safeUrl(x.url), p = platform(u);
-      return `<a class="link" href="${esc(u)}" target="_blank" rel="noopener">
-        <div class="fav" style="background:${favColor(u)}">${esc(p[0] || "↗").toUpperCase()}</div>
-        <div><b>${esc(x.title)}</b><span>${esc(p)}${x.author ? " · " + esc(x.author) : ""}</span>${genHtml(x)}${x.note ? `<span class="why">${esc(x.note)}</span>` : ""}</div>
-        <span class="arr">↗</span></a>`;
+      return `<a class="press${x.note ? "" : " bare"}" href="${esc(u)}" target="_blank" rel="noopener">${bloomOf(x)}
+        ${x.note ? `<span class="note">${esc(x.note)}</span><span class="rule"></span>` : ""}
+        <b class="t">${esc(x.title)}</b><span class="src">${esc(p)}${x.author ? " · " + esc(x.author) : ""}</span>${genHtml(x)}<span class="go">↗</span></a>`;
+    };
+    const startHtml = (x) => {
+      const u = safeUrl(x.url), p = platform(u);
+      return `<a class="start" href="${esc(u)}" target="_blank" rel="noopener">${bloomOf(x)}
+        <span><span class="lbl">start here ✿</span></span>
+        ${x.note ? `<span class="note">${esc(x.note)}</span>` : ""}
+        <b class="t">${esc(x.title)}</b><span class="src">${esc(p)}${x.author ? " · " + esc(x.author) : ""}</span>
+        <span class="btn">read it ↗</span></a>`;
+    };
+    // the read you ♡ in Keeper's room opens the list; if none, the first one
+    const readsHtml = (list, max) => {
+      if (!list.length) return "";
+      const first = list.find((x) => x.featured) || list[0];
+      const rest = list.filter((x) => x !== first).slice(0, max ? max - 1 : undefined);
+      return startHtml(first) + (rest.length ? `<div class="presses">${rest.map(readHtml).join("")}</div>` : "");
     };
 
     function setTab(t) {
@@ -101,7 +120,7 @@
         // a genre picked on All: show every match across quotes, shelf and reads
         if (q.length) html += quotesHtml(q);
         if (b.length) html += `<div class="sec">On my shelf</div><div class="shelf">${b.map(bookHtml).join("")}</div>`;
-        if (r.length) html += `<div class="sec">Good reads</div>${r.map(readHtml).join("")}`;
+        if (r.length) html += `<div class="sec">Good reads</div><div class="presses">${r.map(readHtml).join("")}</div>`;
       } else if (tab === "all") {
         if (q.length) html += quotesHtml(q.slice(0, 3));
         if (b.length) {
@@ -110,10 +129,11 @@
           html += `<div class="sec">On my shelf <span class="hand">I'd recommend ♡</span></div><div class="shelf">${picks.map(bookHtml).join("")}</div>`;
           if (b.length > picks.length) html += `<button class="seeall" data-go="book">See the whole shelf (${b.length} books) →</button>`;
         }
-        if (r.length) html += `<div class="sec">Good reads <span class="hand">worth your time</span></div>${r.slice(0, 5).map(readHtml).join("")}`;
+        if (r.length) html += `<div class="sec">Good reads <span class="hand">worth your time</span></div>${readsHtml(r, 5)}`;
+        if (r.length > 5) html += `<button class="seeall" data-go="read">See all ${r.length} reads →</button>`;
       } else if (tab === "quote") html = quotesHtml(q);
       else if (tab === "book") html = b.length ? `<div class="shelf">${b.map(bookHtml).join("")}</div>` : "";
-      else html = r.map(readHtml).join("");
+      else html = genre === "All" ? readsHtml(r) : (r.length ? `<div class="presses">${r.map(readHtml).join("")}</div>` : "");
 
       const gEl = document.getElementById("genres");
       gEl.style.display = chips.length > 1 ? "" : "none";
@@ -122,6 +142,12 @@
 
       document.getElementById("out").innerHTML = html || none;
       document.querySelectorAll("#out [data-go]").forEach((btn) => btn.onclick = () => { genre = "All"; setTab(btn.dataset.go); render(); window.scrollTo({ top: 0, behavior: "smooth" }); });
+      // cards drift in as you scroll
+      const cards = document.querySelectorAll("#out .press");
+      if ("IntersectionObserver" in window) {
+        const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { e.target.classList.add("in"); io.unobserve(e.target); } }), { rootMargin: "0px 0px -40px 0px" });
+        cards.forEach((c, i) => { c.style.transitionDelay = `${(i % 6) * 60}ms`; io.observe(c); });
+      } else cards.forEach((c) => c.classList.add("in"));
       // tap a long note to read it all
       document.querySelectorAll("#out .why.clamp").forEach((n) => n.onclick = (e) => {
         if (n.scrollHeight > n.clientHeight + 2 || n.classList.contains("expanded")) { e.preventDefault(); e.stopPropagation(); n.classList.toggle("expanded"); }
