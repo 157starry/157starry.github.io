@@ -1,0 +1,424 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <title>Novem · s(T☆R)light</title>
+  <meta name="description" content="Nine by nine, under the stars. A calm sudoku with fresh puzzles every game.">
+  <meta name="theme-color" content="#161a2e">
+  <link rel="icon" type="image/png" href="assets/favicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@500;700&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,400;0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <style>
+    :root{--sky-a:#2c3354;--sky-b:#161a2e;--sky-c:#0e1120;--star:#F5E3E2;--muted:#B9B3CF;--dim:#7F7A9C;--gold:#E8C27A;--gold-2:#F2D49B;--gold-l:rgba(232,194,122,.35);--pink:#D9A7B4;--wrong:#F29A9A;
+      --serif-display:"Playfair Display",Georgia,serif;--serif:"Lora",Georgia,serif;--hand:"Caveat",cursive;--sans:Helvetica,"Helvetica Neue",Arial,sans-serif}
+    *{box-sizing:border-box;margin:0;padding:0}
+    body{min-height:100vh;color:var(--star);font-family:var(--serif);background:radial-gradient(ellipse at 50% 0%,var(--sky-a) 0%,var(--sky-b) 55%,var(--sky-c) 100%) fixed;overflow-x:hidden}
+    button,input{font:inherit;color:inherit}
+    button{cursor:pointer;background:none;border:0}
+    button:focus-visible,input:focus-visible,a:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+    #sky{position:fixed;inset:0;pointer-events:none;z-index:0}
+    #sky i{position:absolute;border-radius:50%;background:#fff;animation:tw 4s ease-in-out infinite}
+    @keyframes tw{50%{opacity:.15}}
+    .page{position:relative;z-index:1;max-width:540px;margin:0 auto;padding:18px 16px 140px}
+    .back{font-family:var(--sans);font-size:12px;letter-spacing:.03em;color:var(--muted);text-decoration:none}
+    .back:hover{color:var(--star)}
+    /* header */
+    .head{display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap;margin:14px 0 12px}
+    .title{font-family:var(--serif-display);font-weight:900;font-size:40px;line-height:1;letter-spacing:-.5px}
+    .title i{font-weight:400;color:var(--pink)}
+    .hello{font-family:var(--serif-display);font-style:italic;font-size:15px;color:var(--muted);margin-top:4px}
+    .stats{display:flex;gap:8px;align-items:center;font-family:var(--sans);font-size:13px}
+    .pill{display:flex;align-items:center;gap:6px;padding:7px 12px;border-radius:999px;border:1px solid rgba(245,227,226,.18);background:rgba(14,17,32,.35)}
+    .pill b{font-weight:700;font-variant-numeric:tabular-nums}
+    .lvl{font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--gold)}
+    .prog{height:3px;border-radius:999px;background:rgba(245,227,226,.12);margin:0 0 14px;overflow:hidden}
+    .prog i{display:block;height:100%;background:linear-gradient(90deg,var(--pink),var(--gold));transition:width .4s}
+    /* grid */
+    .grid{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));aspect-ratio:1;width:100%;border:1.5px solid var(--gold);border-radius:14px;overflow:hidden;background:rgba(14,17,32,.4);box-shadow:0 0 40px rgba(232,194,122,.08)}
+    .cell{position:relative;display:flex;align-items:center;justify-content:center;min-width:0;border-right:1px solid rgba(232,194,122,.16);border-bottom:1px solid rgba(232,194,122,.16);font-family:var(--serif-display);font-weight:400;font-size:clamp(18px,5.4vw,28px);color:var(--gold-2);transition:background .15s}
+    .cell.c3{border-right:1.5px solid var(--gold-l)}.cell.r3{border-bottom:1.5px solid var(--gold-l)}
+    .cell.c9{border-right:0}.cell.r9{border-bottom:0}
+    .cell.given{color:var(--star);font-weight:700}
+    .cell.related{background:rgba(245,227,226,.05)}
+    .cell.same{background:rgba(232,194,122,.14)}
+    .cell.sel{background:rgba(217,167,180,.22);box-shadow:inset 0 0 0 2px var(--pink)}
+    .cell.wrong{color:var(--wrong)}
+    .cell.wrong.shake{animation:shake .3s}
+    @keyframes shake{25%{transform:translateX(-3px)}75%{transform:translateX(3px)}}
+    .cell.pop{animation:pop .25s ease}
+    @keyframes pop{0%{transform:scale(.6);opacity:.3}70%{transform:scale(1.12)}100%{transform:scale(1)}}
+    .cell.lit{animation:lit 1.1s ease}
+    @keyframes lit{30%{background:rgba(232,194,122,.35);text-shadow:0 0 12px var(--gold)}100%{background:transparent}}
+    .cell.hinted{animation:hinted .8s ease}
+    @keyframes hinted{40%{background:rgba(217,167,180,.4)}}
+    .notes{display:grid;grid-template-columns:repeat(3,1fr);width:100%;height:100%;padding:2px}
+    .notes span{display:flex;align-items:center;justify-content:center;font-family:var(--sans);font-size:clamp(7px,1.9vw,10px);color:var(--muted);line-height:1}
+    /* controls */
+    .tools{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:8px;margin:14px 0 10px}
+    .tool{display:flex;flex-direction:column;align-items:center;gap:4px;padding:10px 4px;min-height:56px;border-radius:14px;border:1px solid rgba(245,227,226,.16);background:rgba(14,17,32,.35);font-family:var(--sans);font-size:12px;color:var(--muted);transition:border-color .15s,color .15s}
+    .tool svg{width:20px;height:20px}
+    .tool:hover{border-color:var(--gold-l);color:var(--star)}
+    .tool[aria-pressed="true"]{border-color:var(--pink);color:var(--star);background:rgba(217,167,180,.16)}
+    .pad{display:grid;grid-template-columns:repeat(9,minmax(0,1fr));gap:6px}
+    .num{position:relative;aspect-ratio:1/1.15;border-radius:12px;border:1px solid rgba(232,194,122,.35);background:rgba(14,17,32,.35);font-family:var(--serif-display);font-size:clamp(18px,5vw,26px);color:var(--star);transition:transform .12s,background .15s}
+    .num:hover{background:rgba(232,194,122,.12);transform:translateY(-2px)}
+    .num small{position:absolute;top:3px;right:5px;font-family:var(--sans);font-size:9px;color:var(--dim)}
+    .num.done{opacity:.25;pointer-events:none}
+    .new{display:block;width:100%;margin-top:12px;min-height:46px;border-radius:999px;border:1px solid rgba(245,227,226,.2);font-family:var(--sans);font-size:13px;letter-spacing:.06em;color:var(--muted)}
+    .new:hover{color:var(--star);border-color:var(--gold-l)}
+    /* overlays */
+    .ov{position:fixed;inset:0;z-index:50;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(14,17,32,.72);backdrop-filter:blur(6px)}
+    .ov[hidden]{display:none}
+    .card{width:min(440px,100%);text-align:center;padding:34px 30px 30px;border-radius:24px;border:1px solid rgba(232,194,122,.35);background:linear-gradient(180deg,rgba(44,51,84,.95),rgba(22,26,46,.97));box-shadow:0 30px 70px rgba(0,0,0,.45)}
+    .card .big{font-family:var(--serif-display);font-weight:900;font-size:60px;line-height:1;letter-spacing:-1px}
+    .card .big i{font-weight:400;color:var(--pink)}
+    .card .sub{font-family:var(--serif-display);font-style:italic;color:var(--muted);margin:8px 0 22px}
+    .lb{display:block;text-align:left;font-family:var(--sans);font-size:11px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);margin:0 0 7px}
+    .name{width:100%;padding:12px 16px;border-radius:14px;border:1px solid rgba(245,227,226,.22);background:rgba(14,17,32,.5);font-family:var(--serif);font-size:16px;margin-bottom:18px}
+    .name::placeholder{color:var(--dim)}
+    .diffs{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin-bottom:22px}
+    .diff{padding:12px 4px;border-radius:14px;border:1px solid rgba(245,227,226,.18);font-family:var(--sans);font-size:13px;color:var(--muted)}
+    .diff span{display:block;color:var(--gold);letter-spacing:2px;margin-bottom:3px}
+    .diff[aria-pressed="true"]{border-color:var(--gold);color:var(--star);background:rgba(232,194,122,.12)}
+    .go{width:100%;min-height:50px;border-radius:999px;background:var(--gold);color:#1b1f36;font-family:var(--serif-display);font-weight:700;font-size:18px}
+    .go:hover{background:var(--gold-2)}
+    .ghost{width:100%;min-height:46px;margin-top:10px;border-radius:999px;border:1px solid rgba(232,194,122,.45);font-family:var(--sans);font-size:13px;color:var(--gold-2)}
+    .wstats{display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px;margin:0 0 22px}
+    .wstats div{border-radius:14px;background:rgba(14,17,32,.45);padding:12px 6px}
+    .wstats b{display:block;font-family:var(--serif-display);font-size:24px;color:var(--gold-2)}
+    .wstats span{font-family:var(--sans);font-size:10px;letter-spacing:.14em;text-transform:uppercase;color:var(--muted)}
+    .fall{position:fixed;top:-20px;z-index:60;color:var(--gold-2);pointer-events:none;animation:fall linear forwards}
+    @keyframes fall{to{transform:translateY(110vh) rotate(360deg);opacity:0}}
+    /* the cat */
+    #cat{position:fixed;right:14px;bottom:14px;z-index:40;display:flex;flex-direction:column;align-items:flex-end}
+    #catBtn{width:84px;height:84px;animation:bob 3s ease-in-out infinite}
+    #catBtn svg{width:100%;height:100%;overflow:visible}
+    @keyframes bob{50%{transform:translateY(-8px)}}
+    #catBtn.happy svg{animation:happy .5s}
+    @keyframes happy{40%{transform:scale(1.15) rotate(6deg)}}
+    #catBtn.sad svg{animation:sad .5s}
+    @keyframes sad{25%{transform:rotate(-7deg)}75%{transform:rotate(7deg)}}
+    .eye{transform-box:fill-box;transform-origin:center;animation:blink 5s infinite}
+    @keyframes blink{0%,92%,100%{transform:scaleY(1)}95%{transform:scaleY(.1)}}
+    .bubble{max-width:210px;margin-bottom:6px;padding:9px 14px;border-radius:16px 16px 4px 16px;background:var(--star);color:#2a2340;font-family:var(--hand);font-size:21px;line-height:1.1;text-align:center;opacity:0;transform:translateY(6px);transition:opacity .25s,transform .25s;pointer-events:none}
+    .bubble.show{opacity:1;transform:none}
+    .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+    @media (max-width:520px){#catBtn{width:64px;height:64px}.title{font-size:34px}}
+    @media (prefers-reduced-motion:reduce){#sky i,#catBtn,.eye,.cell,.fall{animation:none!important}}
+  </style>
+</head>
+<body>
+  <div id="sky" aria-hidden="true"></div>
+
+  <main class="page">
+    <a class="back" href="lab.html">← Starry Lab</a>
+    <div class="head">
+      <div><h1 class="title">Nov<i>em</i></h1><p class="hello" id="hello">nine by nine, under the stars</p></div>
+      <div class="stats">
+        <span class="pill" title="Time"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><circle cx="12" cy="13" r="8"/><path d="M12 9v4l2 2M9 2h6"/></svg><b id="time">00:00</b></span>
+        <span class="pill" title="Mistakes"><svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg><b id="miss">0</b></span>
+        <span class="pill lvl" id="lvl">easy</span>
+      </div>
+    </div>
+    <div class="prog" aria-hidden="true"><i id="prog" style="width:0%"></i></div>
+    <div class="grid" id="grid" role="grid" aria-label="Sudoku board"></div>
+    <p class="sr" id="live" aria-live="polite"></p>
+
+    <div class="tools">
+      <button class="tool" id="tNotes" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M4 20h4L19 9l-4-4L4 16z"/><path d="M13 7l4 4"/></svg>notes</button>
+      <button class="tool" id="tUndo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 14L4 9l5-5"/><path d="M4 9h10a6 6 0 0 1 0 12h-3"/></svg>undo</button>
+      <button class="tool" id="tErase"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 20H9l-5-5 10-10 7 7-6 6"/><path d="M7 12l6 6"/></svg>erase</button>
+      <button class="tool" id="tHint"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 2l2.4 6.6L21 9l-5 4.6L17.5 21 12 17.3 6.5 21 8 13.6 3 9l6.6-.4z"/></svg>hint</button>
+    </div>
+    <div class="pad" id="pad"></div>
+    <button class="new" id="newBtn">new puzzle ✦</button>
+  </main>
+
+  <!-- the constellation cat -->
+  <div id="cat">
+    <div class="bubble" id="bubble" role="status"></div>
+    <button id="catBtn" aria-label="The constellation cat">
+      <svg viewBox="0 0 100 100" aria-hidden="true">
+        <g stroke="#F5E3E2" stroke-opacity=".45" stroke-width="1.2" fill="none">
+          <path d="M30 38L22 10 44 30H56L78 10 70 38 86 60 68 82 50 88 32 82 14 60z"/>
+          <path d="M18 66l18-3M18 72l18-1M82 66l-18-3M82 72l-18-1" stroke-opacity=".3"/>
+        </g>
+        <g fill="#F5E3E2">
+          <circle cx="22" cy="10" r="2.4"/><circle cx="78" cy="10" r="2.4"/><circle cx="44" cy="30" r="1.6"/><circle cx="56" cy="30" r="1.6"/>
+          <circle cx="30" cy="38" r="1.8"/><circle cx="70" cy="38" r="1.8"/><circle cx="14" cy="60" r="2"/><circle cx="86" cy="60" r="2"/>
+          <circle cx="32" cy="82" r="1.6"/><circle cx="68" cy="82" r="1.6"/><circle cx="50" cy="88" r="2.2"/>
+        </g>
+        <g fill="#E8C27A">
+          <path class="eye" d="M38 50l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z"/>
+          <path class="eye" d="M62 50l1.6 4 4 1.6-4 1.6-1.6 4-1.6-4-4-1.6 4-1.6z"/>
+        </g>
+        <circle cx="50" cy="66" r="2" fill="#D9A7B4"/>
+        <path id="mouth" d="M44 72q6 5 12 0" stroke="#F5E3E2" stroke-opacity=".7" stroke-width="1.4" fill="none" stroke-linecap="round"/>
+      </svg>
+    </button>
+  </div>
+
+  <!-- welcome -->
+  <div class="ov" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wTitle">
+    <div class="card">
+      <div class="big" id="wTitle">Nov<i>em</i></div>
+      <p class="sub">nine by nine, under the stars</p>
+      <label class="lb" for="nameIn">what's your name?</label>
+      <input class="name" id="nameIn" maxlength="20" placeholder="Starry" autocomplete="given-name">
+      <span class="lb">choose your sky</span>
+      <div class="diffs" role="group" aria-label="Difficulty">
+        <button class="diff" data-d="easy" aria-pressed="true"><span>✦</span>easy</button>
+        <button class="diff" data-d="medium" aria-pressed="false"><span>✦✦</span>medium</button>
+        <button class="diff" data-d="hard" aria-pressed="false"><span>✦✦✦</span>hard</button>
+      </div>
+      <button class="go" id="goBtn">begin ✦</button>
+      <button class="ghost" id="contBtn" hidden>continue my last puzzle</button>
+    </div>
+  </div>
+
+  <!-- win -->
+  <div class="ov" id="win" hidden role="dialog" aria-modal="true" aria-labelledby="winTitle">
+    <div class="card">
+      <div class="big" id="winTitle">a full <i>sky</i></div>
+      <p class="sub" id="winSub"></p>
+      <div class="wstats"><div><b id="wTime">–</b><span>time</span></div><div><b id="wMiss">–</b><span>mistakes</span></div><div><b id="wLvl">–</b><span>level</span></div></div>
+      <button class="go" id="againBtn">another puzzle ✦</button>
+      <button class="ghost" id="menuBtn">change name or level</button>
+    </div>
+  </div>
+
+  <script>
+  (function () {
+    const $ = (id) => document.getElementById(id);
+    const store = { get(k) { try { return JSON.parse(localStorage.getItem(k)); } catch { return null; } }, set(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch {} }, del(k) { try { localStorage.removeItem(k); } catch {} } };
+
+    // twinkling background
+    (function () { let h = ""; for (let i = 0; i < 70; i++) { const s = Math.random() * 2 + .6; h += `<i style="left:${Math.random() * 100}%;top:${Math.random() * 100}%;width:${s}px;height:${s}px;opacity:${(Math.random() * .6 + .2).toFixed(2)};animation-delay:${(Math.random() * 4).toFixed(1)}s"></i>`; } $("sky").innerHTML = h; })();
+
+    // ---------- generator: a fresh puzzle with exactly one solution ----------
+    const BOX = (i) => ((i / 27) | 0) * 3 + (((i % 9) / 3) | 0);
+    const bits = (m) => { let n = 0; while (m) { m &= m - 1; n++; } return n; };
+    function search(board, limit, randomize) {
+      const g = board.slice(), R = Array(9).fill(0), C = Array(9).fill(0), B = Array(9).fill(0);
+      for (let i = 0; i < 81; i++) if (g[i]) { const m = 1 << g[i]; R[(i / 9) | 0] |= m; C[i % 9] |= m; B[BOX(i)] |= m; }
+      let count = 0, first = null;
+      (function rec() {
+        if (count >= limit) return;
+        let best = -1, bestMask = 0, bestN = 10;
+        for (let i = 0; i < 81; i++) if (!g[i]) {
+          const avail = ~(R[(i / 9) | 0] | C[i % 9] | B[BOX(i)]) & 0x3FE, n = bits(avail);
+          if (n < bestN) { bestN = n; best = i; bestMask = avail; if (n <= 1) break; }
+        }
+        if (best < 0) { count++; if (!first) first = g.slice(); return; }
+        if (!bestN) return;
+        let vals = [1, 2, 3, 4, 5, 6, 7, 8, 9].filter((v) => bestMask & (1 << v));
+        if (randomize) vals = shuffle(vals);
+        const r = (best / 9) | 0, c = best % 9, b = BOX(best);
+        for (const v of vals) {
+          const m = 1 << v; g[best] = v; R[r] |= m; C[c] |= m; B[b] |= m;
+          rec();
+          g[best] = 0; R[r] &= ~m; C[c] &= ~m; B[b] &= ~m;
+          if (count >= limit) return;
+        }
+      })();
+      return { count, first };
+    }
+    function shuffle(a) { for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; }
+    const GIVENS = { easy: 40, medium: 32, hard: 26 };
+    function generate(level) {
+      const solution = search(Array(81).fill(0), 1, true).first, puzzle = solution.slice();
+      let givens = 81;
+      for (const i of shuffle([...Array(81).keys()])) {
+        if (givens <= GIVENS[level]) break;
+        const keep = puzzle[i]; puzzle[i] = 0;
+        if (search(puzzle, 2, false).count !== 1) puzzle[i] = keep; else givens--;
+      }
+      return { puzzle, solution };
+    }
+
+    // ---------- state ----------
+    let S = null, sel = -1, notesMode = false, ticker = null, level = "easy", name = "";
+    const who = () => name || "Starry";
+    const fmt = (s) => `${String(Math.floor(s / 60)).padStart(2, "0")}:${String(s % 60).padStart(2, "0")}`;
+    const save = () => S && !S.done && store.set("novem_save", { ...S, notes: S.notes.map((n) => [...n]) });
+
+    // ---------- the cat ----------
+    const GOOD = ["lovely ✦", "that's the one", "another star lit", "bright!", "yes, exactly ✦", "beautiful"];
+    const BAD = ["not this one", "hmm, try again", "almost ✦", "check that row again", "close, but no"];
+    const IDLE = () => [`you're doing well, ${who()} ✦`, "one cell at a time", "breathe, then look again", `the sky's filling up, ${who()}`, "no rush ✦"];
+    let bubbleT, moodT;
+    function say(msg, mood) {
+      $("bubble").textContent = msg; $("bubble").classList.add("show");
+      clearTimeout(bubbleT); bubbleT = setTimeout(() => $("bubble").classList.remove("show"), 3200);
+      const c = $("catBtn"); c.classList.remove("happy", "sad"); void c.offsetWidth; if (mood) c.classList.add(mood);
+      $("mouth").setAttribute("d", mood === "sad" ? "M44 75q6-5 12 0" : "M44 72q6 5 12 0");
+      clearTimeout(moodT); moodT = setTimeout(() => $("mouth").setAttribute("d", "M44 72q6 5 12 0"), 3000);
+    }
+    const pick = (a) => a[Math.floor(Math.random() * a.length)];
+    $("catBtn").onclick = () => say(pick([`I'm cheering for you, ${who()} ✦`, "you've got this", "look for the number that's missing most", "deep breath ✦", ...IDLE()]), "happy");
+    setInterval(() => { if (S && !S.done && !document.hidden) say(pick(IDLE())); }, 45000);
+
+    // ---------- board ----------
+    function buildGrid() {
+      let h = "";
+      for (let i = 0; i < 81; i++) {
+        const r = (i / 9) | 0, c = i % 9;
+        h += `<button class="cell${c % 3 === 2 ? " c3" : ""}${r % 3 === 2 ? " r3" : ""}${c === 8 ? " c9" : ""}${r === 8 ? " r9" : ""}" data-i="${i}" role="gridcell"></button>`;
+      }
+      $("grid").innerHTML = h;
+    }
+    const cellEl = (i) => $("grid").children[i];
+    function paint(i) {
+      const el = cellEl(i), v = S.board[i], given = !!S.puzzle[i];
+      el.classList.toggle("given", given);
+      el.classList.toggle("wrong", !given && !!v && v !== S.solution[i]);
+      if (v) el.textContent = v;
+      else if (S.notes[i].size) el.innerHTML = `<span class="notes">${[1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `<span>${S.notes[i].has(n) ? n : ""}</span>`).join("")}</span>`;
+      else el.textContent = "";
+      const r = ((i / 9) | 0) + 1, c = (i % 9) + 1;
+      el.setAttribute("aria-label", `row ${r}, column ${c}, ${v ? v + (given ? ", given" : "") : "empty"}`);
+    }
+    function highlight() {
+      const v = sel >= 0 ? S.board[sel] : 0, r = (sel / 9) | 0, c = sel % 9, b = BOX(sel);
+      for (let i = 0; i < 81; i++) {
+        const el = cellEl(i);
+        el.classList.toggle("sel", i === sel);
+        el.classList.toggle("related", sel >= 0 && i !== sel && ((i / 9 | 0) === r || i % 9 === c || BOX(i) === b));
+        el.classList.toggle("same", !!v && i !== sel && S.board[i] === v);
+      }
+    }
+    function updatePad() {
+      $("pad").querySelectorAll(".num").forEach((b) => {
+        const n = +b.dataset.n, left = 9 - S.board.filter((x, i) => x === n && x === S.solution[i]).length;
+        b.querySelector("small").textContent = left || ""; b.classList.toggle("done", left === 0);
+      });
+      const ok = S.board.filter((x, i) => x && x === S.solution[i]).length;
+      $("prog").style.width = (ok / 81) * 100 + "%";
+    }
+    $("pad").innerHTML = [1, 2, 3, 4, 5, 6, 7, 8, 9].map((n) => `<button class="num" data-n="${n}" aria-label="Enter ${n}">${n}<small></small></button>`).join("");
+
+    function select(i) { sel = i; highlight(); if (i >= 0) cellEl(i).focus({ preventScroll: true }); }
+    function record(i) { S.history.push({ i, v: S.board[i], n: [...S.notes[i]] }); if (S.history.length > 300) S.history.shift(); }
+    function lightUp(i) {
+      const r = (i / 9) | 0, c = i % 9, b = BOX(i), groups = [];
+      const okSet = (f) => { const idx = [...Array(81).keys()].filter(f); return idx.every((k) => S.board[k] === S.solution[k]) ? idx : null; };
+      [okSet((k) => ((k / 9) | 0) === r), okSet((k) => k % 9 === c), okSet((k) => BOX(k) === b)].forEach((g) => g && groups.push(...g));
+      groups.forEach((k, n) => { const el = cellEl(k); el.classList.remove("lit"); void el.offsetWidth; setTimeout(() => el.classList.add("lit"), (n % 9) * 40); });
+      return groups.length > 0;
+    }
+    function clearNotesAround(i, n) {
+      const r = (i / 9) | 0, c = i % 9, b = BOX(i);
+      for (let k = 0; k < 81; k++) if (((k / 9 | 0) === r || k % 9 === c || BOX(k) === b) && S.notes[k].has(n)) { S.notes[k].delete(n); paint(k); }
+    }
+    function enter(n) {
+      if (!S || S.done || sel < 0 || S.puzzle[sel]) return;
+      record(sel);
+      if (notesMode) {
+        S.board[sel] = 0; S.notes[sel].has(n) ? S.notes[sel].delete(n) : S.notes[sel].add(n);
+        paint(sel); highlight(); save(); return;
+      }
+      if (S.board[sel] === n) { S.history.pop(); return; }
+      S.board[sel] = n; S.notes[sel].clear(); paint(sel);
+      const el = cellEl(sel); el.classList.remove("pop", "shake"); void el.offsetWidth; el.classList.add("pop");
+      if (n === S.solution[sel]) {
+        clearNotesAround(sel, n);
+        const lit = lightUp(sel);
+        if (lit || Math.random() < .3) say(lit ? "a whole line lit up ✦" : pick(GOOD), "happy");
+        $("live").textContent = `${n} placed`;
+      } else {
+        S.mistakes++; $("miss").textContent = S.mistakes; el.classList.add("shake");
+        say(S.mistakes % 3 === 0 ? `take a breath, ${who()}. you've got this` : pick(BAD), "sad");
+        $("live").textContent = `${n} doesn't fit here`;
+      }
+      highlight(); updatePad(); save(); checkWin();
+    }
+    function erase() { if (!S || S.done || sel < 0 || S.puzzle[sel] || (!S.board[sel] && !S.notes[sel].size)) return; record(sel); S.board[sel] = 0; S.notes[sel].clear(); paint(sel); highlight(); updatePad(); save(); }
+    function undo() { if (!S || S.done || !S.history.length) return; const h = S.history.pop(); S.board[h.i] = h.v; S.notes[h.i] = new Set(h.n); paint(h.i); select(h.i); updatePad(); save(); }
+    function hint() {
+      if (!S || S.done) return;
+      const open = [...Array(81).keys()].filter((i) => !S.puzzle[i] && S.board[i] !== S.solution[i]);
+      if (!open.length) return;
+      const i = open.includes(sel) ? sel : pick(open), n = S.solution[i];
+      record(i); S.board[i] = n; S.notes[i].clear(); S.hints++; paint(i); clearNotesAround(i, n);
+      const el = cellEl(i); el.classList.remove("hinted"); void el.offsetWidth; el.classList.add("hinted");
+      select(i); lightUp(i); updatePad(); save();
+      say(`psst… it's ${n} ✦`, "happy"); checkWin();
+    }
+    function toggleNotes() { notesMode = !notesMode; $("tNotes").setAttribute("aria-pressed", String(notesMode)); if (notesMode) say("notes on. mark your maybes", "happy"); }
+
+    // ---------- game flow ----------
+    function startTicker() { clearInterval(ticker); ticker = setInterval(() => { if (!S || S.done || document.hidden) return; S.secs++; $("time").textContent = fmt(S.secs); if (S.secs % 10 === 0) save(); }, 1000); }
+    function load(state) {
+      S = state; sel = -1; notesMode = false; $("tNotes").setAttribute("aria-pressed", "false");
+      level = S.level; buildGrid(); for (let i = 0; i < 81; i++) paint(i);
+      $("time").textContent = fmt(S.secs); $("miss").textContent = S.mistakes; $("lvl").textContent = S.level;
+      $("hello").textContent = `hello, ${who()} ✦`; highlight(); updatePad(); startTicker(); save();
+    }
+    function fresh() {
+      const { puzzle, solution } = generate(level);
+      load({ level, puzzle, solution, board: puzzle.slice(), notes: Array.from({ length: 81 }, () => new Set()), history: [], secs: 0, mistakes: 0, hints: 0, done: false });
+    }
+    function checkWin() {
+      if (S.board.some((v, i) => v !== S.solution[i])) return;
+      S.done = true; clearInterval(ticker); store.del("novem_save");
+      setTimeout(() => {
+        $("wTime").textContent = fmt(S.secs); $("wMiss").textContent = S.mistakes; $("wLvl").textContent = S.level;
+        $("winSub").textContent = pick([`every star in place, ${who()}`, `that was lovely focus, ${who()} ✦`, `the whole sky is yours, ${who()}`, `quietly brilliant, ${who()}`]);
+        $("win").hidden = false; $("againBtn").focus(); starfall();
+      }, 900);
+    }
+    function starfall() {
+      if (matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+      for (let k = 0; k < 40; k++) setTimeout(() => {
+        const s = document.createElement("span"); s.className = "fall"; s.textContent = Math.random() < .5 ? "✦" : "✧";
+        s.style.left = Math.random() * 100 + "vw"; s.style.fontSize = (Math.random() * 14 + 10) + "px"; s.style.animationDuration = (Math.random() * 2 + 2.5) + "s";
+        document.body.appendChild(s); setTimeout(() => s.remove(), 5000);
+      }, k * 70);
+    }
+
+    // ---------- welcome ----------
+    name = (store.get("novem_name") || "").trim();
+    $("nameIn").value = name;
+    const saved = store.get("novem_save");
+    if (saved && saved.board) $("contBtn").hidden = false;
+    document.querySelectorAll(".diff").forEach((b) => b.onclick = () => { level = b.dataset.d; document.querySelectorAll(".diff").forEach((x) => x.setAttribute("aria-pressed", String(x === b))); });
+    function begin(cont) {
+      name = $("nameIn").value.trim(); store.set("novem_name", name);
+      $("welcome").hidden = true;
+      if (cont && saved) load({ ...saved, notes: saved.notes.map((n) => new Set(n)) });
+      else { $("goBtn").textContent = "drawing your sky…"; setTimeout(() => { fresh(); $("goBtn").textContent = "begin ✦"; }, 30); }
+      setTimeout(() => say(`hi ${who()}! let's focus ✦`, "happy"), 700);
+    }
+    $("goBtn").onclick = () => begin(false);
+    $("contBtn").onclick = () => begin(true);
+    $("nameIn").addEventListener("keydown", (e) => { if (e.key === "Enter") begin(false); });
+    $("nameIn").focus();
+
+    // ---------- events ----------
+    $("grid").addEventListener("click", (e) => { const c = e.target.closest(".cell"); if (c) select(+c.dataset.i); });
+    $("pad").addEventListener("click", (e) => { const b = e.target.closest(".num"); if (b) enter(+b.dataset.n); });
+    $("tNotes").onclick = toggleNotes; $("tUndo").onclick = undo; $("tErase").onclick = erase; $("tHint").onclick = hint;
+    $("newBtn").onclick = () => { if (!S || S.done || confirm("Start a new puzzle? This one won't be saved.")) { fresh(); say("a new sky ✦", "happy"); } };
+    $("againBtn").onclick = () => { $("win").hidden = true; fresh(); };
+    $("menuBtn").onclick = () => { $("win").hidden = true; $("contBtn").hidden = true; $("welcome").hidden = false; $("nameIn").focus(); };
+    document.addEventListener("keydown", (e) => {
+      if (!S || !$("welcome").hidden || !$("win").hidden || e.target.tagName === "INPUT") return;
+      if (e.key >= "1" && e.key <= "9") { enter(+e.key); e.preventDefault(); return; }
+      if (["Backspace", "Delete", "0"].includes(e.key)) { erase(); e.preventDefault(); return; }
+      if (e.key === "n" || e.key === "N" || e.key === "p" || e.key === "P") { toggleNotes(); return; }
+      if ((e.metaKey || e.ctrlKey) && e.key.toLowerCase() === "z") { undo(); e.preventDefault(); return; }
+      const moves = { ArrowUp: -9, ArrowDown: 9, ArrowLeft: -1, ArrowRight: 1 };
+      if (moves[e.key] !== undefined) {
+        e.preventDefault(); if (sel < 0) return select(0);
+        const r = (sel / 9) | 0, c = sel % 9;
+        if ((e.key === "ArrowUp" && r === 0) || (e.key === "ArrowDown" && r === 8) || (e.key === "ArrowLeft" && c === 0) || (e.key === "ArrowRight" && c === 8)) return;
+        select(sel + moves[e.key]);
+      }
+    });
+    window.__novem = { generate, search, get state() { return S; } };
+  })();
+  </script>
+</body>
+</html>
