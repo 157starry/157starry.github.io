@@ -12,15 +12,10 @@
   <link rel="apple-touch-icon" href="assets/apple-touch-icon.png">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Caveat:wght@400;600&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Bagel+Fat+One&family=Caveat:wght@400;600&family=Courier+Prime&family=Press+Start+2P&family=Lora:ital,wght@0,400;0,600;1,400&family=Playfair+Display:ital,wght@0,700;0,900;1,400&display=swap" rel="stylesheet">
   <link rel="stylesheet" href="style.css">
-  <style>
-    @media (min-width:900px){
-      #out{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:22px;align-items:start}
-      #out .proj{margin:0}
-      .page.wide .soon{margin-top:22px}
-    }
-  </style>
+  <link rel="stylesheet" href="lab-v2.css">
+  <style>.page.wide .soon { margin-top: 30px; }</style>
 </head>
 <body>
   <main class="page wide">
@@ -34,6 +29,7 @@
   <script src="config.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.117.0/dist/umd/supabase.js"></script>
   <script src="common.js"></script>
+  <script src="lab-v2.js"></script>
   <script>
   (async function () {
     const { sb, esc, safeUrl } = SL;
@@ -43,15 +39,35 @@
         .order("position", { ascending: true }).order("created_at", { ascending: false });
       items = data || [];
     }
-    document.getElementById("out").innerHTML = items.map((p) => {
-      const img = safeUrl(p.image_url), url = safeUrl(p.url);
+    const LW = window.LAB_WORLDS, out = document.getElementById("out"), runs = [];
+    const tilts = ["-.6deg", ".5deg", ".3deg", "-.4deg"];
+    out.innerHTML = items.map((p, i) => {
+      const img = safeUrl(p.image_url), url = safeUrl(p.url), w = LW && LW.find({ ...p, url: url || "" });
       const tags = String(p.tags || "").split(",").map((t) => t.trim()).filter(Boolean);
-      return `<article class="proj">
-        <div class="shot" ${img ? `style="background-image:url('${esc(img)}')"` : ""}>${img ? "" : esc(p.name)}</div>
+      const why = String(p.why || "").trim();
+      // a world to try if we have one, else the screenshot as before
+      const front = w ? `<div class="face front toy ${w.cls}">${w.html({ ...p, url })}</div>`
+        : `<div class="face front shot" ${img ? `style="background-image:url('${esc(img)}')"` : ""}>${img ? "" : esc(p.name)}</div>`;
+      const st = w && w.sticker ? `<span class="sticker ${w.sticker[1]}">${esc(w.sticker[0])}</span>` : "";
+      const open = url && !(w && w.personal) ? `<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open ${esc(p.name)} ↗</a>` : "";
+      return `<article class="proj" data-i="${i}" style="--r:${tilts[i % 4]}">${st}${LW ? LW.peek({ ...p, url: url || "" }) : ""}
+        <div class="world">${front}${why ? `<div class="face back"><span class="lbl">why I made it</span><p class="why">${esc(why)}</p><span class="sig">— STarry ✧</span></div>` : ""}</div>
         <h3>${esc(p.name)}</h3>${p.description ? `<p>${esc(p.description)}</p>` : ""}
         ${tags.length ? `<div class="tags">${tags.map((t) => `<span class="tag">${esc(t)}</span>`).join("")}</div>` : ""}
-        ${url ? `<a class="btn" href="${esc(url)}" target="_blank" rel="noopener">Open ${esc(p.name)} ↗</a>` : ""}</article>`;
+        <div class="row">${open}${why ? `<button class="flipbtn" type="button">why I made it ↻</button>` : ""}</div></article>`;
     }).join("");
+    out.querySelectorAll(".proj").forEach((card) => {
+      const p = items[+card.dataset.i], w = LW && LW.find({ ...p, url: safeUrl(p.url) || "" });
+      const face = card.querySelector(".face.front.toy");
+      if (w && face) { const r = w.init(face); if (typeof r === "function") runs.push([card, r]); }
+      const fb = card.querySelector(".flipbtn");
+      if (fb) fb.onclick = () => { const on = card.classList.toggle("flipped"); fb.textContent = on ? "back to the toy ↻" : "why I made it ↻"; };
+    });
+    // the terminal starts typing when it scrolls into view
+    if ("IntersectionObserver" in window) {
+      const io = new IntersectionObserver((es) => es.forEach((e) => { if (e.isIntersecting) { const r = runs.find(([c]) => c === e.target); r && r[1](); io.unobserve(e.target); } }), { threshold: .4 });
+      runs.forEach(([c]) => io.observe(c));
+    } else runs.forEach(([, r]) => r());
   })();
   </script>
 </body>
