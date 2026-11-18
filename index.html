@@ -172,6 +172,7 @@
     const SRC = [
       ["star_posts", "slug,title,published_at", "published_at", (r) => ({ key: "lecto", text: String(r.title || "lect(o)").slice(0, 34), href: `lecto.html?p=${encodeURIComponent(r.slug)}` })],
       ["star_verbum", "created_at", "created_at", () => ({ key: "lecto", text: "Verbum Diei", href: "lecto.html" })],
+      ["star_lumina", "name,created_at", "created_at", (r) => ({ key: "lecto", text: `${String(r.name || "Lumina(Ry)").slice(0, 34)} · Lumina(Ry)`, href: "lecto.html#lumina" })],
       ["star_flori", "created_at", "created_at", () => ({ key: "florilegium", text: "in Florilegium", href: "florilegium.html" })],
       ["star_songs", "created_at", "created_at", () => ({ key: "nocturnes", text: "in Nocturnes", href: "nocturnes.html" })],
       ["star_places", "created_at", "created_at", () => ({ key: "lieux", text: "in Lieux", href: "lieux.html" })],
@@ -179,7 +180,9 @@
     ];
     Promise.all(SRC.map(async ([t, cols, by, make]) => {
       try {
-        const { data, error } = await sb.from(t).select(cols).eq("published", true).order(by, { ascending: false }).limit(1);
+        let q = sb.from(t).select(cols).eq("published", true);
+        if (t === "star_lumina") q = q.eq("planned", false); // faint "not written yet" stars don't count
+        const { data, error } = await q.order(by, { ascending: false }).limit(1);
         if (error || !data || !data[0] || !data[0][by]) return null;
         return { at: new Date(data[0][by]).getTime(), when: data[0][by], ...make(data[0]) };
       } catch { return null; }
@@ -190,11 +193,11 @@
       setTimeout(shoot, 2500); setInterval(shoot, 25000);
     });
 
-    const tables = { lecto: ["star_posts", "star_verbum"], florilegium: "star_flori", nocturnes: "star_songs", lieux: "star_places", lab: "star_projects" };
+    const tables = { lecto: ["star_posts", "star_verbum", "star_lumina"], florilegium: "star_flori", nocturnes: "star_songs", lieux: "star_places", lab: "star_projects" };
     const sky = document.getElementById("sky");
     stars.forEach(async (s) => {
       if (!tables[s.key]) return;
-      const res = await Promise.all([].concat(tables[s.key]).map((t) => sb.from(t).select("id").limit(14)));
+      const res = await Promise.all([].concat(tables[s.key]).map((t) => (t === "star_lumina" ? sb.from(t).select("id").eq("planned", false) : sb.from(t).select("id")).limit(14)));
       res.flatMap((r) => r.data || []).slice(0, 14).forEach((row) => {
         const a = hash(row.id) * Math.PI * 2;
         const r = 7 + hash(row.id + "r") * 7; // % of width
