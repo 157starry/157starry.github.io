@@ -1,0 +1,6 @@
+# Mac & editor files
+.DS_Store
+*.code-workspace
+
+# work files from Claude (mockups, SQL), keep them local only
+Claude outputs/
