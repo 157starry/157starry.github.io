@@ -280,6 +280,31 @@
     .lm-foot{display:flex;flex-wrap:wrap;justify-content:space-between;gap:8px;margin-top:20px;padding-top:14px;border-top:1px solid var(--line);font-family:var(--sans);font-size:12.5px;color:var(--muted)}
     .lm-foot b{color:var(--ink)}
     @media (prefers-reduced-motion:reduce){.lm-card,.lm-star svg{transition:none}}
+
+    /* ===== Scrip(Ta) · the door to Les Muses de La Muse ===== */
+    .deckdoor{position:relative;display:flex;align-items:center;gap:18px;overflow:hidden;text-decoration:none;color:#f6efe4;border-radius:20px;padding:22px 22px 22px 24px;margin-bottom:14px;min-height:190px;
+      background:radial-gradient(90% 120% at 15% 0%,#3a2766 0%,#1d1440 55%,#0e0a22 100%);box-shadow:0 14px 30px -18px rgba(29,20,64,.7);transition:transform .35s cubic-bezier(.3,1.4,.5,1)}
+    .deckdoor:hover{transform:translateY(-2px)}
+    .deckdoor::before{content:"";position:absolute;inset:0;pointer-events:none;background:radial-gradient(40% 50% at 85% 20%,rgba(255,140,210,.22),transparent 70%),radial-gradient(40% 50% at 70% 100%,rgba(110,200,255,.18),transparent 70%)}
+    .deckdoor .dd-text{position:relative;flex:1;min-width:0}
+    .deckdoor .dd-k{font-family:var(--sans);font-size:10px;letter-spacing:.32em;color:#c9b6e8}
+    .deckdoor h3{font-family:var(--serif-display);font-weight:900;font-size:clamp(25px,4.4vw,32px);line-height:1.05;margin-top:8px;
+      background:linear-gradient(100deg,#ffe7a3,#ffb8e2 30%,#c6b5ff 55%,#9fe6ff 80%,#ffe7a3);background-size:220% 100%;-webkit-background-clip:text;background-clip:text;color:transparent;animation:ddfoil 6s linear infinite alternate}
+    .deckdoor .dd-dek{font-family:var(--serif);font-style:italic;font-size:15px;color:#d8cbee;margin-top:6px}
+    .deckdoor .dd-small{font-family:var(--sans);font-size:11.5px;color:#c9b6e8;margin-top:12px}
+    .deckdoor .dd-go{display:inline-block;margin-top:14px;font-family:var(--sans);font-size:12.5px;font-weight:700;letter-spacing:.06em;color:#2b1d47;border-radius:999px;padding:8px 15px;
+      background:linear-gradient(135deg,#ffe7a3,#ffb8e2 50%,#c6b5ff)}
+    .deckdoor .dd-fan{position:relative;flex:none;width:130px;height:150px}
+    .deckdoor .dd-fan i{position:absolute;left:34px;top:8px;width:62px;height:100px;border-radius:9px;padding:2px;background:linear-gradient(150deg,#fff1c4,#c99a3c 35%,#fbe3a0 55%,#a8792a 80%,#f6dc96);
+      transform-origin:50% 130%;transition:transform .5s cubic-bezier(.3,1.5,.5,1);box-shadow:0 8px 16px rgba(0,0,0,.4)}
+    .deckdoor .dd-fan i::after{content:"";display:block;width:100%;height:100%;border-radius:7px;background:linear-gradient(115deg,#ffd6f0,#d9c8ff 20%,#bfe9ff 40%,#d2ffe6 60%,#fff2c2 80%,#ffd0e6);background-size:250% 250%;animation:ddfoil 7s ease-in-out infinite alternate}
+    .deckdoor .dd-fan i:nth-child(1){transform:rotate(-16deg)} .deckdoor .dd-fan i:nth-child(2){transform:rotate(0deg)} .deckdoor .dd-fan i:nth-child(3){transform:rotate(16deg)}
+    .deckdoor:hover .dd-fan i:nth-child(1){transform:rotate(-26deg)} .deckdoor:hover .dd-fan i:nth-child(3){transform:rotate(26deg)} .deckdoor:hover .dd-fan i:nth-child(2){transform:translateY(-6px)}
+    .deckdoor .dd-fan b{position:absolute;left:34px;top:8px;width:62px;height:100px;display:flex;align-items:center;justify-content:center;font-family:Georgia,serif;font-size:22px;color:#7a5420;pointer-events:none}
+    @keyframes ddfoil{from{background-position:0% 30%}to{background-position:100% 70%}}
+    @media (min-width:900px){#posts .deckdoor{grid-column:1/-1;margin:0}}
+    @media (max-width:440px){.deckdoor{padding:18px;gap:6px}.deckdoor .dd-fan{width:100px;height:130px;transform:scale(.78);transform-origin:center;margin-right:-8px}}
+    @media (prefers-reduced-motion:reduce){.deckdoor h3,.deckdoor .dd-fan i::after{animation:none}.deckdoor,.deckdoor .dd-fan i{transition:none}}
   </style>
 </head>
 <body>
@@ -403,19 +428,29 @@
     }
     function renderPosts() {
       const list = posts.filter((p) => cat === "All" || p.category === cat);
+      // Les Muses de La Muse lives in Scrip(Ta): a door to the oracle deck, right after the featured piece
+      const door = `<a class="deckdoor" href="muses.html" aria-label="Open Les Muses de La Muse, an oracle deck for de Muse">
+        <div class="dd-text"><div class="dd-k">AN ORACLE DECK · DE MUSE</div><h3>Les Muses de La Muse</h3>
+          <p class="dd-dek">untuk mereka yang kusaksikan mekar</p>
+          <div class="dd-small">33 cards · a prologue &amp; an epilogue · written in 2026, while I was La Muse</div>
+          <span class="dd-go">open the deck ✦</span></div>
+        <div class="dd-fan" aria-hidden="true"><i></i><i></i><i></i><b>✦</b></div></a>`;
+      if (cat === "All" && !list.length) { document.getElementById("posts").innerHTML = door; return; }
       if (!list.length) {
         document.getElementById("posts").innerHTML = `<div class="empty">The first page is still being written.<br><span class="scribble">soon ✧</span></div>`;
         return;
       }
       const feat = cat === "All" ? (list.find((p) => p.featured) || list[0]) : null;
       const ordered = feat ? [feat, ...list.filter((p) => p !== feat)] : list;
-      document.getElementById("posts").innerHTML = ordered.map((p) => {
+      const cards = ordered.map((p) => {
         const f = p === feat;
         return `<a class="card ${f ? "feat" : ""}" href="lecto.html?p=${encodeURIComponent(p.slug)}">
           <div class="meta">${f ? "Featured · " : ""}${esc(p.category || "lect(o)")}</div>
           <h3>${esc(p.title)}</h3>${p.dek ? `<p>${esc(p.dek)}</p>` : ""}
           <div class="small">${fmtMonth(p.published_at)} · ${readMins(p.body)} min read</div></a>`;
-      }).join("");
+      });
+      if (cat === "All") cards.splice(feat ? 1 : 0, 0, door);
+      document.getElementById("posts").innerHTML = cards.join("");
     }
     renderCats(); renderPosts();
 

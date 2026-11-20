@@ -4,3 +4,7 @@
 
 # work files from Claude (mockups, SQL), keep them local only
 Claude outputs/
+
+# setup notes & SQL stay off GitHub
+muses.sql
+HANDOFF-*.md

@@ -136,6 +136,35 @@
         { k: "published", label: "Visible", type: "check", def: true },
       ],
     },
+    muses: {
+      label: "Les Muses", table: "star_muses", reorder: true,
+      hint: "The Oracle Deck cards. Tap a name to write the words on the back. Drag ⠿ to change the order inside each deck.",
+      title: (r) => r.name,
+      sub: (r) => [r.grp === "conseil" ? "Le Conseil" : "Les Membres", r.label, r.note ? "written ✓" : "not written yet"].filter(Boolean).join(" · "),
+      badge: (r) => (r.note ? "" : "✎ empty"),
+      fields: [
+        { k: "name", label: "Name (front of the card)", type: "text", req: true, max: 40 },
+        { k: "grp", label: "Deck", type: "select", def: "membres", options: [["conseil", "Le Conseil"], ["membres", "Les Membres"]] },
+        { k: "label", label: "Line under the name", type: "text", max: 40, suggest: true,
+          labelIf: (v) => (v.grp === "conseil" ? "Role (French, e.g. LA PLUME)" : "Major (English, e.g. MANAGEMENT)"),
+          hint: "Roles: LA MUSE, LA LUMIÈRE, LA TRÉSORIÈRE, LA PLUME, LA VOIX. Majors pick their emblem automatically." },
+        { k: "note", label: "The words on the back", type: "textarea", max: 600, hint: "About 25–60 words fit best. Line breaks are kept. Empty = the card says it is still being written." },
+        { k: "published", label: "Visible", type: "check", def: true },
+      ],
+    },
+    musesPage: {
+      label: "Les Muses · letters", table: "star_muses_page",
+      hint: "Title, the line under it, and the Prologue / Epilogue letters. Edit the one entry here (no need for + New).",
+      order: [["created_at", true]],
+      title: (r) => r.title || "Les Muses de La Muse",
+      sub: (r) => [r.prologue ? "prologue ✓" : "no prologue yet", r.epilogue ? "epilogue ✓" : "no epilogue yet"].join(" · "),
+      fields: [
+        { k: "title", label: "Title", type: "text", max: 120 },
+        { k: "dek", label: "Line under the title", type: "text", max: 200 },
+        { k: "prologue", label: "Prologue (the opening letter)", type: "markdown" },
+        { k: "epilogue", label: "Epilogue (the closing letter)", type: "markdown" },
+      ],
+    },
   };
 
   let cur = "lecto";
@@ -165,7 +194,7 @@
     if (error) { box.textContent = "Run star_views.sql in Supabase first."; return; }
     const { data: posts } = await sb.from("star_posts").select("slug,title");
     const titles = Object.fromEntries((posts || []).map((p) => [`post:${p.slug}`, p.title]));
-    const PAGES = { "page:index": "Home (the sky)", "page:lecto": "lect(o)", "page:florilegium": "Florilegium", "page:nocturnes": "Nocturnes", "page:lieux": "Lieux", "page:lab": "Starry Lab" };
+    const PAGES = { "page:index": "Home (the sky)", "page:lecto": "lect(o)", "page:florilegium": "Florilegium", "page:nocturnes": "Nocturnes", "page:lieux": "Lieux", "page:lab": "Starry Lab", "page:muses": "Les Muses de La Muse" };
     const rows = data || [];
     $("viewsTotal").textContent = rows.length ? `· ${rows.reduce((a, r) => a + Number(r.count), 0)} total` : "";
     box.innerHTML = rows.length ? rows.map((r) => `<div style="display:flex;justify-content:space-between;gap:12px;padding:4px 0;border-top:1px solid var(--line,#eee)">
