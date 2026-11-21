@@ -12,6 +12,8 @@ window.LAB_WORLDS = (function () {
 
   const STARRY = `<svg aria-hidden="true" id="sp-starrySvg" viewBox="0 0 200 270" xmlns="http://www.w3.org/2000/svg"> <defs> <radialGradient id="sp-hairG" cx="40%" cy="30%" r="80%"> <stop offset="0" stop-color="#f6f8ff"/><stop offset=".45" stop-color="#bcd2ff"/> <stop offset=".8" stop-color="#9eb2ff"/><stop offset="1" stop-color="#c9a9ff"/> </radialGradient> <linearGradient id="sp-hairTail" x1="0" y1="1" x2="1" y2="0"> <stop offset="0" stop-color="#bcd2ff"/><stop offset=".55" stop-color="#e0b9ff"/><stop offset="1" stop-color="#ffc2e4" stop-opacity=".2"/> </linearGradient> <radialGradient id="sp-skin" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#fff5f0"/><stop offset="1" stop-color="#ffe0d8"/></radialGradient> <linearGradient id="sp-dress" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c4e6ff"/><stop offset="1" stop-color="#84b5f2"/></linearGradient> <radialGradient id="sp-eyeG" cx="50%" cy="30%" r="70%"><stop offset="0" stop-color="#7c9ae0"/><stop offset="1" stop-color="#2b3870"/></radialGradient> <filter id="sp-glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="7"/></filter> </defs> <ellipse cx="100" cy="150" rx="94" ry="22" fill="none" stroke="rgba(225,232,255,.45)" stroke-width="1.3" stroke-dasharray="2 6" transform="rotate(-14 100 150)"/> <!-- cosmic hair tail --> <path d="M112 46 C140 20 170 8 199 2 C190 30 172 56 146 82 C134 72 122 60 112 46Z" fill="url(#sp-hairTail)" filter="url(#sp-glow)" opacity=".9"/> <path d="M112 46 C140 20 170 8 199 2 C190 30 172 56 146 82 C134 72 122 60 112 46Z" fill="url(#sp-hairTail)" opacity=".75"/> <!-- hair back --> <path d="M50 92 C46 50 74 30 102 30 C134 30 156 52 152 94 C152 118 146 132 140 138 L60 138 C54 130 50 116 50 92Z" fill="url(#sp-hairG)" filter="url(#sp-glow)" opacity=".7"/> <path d="M50 92 C46 50 74 30 102 30 C134 30 156 52 152 94 C152 118 146 132 140 138 L60 138 C54 130 50 116 50 92Z" fill="url(#sp-hairG)"/> <!-- legs --> <rect x="87" y="208" width="9" height="36" rx="4.5" fill="url(#sp-skin)"/> <rect x="104" y="208" width="9" height="36" rx="4.5" fill="url(#sp-skin)"/> <ellipse cx="91" cy="246" rx="7.5" ry="4.2" fill="#8ea8ee"/> <ellipse cx="109" cy="246" rx="7.5" ry="4.2" fill="#8ea8ee"/> <!-- left arm --> <path d="M80 142 Q65 160 62 182" stroke="#ffe4dc" stroke-width="9" stroke-linecap="round" fill="none"/> <circle cx="62" cy="184" r="5.5" fill="#ffe4dc"/> <!-- dress --> <path d="M80 134 Q100 128 120 134 L128 150 Q136 180 146 212 Q131 220 116 214 Q100 222 86 214 Q70 220 54 212 Q64 180 72 150 Z" fill="url(#sp-dress)"/> <path d="M70 196 Q100 204 132 196" stroke="rgba(255,255,255,.35)" stroke-width="1.5" fill="none"/> <ellipse cx="78" cy="143" rx="11" ry="9" fill="#acd4fb"/> <!-- head --> <g id="sp-head"> <ellipse cx="100" cy="92" rx="44" ry="40" fill="url(#sp-skin)"/> <path d="M56 92 C54 58 78 42 102 42 C128 42 148 60 144 92 C138 78 130 70 124 66 C122 76 114 80 106 78 C108 72 106 66 104 64 C96 74 84 80 70 80 C66 84 60 88 56 92Z" fill="url(#sp-hairG)"/> <path d="M56 88 C52 110 56 126 64 134 C62 118 62 104 60 92Z" fill="url(#sp-hairG)"/> <path d="M144 88 C148 110 144 126 136 134 C138 118 138 104 140 92Z" fill="url(#sp-hairG)"/> <circle cx="72" cy="58" r="1.6" fill="#fff"/> <circle cx="128" cy="54" r="1.3" fill="#fff"/> <circle cx="160" cy="34" r="1.5" fill="#fff"/> <circle cx="182" cy="16" r="1.2" fill="#fff"/> <!-- star tiara --> <g fill="#fff6c9" style="filter:drop-shadow(0 0 4px #fff3a8)"> <path d="M100 30 L102.6 37 L109.5 39.5 L102.6 42 L100 49 L97.4 42 L90.5 39.5 L97.4 37Z"/> <path d="M86 40 L87.4 43.6 L91 45 L87.4 46.4 L86 50 L84.6 46.4 L81 45 L84.6 43.6Z"/> <path d="M114 40 L115.4 43.6 L119 45 L115.4 46.4 L114 50 L112.6 46.4 L109 45 L112.6 43.6Z"/> </g> <g id="sp-eyeL"> <g><ellipse cx="82" cy="98" rx="7.5" ry="9.5" fill="url(#sp-eyeG)"/><circle cx="84.5" cy="94" r="2.8" fill="#fff"/><circle cx="80" cy="101.5" r="1.3" fill="#fff" opacity=".8"/></g> <path d="M74 101 Q82 93 90 101" stroke="#2b3870" stroke-width="2.6" fill="none" stroke-linecap="round"/> </g> <g id="sp-eyeR"> <g><ellipse cx="118" cy="98" rx="7.5" ry="9.5" fill="url(#sp-eyeG)"/><circle cx="120.5" cy="94" r="2.8" fill="#fff"/><circle cx="116" cy="101.5" r="1.3" fill="#fff" opacity=".8"/></g> <path d="M110 101 Q118 93 126 101" stroke="#2b3870" stroke-width="2.6" fill="none" stroke-linecap="round"/> </g> <ellipse cx="71" cy="112" rx="8" ry="5" fill="#ff9fb8" opacity=".55"/> <ellipse cx="129" cy="112" rx="8" ry="5" fill="#ff9fb8" opacity=".55"/> <path d="M94 113 Q100 119 106 113" stroke="#d9647e" stroke-width="2.2" fill="none" stroke-linecap="round"/> </g> <!-- right (waving) arm --> <g id="sp-armR"> <path d="M122 142 L144 178" stroke="#ffe4dc" stroke-width="9" stroke-linecap="round"/> <circle cx="145" cy="180" r="5.5" fill="#ffe4dc"/> <ellipse cx="122" cy="143" rx="11" ry="9" fill="#acd4fb"/> </g> </svg>`;
 
+  const PORTAL = svg("0 0 100 100", `<circle cx="50" cy="50" r="46" fill="#080b1a"/><circle cx="50" cy="50" r="40" fill="none" stroke="#47e0ff" stroke-width="2" stroke-dasharray="5 5" opacity=".7"/><circle cx="50" cy="50" r="30" fill="none" stroke="#ff4fd8" stroke-width="3" stroke-dasharray="40 30"/><circle class="blink" cx="50" cy="50" r="14" fill="#8ff7ff"/><circle cx="46" cy="46" r="5" fill="#fff" opacity=".85"/><circle cx="50" cy="20" r="3.5" fill="#ffe45c"/>`);
+
   const W = [];
 
   // Merry Christmas.txt — a terminal that types the tree
@@ -181,6 +183,37 @@ window.LAB_WORLDS = (function () {
     },
   });
 
+  // Your Twin in a Parallel World — open the portal, get a tiny holo card
+  const TWINS = [["Intergalactic Lighthouse Keeper", "#47e0ff", "#ff4fd8"], ["Starlight Courier", "#47e0ff", "#ff4fd8"], ["Keeper of the Cosmic Clock", "#ffe45c", "#8b6bff"], ["Time-Hopping Tourist", "#ffe45c", "#8b6bff"],
+    ["Cosmic Time Thief", "#ffe45c", "#8b6bff"], ["Curator of the Dream Museum", "#ff4fd8", "#ffe45c"], ["Spaceship DJ", "#ff4fd8", "#ffe45c"], ["Neon Dream Architect", "#ff4fd8", "#ffe45c"],
+    ["Black Hole Librarian", "#a48bff", "#47e0ff"], ["Star-Sea Diver", "#a48bff", "#47e0ff"], ["Hacker of Cosmic Secrets", "#a48bff", "#47e0ff"], ["Comet Dragon Trainer", "#ff9d4f", "#ff4fd8"],
+    ["Captain of the Snack Pirates", "#ff9d4f", "#ff4fd8"], ["Ruler of the Meteor Storm", "#ff9d4f", "#ff4fd8"], ["Galactic Graffiti Artist", "#ff4fd8", "#ffe45c"], ["Silent Gravity Engineer", "#a48bff", "#47e0ff"]];
+  const RAR = ["RARE", "EPIC", "LEGENDARY", "MYTHIC"];
+  W.push({
+    test: (p) => /parallel|paralel|dunia.?paralel/i.test(p.name + " " + p.url), cls: "w-twin", sticker: ["new ✧", "pink"],
+    html: (p) => `<div class="grid"></div>
+      <div class="stage"><div class="portal"><span class="r1"></span><span class="r2"></span><span class="r3"></span><span class="orb"></span></div>
+      <div class="holo" hidden><div class="ht"><b></b><span></span></div><div class="hn"></div><div class="hk">your twin · no. <i></i></div></div></div>
+      <div class="side"><div class="k">PARALLEL//PORTAL</div><div class="q">somewhere, another you is waiting.</div>
+      <button type="button" class="go">open the portal ✦</button>${p.url ? `<a class="ask" href="${p.url}" target="_blank" rel="noopener">find your real twin · 10 questions ↗</a>` : ""}</div>`,
+    init(el) {
+      const portal = el.querySelector(".portal"), holo = el.querySelector(".holo"), go = el.querySelector(".go");
+      go.onclick = () => {
+        holo.hidden = true; portal.classList.add("busy"); go.disabled = true; go.textContent = "scanning…";
+        setTimeout(() => {
+          const [t, c1, c2] = pick(TWINS);
+          holo.querySelector("b").textContent = pick(RAR);
+          holo.querySelector(".ht span").textContent = String(1 + Math.floor(Math.random() * 20)).padStart(2, "0") + "/20";
+          holo.querySelector(".hn").textContent = t; holo.querySelector(".hn").style.color = c1;
+          holo.querySelector("i").textContent = String(Math.floor(Math.random() * 10000)).padStart(4, "0");
+          holo.style.setProperty("--c1", c1); holo.style.setProperty("--c2", c2);
+          portal.classList.remove("busy"); holo.hidden = false; holo.classList.remove("pop"); void holo.offsetWidth; holo.classList.add("pop");
+          go.disabled = false; go.textContent = "open another ✦";
+        }, 1100);
+      };
+    },
+  });
+
   // where each character sits: [world test, svg, css position]
   const PEEKS = [
     [/tabula|gardenia/i, BUNNY, "right:22px;top:-26px;width:58px;height:58px"],
@@ -188,6 +221,7 @@ window.LAB_WORLDS = (function () {
     [/novem|sudoku/i, STARCAT, "right:18px;top:-22px;width:56px;height:56px"],
     [/grind|study.?quest/i, PIXBUDDY, "right:22px;top:-22px;width:46px;height:40px"],
     [/song.?of.?the.?day|\/song\/?$|starry ?·? ?song/i, STARRY, "right:16px;top:-50px;width:56px;height:76px"],
+    [/parallel|paralel|dunia.?paralel/i, PORTAL, "right:20px;top:-26px;width:54px;height:54px"],
     [/starpal/i, PIXCAT, "right:24px;top:-18px;width:44px;height:34px"],
   ];
   return {

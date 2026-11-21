@@ -135,4 +135,42 @@
 .w-sotd .ask { position: absolute; bottom: 10px; left: 0; right: 0; font-family: var(--sans); font-size: 11.5px; color: #c9b8ff; text-decoration: none; }
 .w-sotd .ask:hover { text-decoration: underline; }
 
-@media (prefers-reduced-motion: reduce) { .w-sotd .twk-sky i, .w-sotd .res { animation: none; transition: none; } .proj, .face, .peek { transition: none; } .blink, .w-term .cur, .w-novem .twk-sky i { animation: none; } }
+/* neon portal · Your Twin in a Parallel World */
+.w-twin { background: radial-gradient(70% 90% at 85% 10%, rgba(139,107,255,.35), transparent 70%), radial-gradient(60% 80% at 0% 100%, rgba(71,224,255,.18), transparent 70%), #080b1a;
+  color: #eef0ff; font-family: "Space Grotesk", var(--sans); flex-direction: row; align-items: center; gap: 4%; padding: 14px 6%; overflow: hidden; }
+.w-twin .grid { position: absolute; left: -50%; right: -50%; bottom: -20%; height: 55%; opacity: .25; pointer-events: none;
+  background-image: linear-gradient(rgba(71,224,255,.6) 1px, transparent 1px), linear-gradient(90deg, rgba(71,224,255,.6) 1px, transparent 1px); background-size: 34px 34px;
+  transform: perspective(300px) rotateX(70deg); -webkit-mask-image: linear-gradient(to top, #000, transparent 85%); mask-image: linear-gradient(to top, #000, transparent 85%); }
+.w-twin > * { position: relative; }
+.w-twin .stage { flex: none; width: 38%; aspect-ratio: 1; display: grid; place-items: center; }
+.w-twin .portal { position: absolute; inset: 0; }
+.w-twin .portal span { position: absolute; border-radius: 50%; }
+.w-twin .r1 { inset: 0; border: 1.5px dashed rgba(71,224,255,.55); animation: tw-rot 18s linear infinite; }
+.w-twin .r2 { inset: 12%; border: 2px solid transparent; border-top-color: #ff4fd8; border-bottom-color: #47e0ff; animation: tw-rot 6s linear infinite reverse; filter: drop-shadow(0 0 6px rgba(255,79,216,.6)); }
+.w-twin .r3 { inset: 26%; border: 1px solid rgba(255,228,92,.6); animation: tw-rot 10s linear infinite; }
+.w-twin .orb { inset: 36%; background: radial-gradient(circle at 35% 30%, #fff, #8ff7ff 25%, #5a3dd8 65%, #1a1446); box-shadow: 0 0 30px rgba(71,224,255,.7), 0 0 60px rgba(139,107,255,.5); animation: tw-breathe 3s ease-in-out infinite; }
+.w-twin .portal.busy .orb { animation-duration: .5s; } .w-twin .portal.busy .r2 { animation-duration: 1.2s; }
+@keyframes tw-rot { to { transform: rotate(360deg); } }
+@keyframes tw-breathe { 50% { transform: scale(.88); filter: brightness(1.3); } }
+.w-twin .holo { position: relative; z-index: 2; width: 64%; aspect-ratio: 3 / 4.3; border-radius: 10px; padding: 8px; display: flex; flex-direction: column; justify-content: space-between;
+  background: linear-gradient(160deg, #1e2050, #10122c 55%, #26124c); box-shadow: 0 10px 30px rgba(80,40,200,.6), 0 0 0 1.5px var(--c1, #47e0ff); overflow: hidden; }
+.w-twin .holo::before { content: ""; position: absolute; inset: 0; background: linear-gradient(115deg, transparent 20%, rgba(255,60,200,.4) 35%, rgba(60,220,255,.4) 50%, rgba(255,235,90,.3) 62%, transparent 78%); background-size: 250% 250%; mix-blend-mode: color-dodge; animation: tw-sheen 3s ease-in-out infinite alternate; }
+@keyframes tw-sheen { from { background-position: 0% 0%; } to { background-position: 100% 100%; } }
+.w-twin .holo.pop { animation: tw-pop .8s cubic-bezier(.2,.8,.2,1); }
+@keyframes tw-pop { 0% { transform: rotateY(180deg) scale(.5); opacity: 0; filter: brightness(3); } 100% { transform: none; opacity: 1; filter: none; } }
+.w-twin .ht { position: relative; display: flex; justify-content: space-between; align-items: center; font-size: 8px; color: #b4b8e6; }
+.w-twin .ht b { font-family: "Unbounded", sans-serif; font-size: 7px; letter-spacing: 1px; padding: 2px 6px; border-radius: 99px; color: #2a1300; background: linear-gradient(90deg, #ffe45c, #ff9d4f); }
+.w-twin .hn { position: relative; font-family: "Unbounded", sans-serif; font-weight: 700; font-size: clamp(10px, 1.35vw, 13px); line-height: 1.15; }
+.w-twin .hk { position: relative; font-family: ui-monospace, Menlo, monospace; font-size: 7.5px; letter-spacing: 1px; color: #b4b8e6; }
+.w-twin .hk i { font-style: normal; color: #eef0ff; }
+.w-twin .side { flex: 1; min-width: 0; }
+.w-twin .k { font-family: ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: .28em; color: #47e0ff; }
+.w-twin .q { font-family: "Unbounded", sans-serif; font-weight: 700; font-size: clamp(15px, 2.1vw, 20px); line-height: 1.2; margin: 6px 0 12px;
+  background: linear-gradient(100deg, #fff 10%, #47e0ff 50%, #ff4fd8 85%); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.w-twin .go { font-family: inherit; font-weight: 700; font-size: 13px; color: #0a0d1f; border: 0; border-radius: 12px; padding: 9px 14px; background: linear-gradient(90deg, #47e0ff, #ff4fd8); box-shadow: 0 6px 18px rgba(255,79,216,.3); }
+.w-twin .go:disabled { opacity: .7; }
+.w-twin .ask { display: block; margin-top: 10px; font-size: 11.5px; color: #b4b8e6; text-decoration: none; }
+.w-twin .ask:hover { color: #47e0ff; text-decoration: underline; }
+@media (max-width: 520px) { .w-twin { padding: 12px 5%; } .w-twin .q { font-size: 14px; } .w-twin .stage { width: 40%; } }
+
+@media (prefers-reduced-motion: reduce) { .w-twin .portal span, .w-twin .holo::before, .w-twin .holo.pop { animation: none; } .w-sotd .twk-sky i, .w-sotd .res { animation: none; transition: none; } .proj, .face, .peek { transition: none; } .blink, .w-term .cur, .w-novem .twk-sky i { animation: none; } }
