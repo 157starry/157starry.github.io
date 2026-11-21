@@ -1,0 +1,935 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Siapa Kamu di Dunia Paralel?</title>
+<meta name="description" content="10 pertanyaan acak, 20 versi dirimu di dunia paralel. Kamu yang mana?">
+<meta property="og:type" content="website">
+<meta property="og:title" content="Siapa Kamu di Dunia Paralel?">
+<meta property="og:description" content="10 pertanyaan acak, 20 versi dirimu di dunia paralel. Kamu yang mana?">
+<meta property="og:url" content="https://157starry.github.io/dunia-paralel/">
+<meta name="theme-color" content="#080b1a">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Unbounded:wght@500;700;800&family=Space+Grotesk:wght@400;500;700&family=Share+Tech+Mono&display=swap" rel="stylesheet">
+<style>
+:root{
+  --bg:#080b1a; --ink:#eef0ff; --dim:#b4b8e6; --cyan:#47e0ff; --pink:#ff4fd8; --gold:#ffe45c; --violet:#8b6bff;
+  --glass:rgba(255,255,255,.05); --line:rgba(255,255,255,.16);
+}
+*{box-sizing:border-box}
+html,body{margin:0;min-height:100%}
+body{font-family:'Space Grotesk',system-ui,sans-serif;color:var(--ink);background:var(--bg);min-height:100vh;overflow-x:hidden}
+.sky{position:fixed;inset:0;z-index:0;pointer-events:none;
+  background:
+   radial-gradient(700px 480px at 85% 15%,rgba(139,107,255,.28),transparent 70%),
+   radial-gradient(600px 420px at 5% 95%,rgba(71,224,255,.16),transparent 70%),
+   radial-gradient(500px 360px at 50% 120%,rgba(255,79,216,.14),transparent 70%)}
+.stars{position:fixed;inset:0;z-index:0;pointer-events:none;opacity:.8;
+  background-image:
+   radial-gradient(1.5px 1.5px at 8% 14%,#fff,transparent),radial-gradient(1px 1px at 22% 72%,#fffb,transparent),
+   radial-gradient(1.5px 1.5px at 41% 9%,#fffc,transparent),radial-gradient(1px 1px at 57% 88%,#fff9,transparent),
+   radial-gradient(1.5px 1.5px at 71% 22%,#fff,transparent),radial-gradient(1px 1px at 93% 61%,#fffb,transparent),
+   radial-gradient(1px 1px at 33% 42%,#fff8,transparent),radial-gradient(1px 1px at 81% 81%,#fffa,transparent),
+   radial-gradient(1.5px 1.5px at 64% 50%,#fff9,transparent),radial-gradient(1px 1px at 14% 50%,#fff9,transparent);
+  animation:drift 60s linear infinite alternate}
+@keyframes drift{to{transform:translateY(-30px)}}
+.grid-floor{position:fixed;left:-50%;right:-50%;bottom:-10%;height:45%;z-index:0;pointer-events:none;opacity:.22;
+  background-image:linear-gradient(rgba(71,224,255,.6) 1px,transparent 1px),linear-gradient(90deg,rgba(71,224,255,.6) 1px,transparent 1px);
+  background-size:60px 60px;transform:perspective(500px) rotateX(70deg);
+  mask-image:linear-gradient(to top,#000,transparent 85%);-webkit-mask-image:linear-gradient(to top,#000,transparent 85%)}
+
+.app{position:relative;z-index:1;max-width:1080px;margin:0 auto;padding:20px 24px 48px;min-height:100vh;display:flex;flex-direction:column}
+header{display:flex;justify-content:space-between;align-items:center;gap:12px;padding:6px 0 18px}
+.brand{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:3px;color:var(--cyan);display:flex;align-items:center;gap:10px}
+.brand i{width:8px;height:8px;border-radius:50%;background:var(--cyan);box-shadow:0 0 12px var(--cyan);animation:pulse 1.6s ease-in-out infinite}
+@keyframes pulse{50%{opacity:.3}}
+.lang{display:flex;padding:4px;border-radius:99px;border:1px solid var(--line);background:rgba(10,12,32,.7);backdrop-filter:blur(8px)}
+.lang button{font:700 13px 'Space Grotesk',sans-serif;letter-spacing:1px;color:var(--dim);background:none;border:none;padding:10px 16px;border-radius:99px;cursor:pointer;min-width:52px;transition:all .25s}
+.lang button[aria-pressed="true"]{color:#0a0d1f;background:linear-gradient(90deg,var(--cyan),#a8f3ff);box-shadow:0 0 18px rgba(71,224,255,.5)}
+
+main{flex:1;display:flex;align-items:center;justify-content:center}
+.screen{width:100%;display:none;animation:in .5s ease both}
+.screen.on{display:block}
+@keyframes in{from{opacity:0;transform:translateY(14px)}to{opacity:1;transform:none}}
+
+/* portal core (abstract, no mascot) */
+.core{--s:220px;position:relative;width:var(--s);height:var(--s);flex:none}
+.core span{position:absolute;border-radius:50%}
+.core .r1{inset:0;border:1.5px dashed rgba(71,224,255,.55);animation:rot 18s linear infinite}
+.core .r2{inset:12%;border:2px solid transparent;border-top-color:var(--pink);border-bottom-color:var(--cyan);animation:rot 6s linear infinite reverse;filter:drop-shadow(0 0 8px rgba(255,79,216,.6))}
+.core .r3{inset:26%;border:1px solid rgba(255,228,92,.6);animation:rot 10s linear infinite}
+.core .r3::before{content:"";position:absolute;top:-5px;left:50%;width:9px;height:9px;margin-left:-4.5px;border-radius:50%;background:var(--gold);box-shadow:0 0 12px var(--gold)}
+.core .orb{inset:36%;background:radial-gradient(circle at 35% 30%,#ffffff,#8ff7ff 25%,#5a3dd8 65%,#1a1446);box-shadow:0 0 40px rgba(71,224,255,.7),0 0 90px rgba(139,107,255,.5);animation:breathe 3s ease-in-out infinite}
+.core.busy .orb{animation:breathe .6s ease-in-out infinite}
+.core.busy .r2{animation-duration:1.4s}
+@keyframes rot{to{transform:rotate(360deg)}}
+@keyframes breathe{50%{transform:scale(.88);filter:brightness(1.3)}}
+.core.blip .orb{animation:blip .5s ease}
+@keyframes blip{40%{transform:scale(1.15);filter:brightness(1.8)}}
+
+/* glass */
+.glass{background:linear-gradient(160deg,rgba(255,255,255,.07),rgba(255,255,255,.02));border:1px solid var(--line);border-radius:20px;backdrop-filter:blur(14px);-webkit-backdrop-filter:blur(14px)}
+.bubble{position:relative;padding:20px 22px;min-height:96px}
+.bubble .who{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:3px;color:var(--cyan);margin-bottom:8px;display:flex;justify-content:space-between;gap:8px}
+.bubble .who span:last-child{color:var(--dim);letter-spacing:1px}
+.bubble p{margin:0;font-size:21px;line-height:1.45;min-height:1.45em}
+.caret{display:inline-block;width:9px;height:1.1em;vertical-align:-3px;margin-left:2px;background:var(--cyan);animation:pulse .8s steps(2) infinite}
+
+.btn{font:700 16px 'Space Grotesk',sans-serif;color:#0a0d1f;border:none;border-radius:14px;padding:16px 26px;cursor:pointer;min-height:52px;
+  background:linear-gradient(90deg,var(--cyan),var(--pink));box-shadow:0 10px 30px rgba(255,79,216,.25);transition:transform .2s,box-shadow .2s}
+.btn:hover{transform:translateY(-2px);box-shadow:0 14px 36px rgba(71,224,255,.35)}
+.btn.ghost{color:var(--ink);background:var(--glass);border:1px solid var(--line);box-shadow:none}
+.btn.ghost:hover{background:rgba(255,255,255,.1)}
+.btn:disabled{opacity:.6;cursor:wait}
+.btn:focus-visible,.opt:focus-visible,.lang button:focus-visible,input:focus-visible{outline:2px solid var(--gold);outline-offset:3px}
+
+/* start */
+.start{display:grid;grid-template-columns:minmax(0,1.15fr) minmax(0,1fr);gap:48px;align-items:center}
+.start .stage{display:flex;flex-direction:column;align-items:center;gap:26px}
+.tag{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:4px;color:var(--pink)}
+h1{font-family:'Unbounded',sans-serif;font-weight:800;font-size:clamp(34px,5.2vw,58px);line-height:1.05;margin:12px 0 16px;
+  background:linear-gradient(100deg,#fff 10%,var(--cyan) 45%,var(--pink) 75%,var(--gold));-webkit-background-clip:text;background-clip:text;color:transparent;background-size:200% 100%;animation:sheen 6s ease-in-out infinite alternate}
+@keyframes sheen{to{background-position:100% 0}}
+.lead{font-size:18px;line-height:1.55;color:var(--dim);margin:0 0 26px;max-width:46ch}
+.field{display:flex;flex-direction:column;gap:8px;margin-bottom:18px;max-width:440px}
+.field label{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:2px;color:var(--cyan)}
+.field input{font:500 18px 'Space Grotesk',sans-serif;color:var(--ink);background:rgba(8,11,26,.6);border:1px solid var(--line);border-radius:14px;padding:16px 18px;min-height:54px;transition:border-color .2s,box-shadow .2s}
+.field input::placeholder{color:#8a8fbf}
+.field input:focus{border-color:var(--cyan);box-shadow:0 0 0 4px rgba(71,224,255,.15)}
+.row{display:flex;gap:14px;align-items:center;flex-wrap:wrap}
+.meta{font-size:14px;color:var(--dim)}
+.coll-mini{font-family:'Share Tech Mono',monospace;font-size:13px;letter-spacing:1px;color:var(--gold);margin-top:18px}
+
+/* quiz */
+.hud{display:flex;align-items:center;gap:14px;margin-bottom:22px;font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:2px;color:var(--cyan)}
+.bar{flex:1;height:8px;border-radius:8px;background:rgba(255,255,255,.1);overflow:hidden}
+.bar>div{height:100%;width:0;background:linear-gradient(90deg,var(--pink),var(--cyan));box-shadow:0 0 12px var(--cyan);transition:width .5s ease}
+.qtop{display:grid;grid-template-columns:120px minmax(0,1fr);gap:24px;align-items:center;margin-bottom:22px}
+.qtop .core{--s:120px}
+.opts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:14px}
+.opt{position:relative;display:flex;gap:14px;align-items:center;text-align:left;font:500 17px/1.35 'Space Grotesk',sans-serif;color:var(--ink);
+  padding:18px 20px;min-height:72px;border-radius:16px;border:1px solid var(--line);background:var(--glass);cursor:pointer;overflow:hidden;
+  transition:transform .2s,border-color .2s,background .2s;opacity:0;transform:translateY(10px)}
+.opts.show .opt{opacity:1;transform:none;transition:opacity .35s ease,transform .35s ease,border-color .2s,background .2s}
+.opts.show .opt:nth-child(2){transition-delay:.06s}.opts.show .opt:nth-child(3){transition-delay:.12s}.opts.show .opt:nth-child(4){transition-delay:.18s}
+.opt:hover{border-color:rgba(71,224,255,.7);background:rgba(71,224,255,.08)}
+.opt .k{flex:none;width:34px;height:34px;border-radius:10px;display:grid;place-items:center;font:700 14px 'Share Tech Mono',monospace;color:var(--cyan);border:1px solid rgba(71,224,255,.5)}
+.opt.pick{border-color:var(--cyan);background:linear-gradient(90deg,rgba(255,79,216,.22),rgba(71,224,255,.22))}
+.opt.pick .k{background:var(--cyan);color:#0a0d1f}
+.opt.pick::after{content:"";position:absolute;inset:0;background:linear-gradient(110deg,transparent 30%,rgba(255,255,255,.35) 50%,transparent 70%);animation:swipe .6s ease}
+@keyframes swipe{from{transform:translateX(-100%)}to{transform:translateX(100%)}}
+.opts.lock .opt{pointer-events:none}
+.opts.lock .opt:not(.pick){opacity:.35}
+
+/* scan */
+.scan{display:flex;flex-direction:column;align-items:center;gap:26px;text-align:center}
+.scanline{font-family:'Share Tech Mono',monospace;font-size:17px;letter-spacing:1px;color:var(--cyan);min-height:24px}
+.scan .bar{width:min(380px,80vw);flex:none}
+
+/* result */
+.result{display:grid;grid-template-columns:minmax(0,380px) minmax(0,1fr);gap:48px;align-items:start}
+.card-zone{display:flex;flex-direction:column;align-items:center;gap:12px;perspective:1000px}
+.card{--rx:0deg;--ry:0deg;--mx:50%;--my:50%;
+  position:relative;width:340px;max-width:86vw;aspect-ratio:340/510;border-radius:22px;padding:20px;display:flex;flex-direction:column;gap:11px;
+  background:linear-gradient(160deg,#1e2050,#10122c 55%,#26124c);
+  transform:rotateX(var(--rx)) rotateY(var(--ry));transform-style:preserve-3d;transition:transform .15s ease-out;
+  box-shadow:0 30px 90px rgba(80,40,200,.5),0 0 0 1px rgba(255,255,255,.06)}
+.card.reveal{animation:reveal 1.1s cubic-bezier(.2,.8,.2,1) both}
+@keyframes reveal{0%{transform:rotateY(180deg) scale(.6);opacity:0;filter:brightness(3)}60%{opacity:1;filter:brightness(1.6)}100%{transform:rotateY(0) scale(1);filter:none}}
+.card::before{content:"";position:absolute;inset:0;border-radius:inherit;pointer-events:none;mix-blend-mode:color-dodge;
+  background:linear-gradient(115deg,transparent 18%,rgba(255,60,200,.42) 32%,rgba(60,220,255,.42) 46%,rgba(255,235,90,.36) 60%,transparent 76%);
+  background-size:260% 260%;background-position:var(--mx) var(--my);opacity:.85}
+.card::after{content:"";position:absolute;inset:0;border-radius:inherit;padding:2px;pointer-events:none;
+  background:conic-gradient(from var(--ang,0deg),#ff4fd8,#47e0ff,#ffe45c,#8b6bff,#ff4fd8);
+  -webkit-mask:linear-gradient(#000 0 0) content-box,linear-gradient(#000 0 0);-webkit-mask-composite:xor;mask-composite:exclude;animation:spin 6s linear infinite}
+@property --ang{syntax:'<angle>';inherits:false;initial-value:0deg}
+@keyframes spin{to{--ang:360deg}}
+.glare{position:absolute;inset:0;border-radius:inherit;pointer-events:none;background:radial-gradient(circle at var(--mx) var(--my),rgba(255,255,255,.28),transparent 45%)}
+.c-top{display:flex;justify-content:space-between;align-items:center;font-size:12px;color:var(--dim);position:relative}
+.rarity{font:800 11px 'Unbounded',sans-serif;letter-spacing:2px;padding:6px 11px;border-radius:99px;color:#2a1300;background:linear-gradient(90deg,var(--gold),#ff9d4f)}
+.c-art{position:relative;flex:none;height:28%;border-radius:14px;display:grid;place-items:center;overflow:hidden}
+.c-art svg{width:40%;height:auto;filter:drop-shadow(0 0 10px currentColor)}
+.c-role{position:absolute;left:10px;bottom:10px;font:700 11px 'Share Tech Mono',monospace;letter-spacing:2px;padding:4px 8px;border-radius:6px;background:rgba(0,0,0,.45);color:#fff}
+.c-code{position:absolute;right:10px;bottom:10px;font:700 11px 'Share Tech Mono',monospace;letter-spacing:2px;color:rgba(255,255,255,.8)}
+.c-holder{font-family:'Share Tech Mono',monospace;font-size:11px;letter-spacing:2px;color:var(--dim);position:relative}
+.c-name{font:800 22px/1.1 'Unbounded',sans-serif;margin-top:2px;word-break:break-word}
+.c-title{font:700 15px/1.3 'Space Grotesk',sans-serif;margin-top:4px}
+.c-sub{font-size:12px;color:var(--dim);margin-top:2px}
+.stats{display:grid;grid-template-columns:auto minmax(0,1fr) 24px;gap:6px 10px;align-items:center;font-size:12px;position:relative}
+.stats .tr{height:6px;border-radius:6px;background:rgba(255,255,255,.12);overflow:hidden}
+.stats .tr div{height:100%;border-radius:6px;width:0;transition:width 1s cubic-bezier(.2,.8,.2,1) .6s}
+.c-weak{margin-top:auto;font-size:12px;line-height:1.4;padding:10px 12px;border-radius:10px;background:rgba(0,0,0,.32);position:relative}
+.hint{font-size:13px;color:var(--dim)}
+
+.info .intro{font-family:'Share Tech Mono',monospace;font-size:14px;letter-spacing:2px;color:var(--pink)}
+.info h2{font:800 clamp(28px,4vw,42px)/1.1 'Unbounded',sans-serif;margin:10px 0 14px}
+.new-badge{display:inline-block;margin-left:8px;font:800 11px 'Unbounded',sans-serif;letter-spacing:2px;padding:5px 10px;border-radius:99px;background:var(--gold);color:#2a1300;vertical-align:middle}
+.info .desc{font-size:18px;line-height:1.6;color:#d9dcff;margin:0 0 22px}
+.facts{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.fact{padding:14px 16px}
+.fact b{display:block;font-family:'Share Tech Mono',monospace;font-weight:400;font-size:12px;letter-spacing:2px;color:var(--cyan);margin-bottom:6px}
+.fact span{font-size:15px;line-height:1.4}
+.trans{padding:14px 16px;margin-bottom:18px}
+.trans b{display:block;font-family:'Share Tech Mono',monospace;font-weight:400;font-size:12px;letter-spacing:2px;color:var(--pink);margin-bottom:6px}
+.trans p{margin:0;font-size:16px;line-height:1.45;font-style:italic;color:#e3e5ff}
+
+.coll{padding:16px;margin-bottom:20px}
+.coll-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:12px;font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--gold)}
+.coll-grid{display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px}
+.slot{aspect-ratio:3/4;border-radius:6px;border:1px solid rgba(255,255,255,.14);background:rgba(255,255,255,.03);display:grid;place-items:center;font:700 9px 'Share Tech Mono',monospace;color:#6f74a8}
+.slot.got{border-color:transparent;color:#0a0d1f}
+.slot.now{outline:2px solid #fff;outline-offset:2px}
+
+.share-label{font-family:'Share Tech Mono',monospace;font-size:12px;letter-spacing:2px;color:var(--cyan);margin:4px 0 10px}
+.share{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px;margin-bottom:12px}
+.share .btn{display:flex;align-items:center;justify-content:center;gap:10px;text-decoration:none}
+.share .btn svg{width:20px;height:20px;flex:none}
+.btn.ig{color:#fff;background:linear-gradient(100deg,#7a3cff,#e63fb0 55%,#ff9d4f);box-shadow:0 10px 30px rgba(230,63,176,.3)}
+.btn.wa{color:#04210f;background:linear-gradient(100deg,#3ee07f,#a6f5c4);box-shadow:0 10px 30px rgba(62,224,127,.25)}
+.steps{margin:0;padding-left:22px;text-align:left;font-size:15px;line-height:1.55;color:#e3e5ff;width:100%}
+.steps li{margin-bottom:6px}
+.modal-title{font:800 20px 'Unbounded',sans-serif;margin:4px 0 0}
+.modal .row{justify-content:center}
+.modal{position:fixed;inset:0;z-index:20;display:none;align-items:center;justify-content:center;padding:20px;background:rgba(4,5,14,.8);backdrop-filter:blur(6px)}
+.modal.on{display:flex}
+.modal .box{max-width:420px;width:100%;padding:18px;display:flex;flex-direction:column;gap:12px;align-items:center;text-align:center}
+.modal img{width:100%;border-radius:14px}
+.toast{position:fixed;left:50%;bottom:28px;transform:translate(-50%,20px);opacity:0;z-index:30;padding:12px 20px;border-radius:12px;background:#10142e;border:1px solid var(--cyan);font-weight:700;transition:all .3s;pointer-events:none}
+.toast.on{opacity:1;transform:translate(-50%,0)}
+
+@media (max-width:820px){
+  .start,.result{grid-template-columns:minmax(0,1fr);gap:28px}
+  .start .stage{order:-1}
+  .start .core{--s:160px}
+  .qtop{grid-template-columns:72px minmax(0,1fr);gap:14px}
+  .qtop .core{--s:72px}
+  .opts{grid-template-columns:minmax(0,1fr)}
+  .bubble p{font-size:18px}
+  .facts{grid-template-columns:minmax(0,1fr)}
+  .coll-grid{grid-template-columns:repeat(5,minmax(0,1fr))}
+}
+@media (prefers-reduced-motion:reduce){*{animation-duration:.01ms!important;animation-iteration-count:1!important;transition-duration:.01ms!important}}
+</style>
+</head>
+<body>
+<div class="sky"></div><div class="stars"></div><div class="grid-floor"></div>
+
+<div class="app">
+  <header>
+    <div class="brand"><i></i><span>PARALLEL//PORTAL v3.0</span></div>
+    <div class="lang" role="group" aria-label="Language">
+      <button type="button" data-lang="id" aria-pressed="true">ID</button>
+      <button type="button" data-lang="en" aria-pressed="false">EN</button>
+    </div>
+  </header>
+
+  <main>
+    <section class="screen on" id="s-start">
+      <div class="start">
+        <div>
+          <div class="tag" data-t="tag"></div>
+          <h1 data-t="title"></h1>
+          <p class="lead" data-t="lead"></p>
+          <form id="startForm" autocomplete="off">
+            <div class="field">
+              <label for="nameIn" data-t="nameLabel"></label>
+              <input id="nameIn" maxlength="20" data-tp="namePh">
+            </div>
+            <div class="row">
+              <button class="btn" type="submit" data-t="start"></button>
+              <span class="meta" data-t="meta"></span>
+            </div>
+            <div class="coll-mini" id="collMini"></div>
+          </form>
+        </div>
+        <div class="stage">
+          <div class="core" id="coreStart"><span class="r1"></span><span class="r2"></span><span class="r3"></span><span class="orb"></span></div>
+          <div class="glass bubble" style="max-width:400px;width:100%">
+            <div class="who"><span data-t="sys"></span><span>//ONLINE</span></div>
+            <p id="greet"></p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section class="screen" id="s-quiz">
+      <div class="hud"><span id="qnum">Q 01/10</span><div class="bar"><div id="qbar"></div></div></div>
+      <div class="qtop">
+        <div class="core" id="coreQuiz"><span class="r1"></span><span class="r2"></span><span class="r3"></span><span class="orb"></span></div>
+        <div class="glass bubble" id="qbubble">
+          <div class="who"><span data-t="sys"></span><span data-t="skip"></span></div>
+          <p id="qtext"></p>
+        </div>
+      </div>
+      <div class="opts" id="opts"></div>
+    </section>
+
+    <section class="screen" id="s-scan">
+      <div class="scan">
+        <div class="core busy" style="--s:240px"><span class="r1"></span><span class="r2"></span><span class="r3"></span><span class="orb"></span></div>
+        <div class="scanline" id="scanText"></div>
+        <div class="bar"><div id="scanBar"></div></div>
+      </div>
+    </section>
+
+    <section class="screen" id="s-result">
+      <div class="result">
+        <div class="card-zone">
+          <div class="card" id="card">
+            <div class="glare"></div>
+            <div class="c-top"><span class="rarity" id="cRarity">LEGENDARY</span><span id="cNo">No. 0000</span></div>
+            <div class="c-art" id="cArt"></div>
+            <div style="position:relative">
+              <div class="c-holder" data-t="holder"></div>
+              <div class="c-name" id="cName"></div>
+              <div class="c-title" id="cTitle"></div>
+              <div class="c-sub" id="cSub"></div>
+            </div>
+            <div class="stats" id="cStats"></div>
+            <div class="c-weak" id="cWeak"></div>
+          </div>
+          <div class="hint" data-t="tilt"></div>
+        </div>
+        <div class="info">
+          <div class="intro" id="rIntro"></div>
+          <h2><span id="rTitle"></span><span class="new-badge" id="rNew" hidden></span></h2>
+          <p class="desc" id="rDesc"></p>
+          <div class="facts">
+            <div class="glass fact"><b data-t="power"></b><span id="rPower"></span></div>
+            <div class="glass fact"><b data-t="match"></b><span id="rMatch"></span></div>
+          </div>
+          <div class="glass trans"><b data-t="trans"></b><p id="rTrans"></p></div>
+          <div class="glass coll">
+            <div class="coll-head"><span data-t="collection"></span><span id="collCount"></span></div>
+            <div class="coll-grid" id="collGrid"></div>
+          </div>
+          <div class="share-label" data-t="shareLabel"></div>
+          <div class="share">
+            <button class="btn ig" type="button" id="igBtn"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><rect x="3" y="3" width="18" height="18" rx="5"/><circle cx="12" cy="12" r="4"/><circle cx="17.5" cy="6.5" r="1" fill="currentColor" stroke="none"/></svg><span data-t="shareIg"></span></button>
+            <a class="btn wa" id="waBtn" href="https://wa.me/" target="_blank" rel="noopener"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" aria-hidden="true"><path d="M4 20l1.3-3.9A8 8 0 1 1 8 19z"/><path d="M9 9.5c0 3 2.5 5.5 5.5 5.5l1-1.5-2-1-1 1c-1-.5-2-1.5-2.5-2.5l1-1-1-2z" fill="currentColor" stroke="none"/></svg><span data-t="shareWa"></span></a>
+          </div>
+          <div class="row">
+            <button class="btn ghost" type="button" id="saveBtn" data-t="save"></button>
+            <button class="btn ghost" type="button" id="copyBtn" data-t="copy"></button>
+            <button class="btn ghost" type="button" id="againBtn" data-t="again"></button>
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+</div>
+
+<div class="modal" id="modal" role="dialog" aria-modal="true" aria-labelledby="modalTxt">
+  <div class="glass box">
+    <p class="modal-title" id="modalTitle"></p>
+    <img id="modalImg" alt="" hidden>
+    <p id="modalTxt" class="hint"></p>
+    <ol class="steps" id="modalSteps" hidden></ol>
+    <div class="row">
+      <button class="btn" type="button" id="modalLink" data-t="copyLink" hidden></button>
+      <button class="btn ghost" type="button" id="modalClose" data-t="close"></button>
+    </div>
+  </div>
+</div>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+(function(){
+"use strict";
+const QPER=10;
+
+const UI={
+  id:{
+    tag:"SISTEM PORTAL // 20 DIMENSI",
+    title:"Siapa Kamu di Dunia Paralel?",
+    lead:"Portal akan membaca frekuensi jiwamu lewat 10 pertanyaan acak. Ada 20 versi dirimu di luar sana. Kamu yang mana?",
+    nameLabel:"NAMA KAMU", namePh:"Tulis namamu...", start:"Masuk Portal", meta:"10 pertanyaan · ±2 menit",
+    sys:"PORTAL // AI", skip:"ketuk untuk lewati", defaultName:"Penjelajah",
+    greet:"Sinyal terdeteksi. Masukkan namamu untuk membuka gerbang antardimensi.",
+    greetName:"Halo, {n}. Frekuensimu terbaca jelas. Gerbang siap dibuka.",
+    last:"Pertanyaan terakhir. ",
+    q:"Q", holder:"PEMEGANG KARTU", tilt:"Gerakkan kursor atau jari di atas kartu",
+    power:"KEKUATAN SUPER", match:"COCOK BERTEMAN DENGAN", weak:"Kelemahan", trans:"TRANSMISI DARI DIMENSIMU",
+    elem:"Elemen", intro:"DI DUNIA PARALEL, {N} ADALAH...",
+    collection:"KOLEKSI KARTU", newCard:"BARU", collMini:"Koleksimu: {c}/20 kartu ditemukan",
+    save:"Simpan Kartu", copy:"Salin Hasil", again:"Main Lagi", copied:"Hasil tersalin!", saved:"Kartu tersimpan!",
+    noCopy:"Gagal menyalin di sini", declined:"Penyimpanan dibatalkan",
+    longpress:"Tahan gambar atau screenshot untuk menyimpan kartumu.", close:"Tutup",
+    stats:["Karisma","Empati","Kekacauan","Keberuntungan"],
+    scan:["Memindai 8.192 dimensi...","Mencocokkan frekuensi jiwa...","Mencetak kartu identitasmu..."],
+    react:["Frekuensi tercatat.","Sinyal menguat...","Dimensi bergeser sedikit.","Pola menarik terdeteksi.","Data diterima.","Hmm, tidak terduga."],
+    footer:"Siapa Kamu di Dunia Paralel?",
+    shareLabel:"BAGIKAN HASILMU", shareIg:"Instagram Story", shareWa:"WhatsApp", copyLink:"Salin Link Kuis", linkCopied:"Link tersalin!",
+    storyTop:"VERSI DIRIKU DI DUNIA PARALEL", storyCta:"Kamu yang mana? Cari tahu di sini", sticker:"TEMPEL STIKER LINK DI SINI",
+    igTitle:"Siap dibagikan ke Story!", igSaved:"Gambar Story (1080×1920) sudah disiapkan.", igPreview:"Tahan gambar untuk menyimpan, atau screenshot.",
+    igSteps:["Buka Instagram, ketuk + lalu pilih Story.","Pilih gambar kartu yang barusan tersimpan.","Ketuk ikon stiker, pilih Link, lalu tempel link kuis di kotak bertitik."],
+    imgTitle:"Kartumu",
+    waText:"Aku ternyata *{t}* di dunia paralel! ({r}, kartu {k}/20)\nKelemahanku: {w}\n\nKamu yang mana? Coba di sini: {u}"
+  },
+  en:{
+    tag:"PORTAL SYSTEM // 20 DIMENSIONS",
+    title:"Who Are You in a Parallel Universe?",
+    lead:"The portal will read your soul's frequency through 10 random questions. There are 20 versions of you out there. Which one are you?",
+    nameLabel:"YOUR NAME", namePh:"Type your name...", start:"Enter the Portal", meta:"10 questions · ~2 minutes",
+    sys:"PORTAL // AI", skip:"tap to skip", defaultName:"Traveler",
+    greet:"Signal detected. Enter your name to open the interdimensional gate.",
+    greetName:"Hello, {n}. Your frequency reads loud and clear. The gate is ready.",
+    last:"Final question. ",
+    q:"Q", holder:"CARD HOLDER", tilt:"Move your cursor or finger over the card",
+    power:"SUPERPOWER", match:"BEST FRIENDS WITH", weak:"Weakness", trans:"TRANSMISSION FROM YOUR DIMENSION",
+    elem:"Element", intro:"IN A PARALLEL UNIVERSE, {N} IS...",
+    collection:"CARD COLLECTION", newCard:"NEW", collMini:"Your collection: {c}/20 cards found",
+    save:"Save Card", copy:"Copy Result", again:"Play Again", copied:"Result copied!", saved:"Card saved!",
+    noCopy:"Couldn't copy here", declined:"Save cancelled",
+    longpress:"Long-press the image or take a screenshot to keep your card.", close:"Close",
+    stats:["Charisma","Empathy","Chaos","Luck"],
+    scan:["Scanning 8,192 dimensions...","Matching soul frequencies...","Printing your identity card..."],
+    react:["Frequency logged.","Signal strengthening...","Dimension shifted slightly.","Interesting pattern detected.","Data received.","Hmm, unexpected."],
+    footer:"Who Are You in a Parallel Universe?",
+    shareLabel:"SHARE YOUR RESULT", shareIg:"Instagram Story", shareWa:"WhatsApp", copyLink:"Copy Quiz Link", linkCopied:"Link copied!",
+    storyTop:"MY PARALLEL UNIVERSE SELF", storyCta:"Which one are you? Find out here", sticker:"PLACE LINK STICKER HERE",
+    igTitle:"Ready for your Story!", igSaved:"Your Story image (1080×1920) is ready.", igPreview:"Long-press the image to save it, or take a screenshot.",
+    igSteps:["Open Instagram, tap + and choose Story.","Pick the card image you just saved.","Tap the sticker icon, choose Link, and paste the quiz link in the dotted box."],
+    imgTitle:"Your card",
+    waText:"Turns out I'm *{t}* in a parallel universe! ({r}, card {k}/20)\nMy weakness: {w}\n\nWhich one are you? Try it here: {u}"
+  }
+};
+// ===== CONFIG =====
+// Link that friends open from WhatsApp / the IG link sticker.
+// Leave empty ("") to use the address the page is hosted at automatically, or paste your own URL here.
+const CUSTOM_SHARE_URL="";
+const SHARE_URL=CUSTOM_SHARE_URL||((!(window.claude&&window.claude.use)&&(location.protocol==="http:"||location.protocol==="https:"))?location.origin+location.pathname:"https://claude.ai/artifact/YKgVmEfXsRw82exzGALswR");
+
+/* Elements: L Lumen, C Chrono, N Neon, V Void, X Nova.  Roles: K Keeper, V Voyager, A Architect, R Rebel.
+   Each option tag = element + role. Bank is balanced: every combo appears exactly 4 times. */
+const Q=[
+ {id:"Kamu tiba-tiba bisa terbang. Hal pertama yang kamu lakuin?",en:"You can suddenly fly. What's the first thing you do?",o:[
+  ["LK","Nganterin temen pulang biar hemat ongkos","Fly my friends home so they save on cab fare"],
+  ["NV","Keliling kota nyari sudut paling estetik","Tour the city for the most aesthetic spots"],
+  ["XA","Bikin lintasan balap udara buat semua orang","Build an air-racing track for everyone"],
+  ["CR","Kabur dari semua deadline","Escape every single deadline"]]},
+ {id:"Pilih camilan dari dimensi lain:",en:"Pick a snack from another dimension:",o:[
+  ["CV","Keripik yang bikin kamu balik ke masa kecil","Chips that send you back to childhood"],
+  ["VA","Kubus gula yang rasanya berubah tiap kamu mikir","A sugar cube that changes taste as you think"],
+  ["LR","Cokelat terlarang yang kamu bagi ke semua orang","Forbidden chocolate you share with everyone"],
+  ["NK","Permen pelangi yang kamu koleksi, sayang dimakan","Rainbow candy you collect but never eat"]]},
+ {id:"Hari Minggu idealmu kayak gimana?",en:"What does your ideal Sunday look like?",o:[
+  ["NA","Bikin sesuatu dari nol: gambar, konten, apa aja","Making something from scratch: art, content, anything"],
+  ["XR","Bangun siang, langsung iyain ajakan random","Wake up late, say yes to a random plan"],
+  ["CK","Rutinitas yang sama tiap minggu, dan itu menenangkan","The same routine every week, and it's soothing"],
+  ["VV","Tenggelam di wiki sampai lupa waktu","Falling down a wiki hole for hours"]]},
+ {id:"Temanmu curhat jam 2 pagi. Kamu...",en:"A friend wants to vent at 2 AM. You...",o:[
+  ["VR","Bilang hal jujur yang orang lain takut bilang","Say the honest thing nobody else dares to"],
+  ["LK","Langsung telepon, dengerin sampai subuh","Call right away and listen until sunrise"],
+  ["NV","Ajak keluar cari makan sambil ngobrol","Take them on a late-night food run"],
+  ["XA","Bikin rencana aksi lengkap biar masalahnya beres","Draft a full action plan to fix it"]]},
+ {id:"Kekuatan super yang paling kamu mau:",en:"The superpower you want the most:",o:[
+  ["XK","Ngendaliin cuaca biar acara temen nggak hujan","Control the weather so friends' plans never get rained out"],
+  ["CV","Pergi ke tahun berapa pun","Travel to any year you want"],
+  ["VA","Membangun apa pun hanya dengan pikiran","Build anything with your mind"],
+  ["LR","Bikin semua orang jujur selama satu menit","Make everyone tell the truth for one minute"]]},
+ {id:"Kamu dapat tiket gratis ke satu planet. Pilih:",en:"You get a free ticket to one planet. Pick:",o:[
+  ["LV","Planet yang penduduknya butuh bantuan","A planet whose people need help"],
+  ["NA","Planet kosong yang bisa kamu desain sendiri","An empty planet you get to design"],
+  ["XR","Planet yang dilarang dikunjungi","The planet that's off-limits"],
+  ["CK","Nggak usah, aku jaga Bumi aja","No thanks, I'll stay and look after Earth"]]},
+ {id:"Barang yang pasti ada di tasmu:",en:"Something that's always in your bag:",o:[
+  ["CA","Planner yang rajin ditulis tapi jarang dicek","A planner I write in but rarely check"],
+  ["VR","Buku dengan judul yang bikin orang nanya-nanya","A book whose title makes people ask questions"],
+  ["LK","Plester, permen, tisu: perlengkapan buat semua orang","Plasters, candy, tissues: supplies for everyone"],
+  ["NV","HP atau kamera dengan memori hampir penuh","A phone or camera that's almost out of storage"]]},
+ {id:"Kamu jadi tokoh di film. Peranmu:",en:"You're a character in a movie. Your role:",o:[
+  ["NR","Seniman eksentrik yang ngelanggar semua aturan","The eccentric artist who breaks every rule"],
+  ["XK","Sahabat heboh yang selalu pasang badan","The loud best friend who always has your back"],
+  ["CV","Pengelana misterius yang muncul di tiap zaman","A mysterious wanderer who appears in every era"],
+  ["VA","Jenius pendiam di balik layar","The quiet genius behind the scenes"]]},
+ {id:"Grup chat jadi hidup gara-gara kamu...",en:"The group chat comes alive because you...",o:[
+  ["VK","Diam-diam nyimpen semua info penting","Quietly keep track of every important detail"],
+  ["LV","Selalu ngajak ketemuan","Always suggest meeting up"],
+  ["NA","Bikin stiker dan meme sendiri","Make your own stickers and memes"],
+  ["XR","Lempar topik random jam 3 pagi","Drop random topics at 3 AM"]]},
+ {id:"Pintu misterius muncul di kamarmu, {n}. Kamu...",en:"A mysterious door appears in your room, {n}. You...",o:[
+  ["XV","Langsung masuk tanpa mikir","Walk right in without thinking"],
+  ["CA","Ukur dulu, gambar denahnya, baru masuk","Measure it, map it, then go in"],
+  ["VR","Coba buka pakai cara yang nggak biasa","Try to open it the weird way"],
+  ["LK","Tunggu teman-teman datang biar semua aman","Wait for your friends so everyone's safe"]]},
+ {id:"Kalau punya toko di dunia paralel, kamu jual...",en:"If you ran a shop in a parallel world, you'd sell...",o:[
+  ["LA","Lampu yang menyala sesuai suasana hati","Lamps that glow with your mood"],
+  ["NR","Baju dengan warna yang bikin orang kaget","Clothes in colors that shock people"],
+  ["XK","Camilan pedas buat begadang bareng","Spicy snacks for late nights with friends"],
+  ["CV","Kaset berisi kenangan orang-orang","Cassette tapes full of people's memories"]]},
+ {id:"Alarm pagimu bunyi. Kamu...",en:"Your morning alarm goes off. You...",o:[
+  ["CR","Snooze lima kali, dengan bangga","Snooze five times, proudly"],
+  ["VK","Udah bangun duluan, mikirin hidup","Already awake, thinking about life"],
+  ["LV","Langsung siap, hari ini mau ketemu orang","Up right away, there are people to see"],
+  ["NA","Nyatet mimpi semalam buat jadi ide","Jot down last night's dream as an idea"]]},
+ {id:"Musik yang paling menggambarkan kamu:",en:"The music that describes you best:",o:[
+  ["NK","Playlist yang kamu kurasi bertahun-tahun","A playlist you've curated for years"],
+  ["XV","Lagu road trip, diputar kencang","Road-trip anthems, played loud"],
+  ["CA","Lo-fi buat fokus","Lo-fi to focus"],
+  ["VR","Lagu yang nggak dikenal siapa pun","Songs nobody else has heard of"]]},
+ {id:"Di pesta, kamu biasanya...",en:"At a party, you usually...",o:[
+  ["VV","Ngobrol mendalam di pojok sama satu orang","Have a deep talk in the corner with one person"],
+  ["LA","Jadi yang ngatur acaranya dari awal","Are the one who organized the whole thing"],
+  ["NR","Datang pakai outfit paling berani","Show up in the boldest outfit"],
+  ["XK","Mastiin semua orang ikut seru","Make sure everyone's having fun"]]},
+ {id:"Proyek kelompok dimulai. Kamu...",en:"A group project kicks off. You...",o:[
+  ["XA","Langsung bagi tugas dengan semangat 200%","Divide the tasks with 200% energy"],
+  ["CR","Ngerjain semuanya H-1, tapi hasilnya bagus","Do it all the night before, and it turns out great"],
+  ["VK","Ngecek ulang detail kerjaan semua orang","Double-check everyone's details"],
+  ["LV","Nyari referensi ke mana-mana","Hunt for references everywhere"]]},
+ {id:"Satu aturan yang mau kamu hapus dari dunia:",en:"One rule you'd erase from the world:",o:[
+  ["LR","“Jangan terlalu baik sama orang”","“Don't be too nice to people”"],
+  ["NK","Larangan dekor ulang kamar kos","Rules against redecorating your rented room"],
+  ["XV","Batas bagasi pesawat","Airline baggage limits"],
+  ["CA","Jam kerja 9 sampai 5","The 9-to-5"]]},
+ {id:"Benda yang kamu simpan sejak lama:",en:"Something you've kept for ages:",o:[
+  ["CK","Tiket bioskop dan struk penuh kenangan","Old movie tickets and receipts full of memories"],
+  ["VV","Batu atau benda aneh dari tempat jauh","A strange rock or object from somewhere far"],
+  ["LA","Sketsa rencana masa depan","Sketches of future plans"],
+  ["NR","Jaket penuh pin dan coretan","A jacket covered in pins and doodles"]]},
+ {id:"Malam ini ada hujan meteor. Kamu...",en:"There's a meteor shower tonight. You...",o:[
+  ["NV","Naik ke atap buat foto paling dramatis","Climb to the roof for the most dramatic shot"],
+  ["XA","Ngadain nonton bareng satu kompleks","Organize a viewing party for the whole block"],
+  ["CR","Ketiduran, nonton rekamannya besok","Fall asleep and watch the recording tomorrow"],
+  ["VK","Nyatet tiap meteor di jurnal","Log every single meteor in a journal"]]},
+ {id:"Kata yang paling menggambarkan kamu, {n}?",en:"Which word describes you best, {n}?",o:[
+  ["VA","Teliti","Meticulous"],
+  ["LR","Berani peduli","Fiercely kind"],
+  ["NK","Estetik","Aesthetic"],
+  ["XV","Spontan","Spontaneous"]]},
+ {id:"Kalau semesta punya tombol, kamu pencet yang...",en:"If the universe had buttons, you'd press...",o:[
+  ["XR","“JANGAN DIPENCET”","“DO NOT PRESS”"],
+  ["CK","“Pause”, biar semua bisa istirahat","“Pause”, so everyone can rest"],
+  ["VV","Tombol “?” tanpa keterangan","The unlabeled “?” button"],
+  ["LA","“Reset”, lalu bangun ulang lebih baik","“Reset”, then rebuild it better"]]}
+];
+
+const ICON={
+  L:'<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><ellipse cx="60" cy="62" rx="54" ry="18" transform="rotate(-18 60 62)" opacity=".7"/><path d="M50 98 L54 48 H66 L70 98 Z"/><path d="M48 48 H72 L68 38 H52 Z"/><circle cx="60" cy="31" r="5" fill="currentColor" stroke="none"/><path d="M66 31 L106 18 M66 31 L106 44" opacity=".7"/><path d="M53 64 H67 M52 80 H68"/></svg>',
+  C:'<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M40 22 H80 M40 98 H80"/><path d="M44 22 C44 48 76 48 76 60 C76 72 44 72 44 98"/><path d="M76 22 C76 48 44 48 44 60 C44 72 76 72 76 98"/><path d="M52 92 L60 82 L68 92 Z" fill="currentColor" stroke="none"/><ellipse cx="60" cy="60" rx="52" ry="16" transform="rotate(20 60 60)" opacity=".6"/></svg>',
+  N:'<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><path d="M60 14 L100 36 V84 L60 106 L20 84 V36 Z"/><path d="M20 36 L60 58 L100 36 M60 58 V106"/><path d="M40 47 V95 M80 47 V95" opacity=".4"/><circle cx="60" cy="58" r="5" fill="currentColor" stroke="none"/></svg>',
+  V:'<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="60" cy="60" r="14" fill="currentColor" fill-opacity=".35"/><path d="M60 22 C90 22 100 48 86 62 C76 72 58 66 62 56"/><path d="M60 98 C30 98 20 72 34 58 C44 48 62 54 58 64"/><ellipse cx="60" cy="60" rx="54" ry="14" opacity=".55"/></svg>',
+  X:'<svg viewBox="0 0 120 120" fill="none" stroke="currentColor" stroke-width="2.5" aria-hidden="true"><circle cx="78" cy="42" r="16" fill="currentColor" fill-opacity=".3"/><path d="M66 54 L18 102 M72 60 L34 106 M60 48 L14 86" opacity=".75"/><path d="M78 14 V24 M78 60 V70 M50 42 H60 M96 42 H106 M58 22 L64 28 M92 56 L98 62 M98 22 L92 28" opacity=".8"/></svg>'
+};
+
+const ELEM={
+  L:{c1:"#47e0ff",c2:"#ff4fd8",base:[80,92,30],id:{e:"Cahaya",d:"Sektor Lumen-7",m:"Jangan lupa nyalain lampu buat dirimu sendiri juga."},en:{e:"Light",d:"Lumen Sector 7",m:"Don't forget to keep a light on for yourself too."}},
+  C:{c1:"#ffe45c",c2:"#8b6bff",base:[62,70,55],id:{e:"Waktu",d:"Zona Jeda ∞",m:"Kamu nggak terlambat. Kamu tepat di waktumu sendiri."},en:{e:"Time",d:"Pause Zone ∞",m:"You're not late. You're right on your own time."}},
+  N:{c1:"#ff4fd8",c2:"#ffe45c",base:[86,68,66],id:{e:"Neon",d:"Kota Hologram 2099",m:"Dunia butuh warna yang cuma bisa kamu lihat."},en:{e:"Neon",d:"Hologram City 2099",m:"The world needs the colors only you can see."}},
+  V:{c1:"#a48bff",c2:"#47e0ff",base:[58,74,42],id:{e:"Hampa",d:"Arsip Event Horizon",m:"Pertanyaanmu lebih berharga daripada jawaban siapa pun."},en:{e:"Void",d:"Event Horizon Archive",m:"Your questions are worth more than anyone's answers."}},
+  X:{c1:"#ff9d4f",c2:"#ff4fd8",base:[90,64,94],id:{e:"Nova",d:"Sabuk Asteroid Selatan",m:"Kekacauanmu adalah alasan orang lain berani hidup lebih lantang."},en:{e:"Nova",d:"Southern Asteroid Belt",m:"Your chaos is why others dare to live louder."}}
+};
+const ROLE={K:{id:"PENJAGA",en:"KEEPER",adj:[0,6,-10]},V:{id:"PENJELAJAH",en:"VOYAGER",adj:[6,0,6]},A:{id:"ARSITEK",en:"ARCHITECT",adj:[-2,-2,-8]},R:{id:"PEMBERONTAK",en:"REBEL",adj:[4,-6,12]}};
+const EORDER="LCNVX", RORDER="KVAR";
+const MATCH_E={L:"X",X:"V",V:"N",N:"C",C:"L"}, MATCH_R={K:"V",V:"A",A:"R",R:"K"};
+
+// t: title, d: description, p: power, w: weakness
+const CARD={
+ LK:{id:{t:"Penjaga Mercusuar Antargalaksi",d:"Kamu yang nyalain lampu waktu orang lain tersesat. Teman-temanmu mungkin nggak sadar, tapi separuh galaksi navigasi pakai cahayamu.",p:"Bikin orang asing curhat dalam 5 menit",w:"Nggak bisa nolak ajakan nongkrong dadakan"},
+     en:{t:"Intergalactic Lighthouse Keeper",d:"You're the one who turns the light on when others get lost. Your friends might not notice, but half the galaxy navigates by your glow.",p:"Gets strangers to open up within 5 minutes",w:"Cannot say no to last-minute hangouts"}},
+ LV:{id:{t:"Kurir Cahaya Lintas Bintang",d:"Kamu muncul di mana-mana membawa kabar baik dan energi hangat. Jarak antarbintang bukan alasan buat nggak datang.",p:"Selalu datang tepat saat dibutuhkan",w:"Kalender penuh janji ketemuan"},
+     en:{t:"Starlight Courier",d:"You show up everywhere carrying good news and warm energy. Light-years are no excuse not to come.",p:"Always arrives exactly when needed",w:"A calendar drowning in meetups"}},
+ LA:{id:{t:"Perancang Matahari Buatan",d:"Kamu membangun hal-hal yang bikin hidup orang lain lebih terang, dan menikmati setiap detail rencananya.",p:"Mengubah kekacauan jadi sistem yang hangat",w:"Susah berhenti merevisi rencana"},
+     en:{t:"Artificial Sun Designer",d:"You build things that make other people's lives brighter, and you savor every detail of the plan.",p:"Turning chaos into a warm, working system",w:"Can't stop revising the plan"}},
+ LR:{id:{t:"Pemberontak Lampu Tidur",d:"Kamu menolak aturan bahwa orang harus menghadapi gelap sendirian. Kebaikanmu keras kepala, dan itu kekuatanmu.",p:"Membela orang yang nggak berani bersuara",w:"Gampang panas lihat ketidakadilan kecil"},
+     en:{t:"Night-Light Rebel",d:"You reject the rule that anyone should face the dark alone. Your kindness is stubborn, and that's your power.",p:"Speaking up for those who can't",w:"Gets fired up over tiny injustices"}},
+ CK:{id:{t:"Penjaga Jam Kosmik",d:"Kamu menjaga ritme semesta tetap tenang. Rutinitas buatmu bukan hal membosankan, tapi rumah.",p:"Selalu ingat ulang tahun semua orang",w:"Panik kalau rencana berubah mendadak"},
+     en:{t:"Keeper of the Cosmic Clock",d:"You keep the universe's rhythm calm. Routine isn't boring to you; it's home.",p:"Remembers everyone's birthday",w:"Panics when plans change last-minute"}},
+ CV:{id:{t:"Turis Lintas Abad",d:"Kamu hidup di banyak era sekaligus: lagu lama, film jadul, ide masa depan. Nostalgia adalah paspormu.",p:"Selera retro yang selalu kembali tren",w:"Gampang tenggelam di galeri foto lama"},
+     en:{t:"Time-Hopping Tourist",d:"You live in many eras at once: old songs, vintage films, future ideas. Nostalgia is your passport.",p:"Retro taste that always comes back in style",w:"Gets lost scrolling old photos"}},
+ CA:{id:{t:"Arsitek Hari Senin yang Lebih Baik",d:"Kamu membangun sistem supaya waktu terasa lebih ringan. To-do list adalah seni, dan kamu senimannya.",p:"Bikin jadwal mustahil jadi masuk akal",w:"Lebih lama bikin planner daripada ngerjain tugasnya"},
+     en:{t:"Architect of Better Mondays",d:"You build systems that make time feel lighter. To-do lists are art, and you're the artist.",p:"Making impossible schedules make sense",w:"Spends longer on the planner than on the tasks"}},
+ CR:{id:{t:"Pencuri Waktu Kosmik",d:"Kamu bisa nunda apa aja sampai detik terakhir, lalu nyelesaiin semuanya secepat cahaya. Hukum fisika masih bingung sama kamu.",p:"Ngerjain tugas seminggu dalam satu malam",w:"Selalu bilang “5 menit lagi” (bohong)"},
+     en:{t:"Cosmic Time Thief",d:"You can postpone anything until the last second, then finish it all at light speed. Physics is still confused by you.",p:"Doing a week of work in one night",w:"Always says “5 more minutes” (a lie)"}},
+ NK:{id:{t:"Kurator Museum Mimpi",d:"Kamu menyimpan hal-hal indah yang orang lain lewatkan: lagu, foto, warna langit sore. Hidupmu adalah koleksi.",p:"Punya playlist untuk setiap suasana",w:"Memori HP penuh, nggak tega hapus"},
+     en:{t:"Curator of the Dream Museum",d:"You keep the beautiful things others miss: songs, photos, the color of the evening sky. Your life is a collection.",p:"A playlist for every possible mood",w:"Phone storage full, can't bear to delete"}},
+ NV:{id:{t:"DJ Kapal Antariksa",d:"Ke mana pun kamu pergi, suasana ikut menyala. Kamu menjelajah dunia sambil membawa soundtrack-nya sendiri.",p:"Mengubah perjalanan biasa jadi konten",w:"Nggak bisa keluar rumah tanpa earphone"},
+     en:{t:"Spaceship DJ",d:"Wherever you go, the vibe lights up. You explore the world with your own soundtrack.",p:"Turning any trip into content",w:"Can't leave home without earphones"}},
+ NA:{id:{t:"Arsitek Mimpi Neon",d:"Kepalamu penuh ide yang belum sempat diwujudkan, dan sebagian sudah jadi kenyataan. Kamu melihat warna yang belum ada namanya.",p:"Mengubah ide random jam 3 pagi jadi karya",w:"Punya 47 tab dan 12 proyek setengah jadi"},
+     en:{t:"Neon Dream Architect",d:"Your head is full of ideas you haven't built yet, and some have already come true. You see colors nobody has named yet.",p:"Turning random 3 AM ideas into real work",w:"Has 47 tabs and 12 half-finished projects"}},
+ NR:{id:{t:"Seniman Grafiti Galaksi",d:"Kamu mewarnai tempat yang kata orang harus tetap abu-abu. Ekspresimu berani, dan dunia jadi lebih menarik karenanya.",p:"Bikin gaya sendiri yang akhirnya ditiru orang",w:"Langsung bosan kalau harus ikut template"},
+     en:{t:"Galactic Graffiti Artist",d:"You paint the places people say should stay grey. Your expression is bold, and the world is more interesting for it.",p:"Starting trends others end up copying",w:"Bored stiff by templates"}},
+ VK:{id:{t:"Pustakawan Lubang Hitam",d:"Rasa penasaranmu sedalam lubang hitam. Kamu tahu fakta random tentang hampir semua hal, dan diam-diam memperhatikan semuanya.",p:"Tahu jawaban dari pertanyaan yang belum ditanyain",w:"Bilang “satu artikel lagi”, tahu-tahu subuh"},
+     en:{t:"Black Hole Librarian",d:"Your curiosity runs as deep as a black hole. You know random facts about almost everything, and you quietly notice it all.",p:"Knowing answers to questions nobody asked yet",w:"Says “one more article” and suddenly it's dawn"}},
+ VV:{id:{t:"Penyelam Lautan Bintang",d:"Kamu suka menyelam ke hal-hal yang dalam: pertanyaan besar, tempat sepi, obrolan jam 1 pagi.",p:"Menemukan makna di hal-hal kecil",w:"Overthinking level antariksa"},
+     en:{t:"Star-Sea Diver",d:"You love diving deep: big questions, quiet places, 1 AM conversations.",p:"Finding meaning in small things",w:"Overthinking at a cosmic scale"}},
+ VA:{id:{t:"Insinyur Gravitasi Sunyi",d:"Kamu bekerja diam-diam, tapi semua hal di sekitarmu jadi stabil karena kamu. Tenang, teliti, dan nggak butuh sorotan.",p:"Membereskan masalah sebelum orang lain sadar ada masalah",w:"Lupa kalau dirimu juga butuh istirahat"},
+     en:{t:"Silent Gravity Engineer",d:"You work quietly, yet everything around you stays stable because of you. Calm, precise, no spotlight needed.",p:"Fixing problems before anyone notices them",w:"Forgets that you need rest too"}},
+ VR:{id:{t:"Peretas Rahasia Semesta",d:"Kamu selalu bertanya “kenapa harus begitu?” dan nggak puas sampai tahu jawabannya. Aturan semesta pun kamu bongkar.",p:"Melihat celah yang orang lain lewatkan",w:"Siap debat sama siapa aja, termasuk diri sendiri"},
+     en:{t:"Hacker of Cosmic Secrets",d:"You always ask “why does it have to be that way?” and won't rest until you know. Even the universe's rules get taken apart.",p:"Spotting loopholes others miss",w:"Will debate anyone, including yourself"}},
+ XK:{id:{t:"Pelatih Naga Komet",d:"Energimu meledak-ledak, tapi kamu pakai buat melindungi orang-orangmu. Sahabat yang heboh dan setia.",p:"Bikin semua orang berani coba hal baru",w:"Volume suara cuma satu: maksimal"},
+     en:{t:"Comet Dragon Trainer",d:"Your energy is explosive, but you use it to protect your people. Loud, loyal, unforgettable.",p:"Making everyone brave enough to try new things",w:"Only one volume setting: max"}},
+ XV:{id:{t:"Kapten Bajak Laut Camilan",d:"Hidup buatmu adalah petualangan, dan setiap petualangan butuh camilan. Kamu bawa energi, tawa, dan rencana yang biasanya nggak ada.",p:"Bikin acara biasa jadi cerita legendaris",w:"Dompet selalu kalah sama jajanan"},
+     en:{t:"Captain of the Snack Pirates",d:"Life is an adventure to you, and every adventure needs snacks. You bring the energy, the laughs, and plans that usually don't exist.",p:"Turning ordinary outings into legendary stories",w:"Your wallet always loses to snacks"}},
+ XA:{id:{t:"Pembangun Taman Hiburan Asteroid",d:"Kamu punya energi besar dan ide gila, dan anehnya kamu bisa mewujudkannya. Semua rencanamu berakhir seru.",p:"Ngumpulin orang buat proyek dadakan",w:"Mulai lima proyek sekaligus"},
+     en:{t:"Asteroid Theme Park Builder",d:"You've got huge energy and wild ideas, and somehow you make them real. Every plan of yours ends up fun.",p:"Rallying people for spontaneous projects",w:"Starts five projects at once"}},
+ XR:{id:{t:"Penguasa Badai Meteor",d:"Kamu adalah kekacauan yang indah. Aturan buatmu cuma saran, dan hidup di dekatmu nggak pernah membosankan.",p:"Selamat dari situasi apa pun dengan improvisasi",w:"Tombol “jangan dipencet” selalu kamu pencet"},
+     en:{t:"Ruler of the Meteor Storm",d:"You're beautiful chaos. Rules are just suggestions, and life near you is never boring.",p:"Surviving anything through improvisation",w:"Always presses the “do not press” button"}}
+};
+const ALLKEYS=[];for(const e of EORDER)for(const r of RORDER)ALLKEYS.push(e+r);
+
+/* ---------- helpers ---------- */
+const $=s=>document.querySelector(s);
+let lang="id";
+try{const s=localStorage.getItem("dp-lang");if(s==="en"||s==="id")lang=s;}catch(e){}
+let found=[];
+try{const f=JSON.parse(localStorage.getItem("dp-found")||"[]");if(Array.isArray(f))found=f.filter(k=>CARD[k]);}catch(e){}
+let name="",deck=[],qi=0,se={},sr={},result=null,screen="start",locked=false,optOrder=[];
+
+const t=k=>UI[lang][k];
+const nm=()=>name||t("defaultName");
+const fill=s=>s.replace("{n}",nm()).replace("{N}",nm().toUpperCase()).replace("{c}",found.length);
+function hash(s){let h=2166136261;for(let i=0;i<s.length;i++){h^=s.charCodeAt(i);h=Math.imul(h,16777619);}return h>>>0;}
+function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a;}
+function blip(id){const c=document.getElementById(id);c.classList.remove("blip");void c.offsetWidth;c.classList.add("blip");}
+
+/* ---------- typewriter ---------- */
+let typeTimer=null,typeFull="",typeEl=null,typeDone=null;
+function typeText(el,text,done){
+  clearInterval(typeTimer);typeEl=el;typeFull=text;typeDone=done;let i=0;
+  el.textContent="";const node=document.createTextNode("");const caret=document.createElement("span");caret.className="caret";
+  el.append(node,caret);
+  typeTimer=setInterval(()=>{i++;node.textContent=text.slice(0,i);if(i>=text.length)finishType();},20);
+}
+function finishType(){
+  clearInterval(typeTimer);typeTimer=null;
+  if(typeEl)typeEl.textContent=typeFull;
+  const cb=typeDone;typeDone=null;if(cb)cb();
+}
+$("#qbubble").addEventListener("click",()=>{if(typeTimer)finishType();});
+
+/* ---------- i18n ---------- */
+function applyLang(){
+  document.documentElement.lang=lang;document.title=t("title");
+  document.querySelectorAll("[data-t]").forEach(el=>{el.textContent=t(el.dataset.t);});
+  document.querySelectorAll("[data-tp]").forEach(el=>{el.placeholder=t(el.dataset.tp);});
+  document.querySelectorAll(".lang button").forEach(b=>b.setAttribute("aria-pressed",String(b.dataset.lang===lang)));
+  renderStartBits();
+  if(screen==="quiz")renderQuestion(true);
+  if(screen==="result")renderResult(false);
+}
+document.querySelectorAll(".lang button").forEach(b=>b.addEventListener("click",()=>{
+  if(lang===b.dataset.lang)return;lang=b.dataset.lang;
+  try{localStorage.setItem("dp-lang",lang);}catch(e){}
+  applyLang();
+}));
+function renderStartBits(){
+  $("#greet").textContent=name?fill(t("greetName")):t("greet");
+  $("#collMini").textContent=found.length?fill(t("collMini")):"";
+}
+
+function show(id){
+  screen=id;
+  document.querySelectorAll(".screen").forEach(s=>s.classList.toggle("on",s.id==="s-"+id));
+  window.scrollTo({top:0,behavior:"smooth"});
+}
+
+/* ---------- start ---------- */
+let greetT=null;
+$("#nameIn").addEventListener("input",e=>{
+  name=e.target.value.trim().slice(0,20);clearTimeout(greetT);
+  greetT=setTimeout(()=>{renderStartBits();blip("coreStart");},250);
+});
+$("#startForm").addEventListener("submit",e=>{
+  e.preventDefault();
+  name=$("#nameIn").value.trim().slice(0,20);
+  deck=shuffle(Q.map((_,i)=>i)).slice(0,QPER);
+  qi=0;se={L:0,C:0,N:0,V:0,X:0};sr={K:0,V:0,A:0,R:0};locked=false;optOrder=[];
+  show("quiz");renderQuestion(false);
+});
+
+/* ---------- quiz ---------- */
+function renderQuestion(instant){
+  const q=Q[deck[qi]];
+  if(!optOrder.length)optOrder=shuffle([0,1,2,3]);
+  $("#qnum").textContent=t("q")+" "+String(qi+1).padStart(2,"0")+"/"+String(QPER).padStart(2,"0");
+  $("#qbar").style.width=((qi+(locked?1:0))/QPER*100)+"%";
+  const box=$("#opts");const pickEl=box.querySelector(".pick");const picked=pickEl?Number(pickEl.dataset.o):-1;
+  box.className="opts"+(locked?" lock show":"");box.innerHTML="";
+  optOrder.forEach((oi,pos)=>{
+    const o=q.o[oi];
+    const b=document.createElement("button");b.type="button";b.className="opt"+(locked&&oi===picked?" pick":"");b.dataset.o=oi;
+    const k=document.createElement("span");k.className="k";k.textContent="ABCD"[pos];
+    const s=document.createElement("span");s.textContent=lang==="id"?o[1]:o[2];
+    b.append(k,s);b.addEventListener("click",()=>answer(oi,b));box.appendChild(b);
+  });
+  if(locked)return;
+  const text=(qi===QPER-1?t("last"):"")+fill(q[lang]);
+  if(instant){clearInterval(typeTimer);typeTimer=null;typeDone=null;$("#qtext").textContent=text;box.classList.add("show");}
+  else{typeText($("#qtext"),text,()=>box.classList.add("show"));setTimeout(()=>box.classList.add("show"),Math.min(text.length*20+200,1700));}
+}
+function answer(oi,btn){
+  if(locked)return;locked=true;
+  if(typeTimer)finishType();
+  btn.classList.add("pick");$("#opts").classList.add("lock","show");
+  const tag=Q[deck[qi]].o[oi][0];se[tag[0]]++;sr[tag[1]]++;
+  $("#qbar").style.width=((qi+1)/QPER*100)+"%";
+  blip("coreQuiz");
+  const re=t("react");
+  setTimeout(()=>{$("#qtext").textContent=re[Math.floor(Math.random()*re.length)];},220);
+  setTimeout(()=>{
+    locked=false;qi++;optOrder=[];
+    if(qi<QPER)renderQuestion(false);else startScan();
+  },1150);
+}
+document.addEventListener("keydown",e=>{
+  if(screen!=="quiz"||e.target.tagName==="INPUT")return;
+  const m={"1":0,"2":1,"3":2,"4":3,"a":0,"b":1,"c":2,"d":3}[e.key.toLowerCase()];
+  if(m!==undefined){const b=$("#opts").children[m];if(b)answer(Number(b.dataset.o),b);}
+});
+
+/* ---------- scan ---------- */
+function startScan(){
+  show("scan");
+  const bar=$("#scanBar");bar.style.transition="none";bar.style.width="0";
+  let step=0;$("#scanText").textContent=t("scan")[0];
+  requestAnimationFrame(()=>requestAnimationFrame(()=>{bar.style.transition="width 2.6s cubic-bezier(.4,0,.2,1)";bar.style.width="100%";}));
+  const iv=setInterval(()=>{step++;if(step<3)$("#scanText").textContent=t("scan")[step];},900);
+  setTimeout(()=>{clearInterval(iv);computeResult();show("result");renderResult(true);},2800);
+}
+
+/* ---------- result ---------- */
+function computeResult(){
+  const h=hash(nm().toLowerCase());
+  const pickTop=(obj,order,salt)=>{const m=Math.max(...order.split("").map(k=>obj[k]));const top=order.split("").filter(k=>obj[k]===m);return top[(h>>>salt)%top.length];};
+  const e=pickTop(se,EORDER,0),r=pickTop(sr,RORDER,7);
+  const key=e+r,E=ELEM[e],R=ROLE[r];
+  const jit=n=>((h>>>(n*5))%13)-6;
+  const cl=v=>Math.max(8,Math.min(99,v));
+  const stats=[cl(E.base[0]+R.adj[0]+jit(1)),cl(E.base[1]+R.adj[1]+jit(2)),cl(E.base[2]+R.adj[2]+jit(3)),cl(25+((h>>>11)%75))];
+  const rv=(h>>>3)%100;
+  const rarity=rv<8?"MYTHIC":rv<28?"LEGENDARY":rv<60?"EPIC":"RARE";
+  const isNew=!found.includes(key);
+  if(isNew){found.push(key);try{localStorage.setItem("dp-found",JSON.stringify(found));}catch(err){}}
+  result={key,e,r,stats,rarity,isNew,no:String(h%10000).padStart(4,"0")};
+}
+function renderResult(animate){
+  if(!result)return;
+  const E=ELEM[result.e],C=CARD[result.key][lang],R=ROLE[result.r];
+  const card=$("#card");
+  $("#cRarity").textContent=result.rarity;
+  $("#cNo").textContent="No. "+result.no;
+  const art=$("#cArt");art.innerHTML=ICON[result.e];art.style.color=E.c1;
+  art.style.background="radial-gradient(circle at 50% 40%,"+E.c2+"55,#14123a 72%)";
+  const role=document.createElement("span");role.className="c-role";role.textContent=R[lang];
+  const code=document.createElement("span");code.className="c-code";code.textContent=String(ALLKEYS.indexOf(result.key)+1).padStart(2,"0")+"/20";
+  art.append(role,code);
+  $("#cName").textContent=nm();
+  $("#cTitle").textContent=C.t;$("#cTitle").style.color=E.c1;
+  $("#cSub").textContent=t("elem")+": "+E[lang].e+" · "+E[lang].d;
+  const st=$("#cStats");st.innerHTML="";
+  const cols=[E.c1,E.c2,"#ffe45c","#9dffb0"];
+  t("stats").forEach((lab,i)=>{
+    const l=document.createElement("span");l.textContent=lab;
+    const tr=document.createElement("div");tr.className="tr";const f=document.createElement("div");f.style.background=cols[i];tr.appendChild(f);
+    const v=document.createElement("span");v.textContent=result.stats[i];
+    st.append(l,tr,v);
+    if(animate)requestAnimationFrame(()=>requestAnimationFrame(()=>{f.style.width=result.stats[i]+"%";}));
+    else{f.style.transition="none";f.style.width=result.stats[i]+"%";}
+  });
+  $("#cWeak").textContent=t("weak")+": "+C.w;
+  $("#rIntro").textContent=fill(t("intro"));
+  $("#rTitle").textContent=C.t;
+  const nb=$("#rNew");nb.hidden=!result.isNew;nb.textContent=t("newCard");
+  $("#rDesc").textContent=C.d;
+  $("#rPower").textContent=C.p;
+  $("#rMatch").textContent=CARD[MATCH_E[result.e]+MATCH_R[result.r]][lang].t;
+  $("#rTrans").textContent="“"+E[lang].m+"”";
+  renderCollection();
+  const wa=t("waText").replace("{t}",C.t).replace("{r}",result.rarity).replace("{k}",String(ALLKEYS.indexOf(result.key)+1).padStart(2,"0")).replace("{w}",C.w).replace("{u}",SHARE_URL);
+  $("#waBtn").href="https://wa.me/?text="+encodeURIComponent(wa);
+  if(animate){card.classList.remove("reveal");void card.offsetWidth;card.classList.add("reveal");}
+}
+function renderCollection(){
+  const g=$("#collGrid");g.innerHTML="";
+  ALLKEYS.forEach((k,i)=>{
+    const s=document.createElement("div");const got=found.includes(k);
+    s.className="slot"+(got?" got":"")+(result&&k===result.key?" now":"");
+    s.textContent=String(i+1).padStart(2,"0");
+    if(got){const E=ELEM[k[0]];s.style.background="linear-gradient(160deg,"+E.c1+","+E.c2+")";s.title=CARD[k][lang].t;}
+    else s.title="???";
+    g.appendChild(s);
+  });
+  $("#collCount").textContent=found.length+"/20";
+}
+
+/* tilt */
+(function(){
+  const card=$("#card");
+  function move(x,y){
+    const r=card.getBoundingClientRect();
+    const px=Math.min(1,Math.max(0,(x-r.left)/r.width)),py=Math.min(1,Math.max(0,(y-r.top)/r.height));
+    card.style.setProperty("--ry",((px-.5)*24)+"deg");card.style.setProperty("--rx",((.5-py)*20)+"deg");
+    card.style.setProperty("--mx",(px*100)+"%");card.style.setProperty("--my",(py*100)+"%");
+  }
+  card.addEventListener("pointermove",e=>{card.classList.remove("reveal");move(e.clientX,e.clientY);});
+  card.addEventListener("pointerleave",()=>{card.style.setProperty("--rx","0deg");card.style.setProperty("--ry","0deg");card.style.setProperty("--mx","50%");card.style.setProperty("--my","50%");});
+  card.addEventListener("touchmove",e=>{const tt=e.touches[0];if(tt)move(tt.clientX,tt.clientY);},{passive:true});
+})();
+
+let toastT=null;
+function toast(msg){const el=$("#toast");el.textContent=msg;el.classList.add("on");clearTimeout(toastT);toastT=setTimeout(()=>el.classList.remove("on"),2000);}
+
+$("#copyBtn").addEventListener("click",async()=>{
+  const C=CARD[result.key][lang];
+  const txt=t("footer")+"\n\n"+fill(t("intro"))+"\n"+C.t+" ("+result.rarity+" · "+ROLE[result.r][lang]+")\n"+
+    t("stats").map((s,i)=>s+" "+result.stats[i]).join(" · ")+"\n"+
+    t("power")+": "+C.p+"\n"+t("weak")+": "+C.w+"\n\n“"+ELEM[result.e][lang].m+"”";
+  try{await navigator.clipboard.writeText(txt);toast(t("copied"));}catch(e){toast(t("noCopy"));}
+});
+$("#againBtn").addEventListener("click",()=>{result=null;show("start");renderStartBits();});
+
+/* ---------- card image ---------- */
+function loadSVG(svg,color){
+  return new Promise(res=>{
+    const s=svg.replace(/currentColor/g,color).replace("<svg ",'<svg xmlns="http://www.w3.org/2000/svg" width="240" height="240" ');
+    const img=new Image();img.onload=()=>res(img);img.onerror=()=>res(null);
+    img.src="data:image/svg+xml;charset=utf-8,"+encodeURIComponent(s);
+  });
+}
+function rr(ctx,x,y,w,h,r){ctx.beginPath();ctx.moveTo(x+r,y);ctx.arcTo(x+w,y,x+w,y+h,r);ctx.arcTo(x+w,y+h,x,y+h,r);ctx.arcTo(x,y+h,x,y,r);ctx.arcTo(x,y,x+w,y,r);ctx.closePath();}
+function wrap(ctx,text,x,y,maxW,lh,maxLines){
+  const words=text.split(" ");let line="",lines=[];
+  for(const w of words){const test=line?line+" "+w:w;if(ctx.measureText(test).width>maxW&&line){lines.push(line);line=w;}else line=test;}
+  if(line)lines.push(line);lines=lines.slice(0,maxLines||9);
+  lines.forEach((l,i)=>ctx.fillText(l,x,y+i*lh));return lines.length*lh;
+}
+async function drawCard(story){
+  try{await document.fonts.ready;}catch(e){}
+  const W=1080,H=story?1920:1350,cv=document.createElement("canvas");cv.width=W;cv.height=H;const x=cv.getContext("2d");
+  const E=ELEM[result.e],C=CARD[result.key][lang],R=ROLE[result.r];
+  let g=x.createLinearGradient(0,0,W,H);g.addColorStop(0,"#0a0d22");g.addColorStop(1,"#1d0f3e");x.fillStyle=g;x.fillRect(0,0,W,H);
+  const hs=hash(nm());for(let i=0;i<90;i++){const sx=(Math.imul(hs+i*97,2654435761)>>>0)%W,sy=(Math.imul(hs+i*31,40503)>>>0)%H;x.fillStyle="rgba(255,255,255,"+(.3+(i%5)/8)+")";const z=i%7===0?3:2;x.fillRect(sx,sy,z,z);}
+  if(story){
+    g=x.createRadialGradient(W/2,H*.45,50,W/2,H*.45,900);g.addColorStop(0,"rgba(139,107,255,.35)");g.addColorStop(1,"rgba(139,107,255,0)");x.fillStyle=g;x.fillRect(0,0,W,H);
+    x.textAlign="center";x.font="400 30px 'Share Tech Mono', monospace";x.fillStyle="#47e0ff";x.fillText(t("storyTop"),W/2,170);
+    x.font="800 52px Unbounded, sans-serif";g=x.createLinearGradient(140,0,W-140,0);g.addColorStop(0,"#ffffff");g.addColorStop(.5,"#47e0ff");g.addColorStop(1,"#ff4fd8");x.fillStyle=g;
+    wrap(x,t("footer"),W/2,248,W-160,62,2);x.textAlign="left";
+  }
+  const cx=150,cy=story?360:100,cw=780,ch=1080;
+  x.save();x.shadowColor="rgba(120,70,255,.6)";x.shadowBlur=80;rr(x,cx,cy,cw,ch,46);
+  g=x.createLinearGradient(cx,cy,cx+cw,cy+ch);g.addColorStop(0,"#20235a");g.addColorStop(.55,"#10122c");g.addColorStop(1,"#2a1352");x.fillStyle=g;x.fill();x.restore();
+  x.save();rr(x,cx,cy,cw,ch,46);x.clip();x.globalCompositeOperation="screen";
+  g=x.createLinearGradient(cx,cy+ch*.2,cx+cw,cy+ch*.7);g.addColorStop(0,"rgba(0,0,0,0)");g.addColorStop(.35,"rgba(255,60,200,.22)");g.addColorStop(.5,"rgba(60,220,255,.24)");g.addColorStop(.65,"rgba(255,235,90,.18)");g.addColorStop(1,"rgba(0,0,0,0)");
+  x.fillStyle=g;x.fillRect(cx,cy,cw,ch);x.restore();
+  g=x.createLinearGradient(cx,cy,cx+cw,cy+ch);g.addColorStop(0,"#ff4fd8");g.addColorStop(.33,"#47e0ff");g.addColorStop(.66,"#ffe45c");g.addColorStop(1,"#8b6bff");
+  x.lineWidth=5;x.strokeStyle=g;rr(x,cx+2,cy+2,cw-4,ch-4,44);x.stroke();
+  const px=cx+56,pw=cw-112;let y=cy+60;
+  x.font="800 26px Unbounded, sans-serif";const rw=x.measureText(result.rarity).width+50;
+  g=x.createLinearGradient(px,0,px+rw,0);g.addColorStop(0,"#ffe45c");g.addColorStop(1,"#ff9d4f");x.fillStyle=g;rr(x,px,y,rw,56,28);x.fill();
+  x.fillStyle="#2a1300";x.textBaseline="middle";x.fillText(result.rarity,px+25,y+29);
+  x.font="500 28px 'Space Grotesk', sans-serif";x.fillStyle="#c6c9f0";x.textAlign="right";x.fillText("No. "+result.no,px+pw,y+29);x.textAlign="left";x.textBaseline="alphabetic";
+  y+=88;
+  g=x.createRadialGradient(px+pw/2,y+130,10,px+pw/2,y+150,pw*.6);g.addColorStop(0,E.c2+"88");g.addColorStop(1,"#14123a");x.fillStyle=g;rr(x,px,y,pw,300,30);x.fill();
+  const icon=await loadSVG(ICON[result.e],E.c1);
+  if(icon){x.save();x.shadowColor=E.c1;x.shadowBlur=30;x.drawImage(icon,px+pw/2-120,y+30,240,240);x.restore();}
+  x.font="700 24px 'Share Tech Mono', monospace";const rlw=x.measureText(R[lang]).width+28;
+  x.fillStyle="rgba(0,0,0,.5)";rr(x,px+20,y+300-58,rlw,40,8);x.fill();x.fillStyle="#fff";x.fillText(R[lang],px+34,y+300-30);
+  x.textAlign="right";x.fillStyle="rgba(255,255,255,.85)";x.fillText(String(ALLKEYS.indexOf(result.key)+1).padStart(2,"0")+"/20",px+pw-22,y+300-30);x.textAlign="left";
+  y+=350;
+  x.font="400 24px 'Share Tech Mono', monospace";x.fillStyle="#b4b8e6";x.fillText(t("holder"),px,y);y+=62;
+  let ns=58;x.font="800 "+ns+"px Unbounded, sans-serif";while(x.measureText(nm()).width>pw&&ns>30){ns-=2;x.font="800 "+ns+"px Unbounded, sans-serif";}
+  x.fillStyle="#ffffff";x.fillText(nm(),px,y);y+=52;
+  x.font="700 36px 'Space Grotesk', sans-serif";x.fillStyle=E.c1;y+=wrap(x,C.t,px,y,pw,44,2);
+  x.font="400 26px 'Space Grotesk', sans-serif";x.fillStyle="#b4b8e6";x.fillText(t("elem")+": "+E[lang].e+" · "+E[lang].d,px,y);y+=58;
+  const cols=[E.c1,E.c2,"#ffe45c","#9dffb0"];
+  t("stats").forEach((lab,i)=>{
+    x.font="500 26px 'Space Grotesk', sans-serif";x.fillStyle="#eef0ff";x.fillText(lab,px,y);
+    x.textAlign="right";x.fillText(String(result.stats[i]),px+pw,y);x.textAlign="left";
+    const bx=px+230,bw=pw-300;x.fillStyle="rgba(255,255,255,.14)";rr(x,bx,y-16,bw,14,7);x.fill();
+    x.fillStyle=cols[i];rr(x,bx,y-16,bw*result.stats[i]/100,14,7);x.fill();
+    y+=46;
+  });
+  y+=10;
+  x.font="500 26px 'Space Grotesk', sans-serif";
+  x.fillStyle="rgba(0,0,0,.35)";rr(x,px,y,pw,Math.max(90,cy+ch-50-y),20);x.fill();
+  x.fillStyle="#e2e4ff";wrap(x,t("weak")+": "+C.w,px+26,y+46,pw-52,34,3);
+  x.textAlign="center";
+  if(story){
+    x.font="700 38px 'Space Grotesk', sans-serif";x.fillStyle="#eef0ff";x.fillText(t("storyCta"),W/2,1550);
+    x.save();x.setLineDash([16,12]);x.lineWidth=4;x.strokeStyle="rgba(255,255,255,.75)";rr(x,W/2-330,1600,660,150,36);x.stroke();x.restore();
+    x.font="400 28px 'Share Tech Mono', monospace";x.fillStyle="rgba(255,255,255,.8)";x.fillText(t("sticker"),W/2,1686);
+  }else{
+    x.font="700 30px 'Space Grotesk', sans-serif";x.fillStyle="#b4b8e6";x.fillText(t("footer"),W/2,H-50);
+  }
+  x.textAlign="left";
+  return cv;
+}
+
+let downloads=null;
+(async()=>{try{if(window.claude&&window.claude.use)downloads=await window.claude.use("downloads");}catch(e){downloads=null;}})();
+
+function slug(){return nm().toLowerCase().replace(/[^a-z0-9]+/g,"-").replace(/^-|-$/g,"")||"kartu";}
+// returns "saved" | "declined" | "preview"
+const IN_CLAUDE=!!(window.claude&&window.claude.use);
+async function offerImage(cv,fname,useShare){
+  const blob=await new Promise(r=>cv.toBlob(r,"image/png"));
+  if(!blob)return "preview";
+  if(IN_CLAUDE){
+    if(downloads){
+      try{await downloads.save({filename:fname,data:blob});return "saved";}
+      catch(err){if(err&&err.code==="declined")return "declined";}
+    }
+    return "preview";
+  }
+  // Standalone (your own hosting): native share sheet on phones, normal download elsewhere
+  if(useShare&&navigator.canShare){
+    try{
+      const file=new File([blob],fname,{type:"image/png"});
+      if(navigator.canShare({files:[file]})){
+        await navigator.share({files:[file],title:t("footer")});
+        return "saved";
+      }
+    }catch(err){if(err&&err.name==="AbortError")return "declined";}
+  }
+  try{
+    const url=URL.createObjectURL(blob);const a=document.createElement("a");
+    a.href=url;a.download=fname;document.body.appendChild(a);a.click();a.remove();
+    setTimeout(()=>URL.revokeObjectURL(url),4000);
+    return "saved";
+  }catch(e){return "preview";}
+}
+function openModal(o){
+  $("#modalTitle").textContent=o.title||"";
+  const img=$("#modalImg");
+  if(o.cv){img.src=o.cv.toDataURL("image/png");img.alt=CARD[result.key][lang].t;img.hidden=false;img.style.maxHeight=o.story?"52vh":"60vh";img.style.width="auto";img.style.maxWidth="100%";}
+  else img.hidden=true;
+  $("#modalTxt").textContent=o.text||"";
+  const ol=$("#modalSteps");ol.innerHTML="";
+  if(o.steps){o.steps.forEach(s=>{const li=document.createElement("li");li.textContent=s;ol.appendChild(li);});ol.hidden=false;}else ol.hidden=true;
+  $("#modalLink").hidden=!o.link;
+  $("#modal").classList.add("on");(o.link?$("#modalLink"):$("#modalClose")).focus();
+}
+$("#saveBtn").addEventListener("click",async()=>{
+  const btn=$("#saveBtn");btn.disabled=true;
+  try{
+    const cv=await drawCard(false);
+    const r=await offerImage(cv,"dunia-paralel-"+slug()+".png");
+    if(r==="saved")toast(t("saved"));else if(r==="declined")toast(t("declined"));
+    else openModal({title:t("imgTitle"),cv,text:t("longpress")});
+  }finally{btn.disabled=false;}
+});
+$("#igBtn").addEventListener("click",async()=>{
+  const btn=$("#igBtn");btn.disabled=true;
+  try{
+    const cv=await drawCard(true);
+    const r=await offerImage(cv,"story-dunia-paralel-"+slug()+".png",true);
+    if(r==="declined"){toast(t("declined"));return;}
+    if(r==="saved")openModal({title:t("igTitle"),text:t("igSaved"),steps:t("igSteps"),link:true});
+    else openModal({title:t("igTitle"),cv,story:true,text:t("igPreview"),steps:t("igSteps"),link:true});
+  }finally{btn.disabled=false;}
+});
+$("#modalLink").addEventListener("click",async()=>{
+  try{await navigator.clipboard.writeText(SHARE_URL);toast(t("linkCopied"));}catch(e){toast(t("noCopy"));}
+});
+$("#modalClose").addEventListener("click",()=>$("#modal").classList.remove("on"));
+$("#modal").addEventListener("click",e=>{if(e.target.id==="modal")$("#modal").classList.remove("on");});
+
+applyLang();
+})();
+</script>
+</body>
+</html>
