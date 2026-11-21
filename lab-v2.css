@@ -85,7 +85,7 @@
 .w-novem .grid button.given { color: #E8C27A; cursor: default; }
 .w-novem .grid button.dupe { border-color: #E6B8C2; background: rgba(230,184,194,.18); }
 .w-novem .hint { font-family: var(--hand); font-size: 17px; color: #c9c3dc; margin-top: 8px; min-height: 1.1em; }
-.w-novem .sky i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #F5E3E2; animation: twk 3s ease-in-out infinite; }
+.w-novem .twk-sky i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #F5E3E2; animation: twk 3s ease-in-out infinite; }
 @keyframes twk { 50% { opacity: .2; } }
 
 /* bubble letters · Quefory */
@@ -118,4 +118,21 @@
 .w-pal .note.pop { animation: notepop .45s cubic-bezier(.3,1.6,.5,1); }
 @keyframes notepop { from { transform: scale(.3) rotate(-20deg); opacity: 0; } }
 
-@media (prefers-reduced-motion: reduce) { .proj, .face, .peek { transition: none; } .blink, .w-term .cur, .w-novem .sky i { animation: none; } }
+/* night oracle · Starry Song of the Day */
+.w-sotd { background: radial-gradient(ellipse at 70% 0%, #3b2a6e, #14102f 55%, #060518); color: #efe9ff; align-items: center; justify-content: center; text-align: center; font-family: "Fredoka", var(--sans); padding: 14px; }
+.w-sotd .twk-sky i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #fff; animation: twk 3s ease-in-out infinite; }
+.w-sotd > * { position: relative; }
+.w-sotd .k { font-family: ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: .3em; color: #b9a8e8; }
+.w-sotd .q { font-size: clamp(19px, 2.6vw, 25px); font-weight: 600; margin: 4px 0 10px; background: linear-gradient(90deg, #fff, #c9b8ff 40%, #ffb8e2); -webkit-background-clip: text; background-clip: text; color: transparent; }
+.w-sotd .opts { display: flex; gap: 6px; flex-wrap: wrap; justify-content: center; }
+.w-sotd .opts button { font-family: inherit; font-size: 13px; color: #efe9ff; background: rgba(255,255,255,.08); border: 1px solid rgba(201,184,255,.35); border-radius: 999px; padding: 6px 12px; }
+.w-sotd .opts button.on { background: linear-gradient(135deg, #a9b8ff, #f0b4dc); color: #1d1440; border-color: transparent; }
+.w-sotd .res { min-height: 3.4em; margin-top: 10px; display: flex; flex-direction: column; align-items: center; opacity: 0; transform: translateY(6px); transition: opacity .4s, transform .4s; }
+.w-sotd .res.show { opacity: 1; transform: none; }
+.w-sotd .res span { font-family: var(--hand); font-size: 17px; color: #c9b8ff; }
+.w-sotd .res b { font-size: clamp(16px, 2.2vw, 20px); font-weight: 600; line-height: 1.1; }
+.w-sotd .res em { font-style: normal; font-size: 12.5px; color: #b9a8e8; }
+.w-sotd .ask { position: absolute; bottom: 10px; left: 0; right: 0; font-family: var(--sans); font-size: 11.5px; color: #c9b8ff; text-decoration: none; }
+.w-sotd .ask:hover { text-decoration: underline; }
+
+@media (prefers-reduced-motion: reduce) { .w-sotd .twk-sky i, .w-sotd .res { animation: none; transition: none; } .proj, .face, .peek { transition: none; } .blink, .w-term .cur, .w-novem .twk-sky i { animation: none; } }

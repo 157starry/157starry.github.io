@@ -10,6 +10,8 @@ window.LAB_WORLDS = (function () {
   const PIXBUDDY = svg("0 0 16 14", `<g shape-rendering="crispEdges"><path d="M4 2h8v1h1v1h1v7h-1v1H3v-1H2V4h1V3h1z" fill="#2c3a37"/><path d="M4 3h8v1h1v7H3V4h1z" fill="#F2B8C2"/><rect class="blink" x="5" y="6" width="2" height="2" fill="#2c3a37"/><rect class="blink" x="9" y="6" width="2" height="2" fill="#2c3a37"/><rect x="4" y="8" width="1" height="1" fill="#e57e93"/><rect x="11" y="8" width="1" height="1" fill="#e57e93"/><rect x="7" y="9" width="2" height="1" fill="#2c3a37"/></g>`);
   const PIXCAT = svg("0 0 16 12", `<g shape-rendering="crispEdges"><path d="M2 0h2v1h1v1h6V1h1V0h2v4h1v7H1V4h1z" fill="#3A2A2E"/><path d="M5 5h6v5H5z" fill="#F3E6DA"/><rect class="blink" x="3" y="5" width="2" height="2" fill="#F6E9E9"/><rect class="blink" x="11" y="5" width="2" height="2" fill="#F6E9E9"/><rect x="7" y="7" width="2" height="1" fill="#E7A9AE"/></g>`);
 
+  const STARRY = `<svg aria-hidden="true" id="sp-starrySvg" viewBox="0 0 200 270" xmlns="http://www.w3.org/2000/svg"> <defs> <radialGradient id="sp-hairG" cx="40%" cy="30%" r="80%"> <stop offset="0" stop-color="#f6f8ff"/><stop offset=".45" stop-color="#bcd2ff"/> <stop offset=".8" stop-color="#9eb2ff"/><stop offset="1" stop-color="#c9a9ff"/> </radialGradient> <linearGradient id="sp-hairTail" x1="0" y1="1" x2="1" y2="0"> <stop offset="0" stop-color="#bcd2ff"/><stop offset=".55" stop-color="#e0b9ff"/><stop offset="1" stop-color="#ffc2e4" stop-opacity=".2"/> </linearGradient> <radialGradient id="sp-skin" cx="50%" cy="40%" r="65%"><stop offset="0" stop-color="#fff5f0"/><stop offset="1" stop-color="#ffe0d8"/></radialGradient> <linearGradient id="sp-dress" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c4e6ff"/><stop offset="1" stop-color="#84b5f2"/></linearGradient> <radialGradient id="sp-eyeG" cx="50%" cy="30%" r="70%"><stop offset="0" stop-color="#7c9ae0"/><stop offset="1" stop-color="#2b3870"/></radialGradient> <filter id="sp-glow" x="-60%" y="-60%" width="220%" height="220%"><feGaussianBlur stdDeviation="7"/></filter> </defs> <ellipse cx="100" cy="150" rx="94" ry="22" fill="none" stroke="rgba(225,232,255,.45)" stroke-width="1.3" stroke-dasharray="2 6" transform="rotate(-14 100 150)"/> <!-- cosmic hair tail --> <path d="M112 46 C140 20 170 8 199 2 C190 30 172 56 146 82 C134 72 122 60 112 46Z" fill="url(#sp-hairTail)" filter="url(#sp-glow)" opacity=".9"/> <path d="M112 46 C140 20 170 8 199 2 C190 30 172 56 146 82 C134 72 122 60 112 46Z" fill="url(#sp-hairTail)" opacity=".75"/> <!-- hair back --> <path d="M50 92 C46 50 74 30 102 30 C134 30 156 52 152 94 C152 118 146 132 140 138 L60 138 C54 130 50 116 50 92Z" fill="url(#sp-hairG)" filter="url(#sp-glow)" opacity=".7"/> <path d="M50 92 C46 50 74 30 102 30 C134 30 156 52 152 94 C152 118 146 132 140 138 L60 138 C54 130 50 116 50 92Z" fill="url(#sp-hairG)"/> <!-- legs --> <rect x="87" y="208" width="9" height="36" rx="4.5" fill="url(#sp-skin)"/> <rect x="104" y="208" width="9" height="36" rx="4.5" fill="url(#sp-skin)"/> <ellipse cx="91" cy="246" rx="7.5" ry="4.2" fill="#8ea8ee"/> <ellipse cx="109" cy="246" rx="7.5" ry="4.2" fill="#8ea8ee"/> <!-- left arm --> <path d="M80 142 Q65 160 62 182" stroke="#ffe4dc" stroke-width="9" stroke-linecap="round" fill="none"/> <circle cx="62" cy="184" r="5.5" fill="#ffe4dc"/> <!-- dress --> <path d="M80 134 Q100 128 120 134 L128 150 Q136 180 146 212 Q131 220 116 214 Q100 222 86 214 Q70 220 54 212 Q64 180 72 150 Z" fill="url(#sp-dress)"/> <path d="M70 196 Q100 204 132 196" stroke="rgba(255,255,255,.35)" stroke-width="1.5" fill="none"/> <ellipse cx="78" cy="143" rx="11" ry="9" fill="#acd4fb"/> <!-- head --> <g id="sp-head"> <ellipse cx="100" cy="92" rx="44" ry="40" fill="url(#sp-skin)"/> <path d="M56 92 C54 58 78 42 102 42 C128 42 148 60 144 92 C138 78 130 70 124 66 C122 76 114 80 106 78 C108 72 106 66 104 64 C96 74 84 80 70 80 C66 84 60 88 56 92Z" fill="url(#sp-hairG)"/> <path d="M56 88 C52 110 56 126 64 134 C62 118 62 104 60 92Z" fill="url(#sp-hairG)"/> <path d="M144 88 C148 110 144 126 136 134 C138 118 138 104 140 92Z" fill="url(#sp-hairG)"/> <circle cx="72" cy="58" r="1.6" fill="#fff"/> <circle cx="128" cy="54" r="1.3" fill="#fff"/> <circle cx="160" cy="34" r="1.5" fill="#fff"/> <circle cx="182" cy="16" r="1.2" fill="#fff"/> <!-- star tiara --> <g fill="#fff6c9" style="filter:drop-shadow(0 0 4px #fff3a8)"> <path d="M100 30 L102.6 37 L109.5 39.5 L102.6 42 L100 49 L97.4 42 L90.5 39.5 L97.4 37Z"/> <path d="M86 40 L87.4 43.6 L91 45 L87.4 46.4 L86 50 L84.6 46.4 L81 45 L84.6 43.6Z"/> <path d="M114 40 L115.4 43.6 L119 45 L115.4 46.4 L114 50 L112.6 46.4 L109 45 L112.6 43.6Z"/> </g> <g id="sp-eyeL"> <g><ellipse cx="82" cy="98" rx="7.5" ry="9.5" fill="url(#sp-eyeG)"/><circle cx="84.5" cy="94" r="2.8" fill="#fff"/><circle cx="80" cy="101.5" r="1.3" fill="#fff" opacity=".8"/></g> <path d="M74 101 Q82 93 90 101" stroke="#2b3870" stroke-width="2.6" fill="none" stroke-linecap="round"/> </g> <g id="sp-eyeR"> <g><ellipse cx="118" cy="98" rx="7.5" ry="9.5" fill="url(#sp-eyeG)"/><circle cx="120.5" cy="94" r="2.8" fill="#fff"/><circle cx="116" cy="101.5" r="1.3" fill="#fff" opacity=".8"/></g> <path d="M110 101 Q118 93 126 101" stroke="#2b3870" stroke-width="2.6" fill="none" stroke-linecap="round"/> </g> <ellipse cx="71" cy="112" rx="8" ry="5" fill="#ff9fb8" opacity=".55"/> <ellipse cx="129" cy="112" rx="8" ry="5" fill="#ff9fb8" opacity=".55"/> <path d="M94 113 Q100 119 106 113" stroke="#d9647e" stroke-width="2.2" fill="none" stroke-linecap="round"/> </g> <!-- right (waving) arm --> <g id="sp-armR"> <path d="M122 142 L144 178" stroke="#ffe4dc" stroke-width="9" stroke-linecap="round"/> <circle cx="145" cy="180" r="5.5" fill="#ffe4dc"/> <ellipse cx="122" cy="143" rx="11" ry="9" fill="#acd4fb"/> </g> </svg>`;
+
   const W = [];
 
   // Merry Christmas.txt — a terminal that types the tree
@@ -89,7 +91,7 @@ window.LAB_WORLDS = (function () {
   W.push({
     test: (p) => /novem|sudoku/i.test(p.name + p.url), cls: "w-novem", sticker: ["new ✧", "pink"],
     why: "My old STarry Sudoku lived on an account I lost. So I rebuilt it under the night sky: always a fresh puzzle, and a constellation cat to keep me company.",
-    html: () => `<div class="sky">${Array.from({ length: 22 }, () => `<i style="left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-delay:${(Math.random() * 3).toFixed(1)}s"></i>`).join("")}</div>
+    html: () => `<div class="twk-sky">${Array.from({ length: 22 }, () => `<i style="left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-delay:${(Math.random() * 3).toFixed(1)}s"></i>`).join("")}</div>
       <div class="ttl">Nov<i>em</i></div><div class="sub">fill one to nine, under the stars</div><div class="grid"></div><div class="hint">tap a square ✧</div>`,
     init(el) {
       const given = { 0: 4, 4: 5, 8: 6 }, vals = Array(9).fill(0);
@@ -156,16 +158,40 @@ window.LAB_WORLDS = (function () {
     },
   });
 
+  // Starry · Song of the Day — Starry reads today's mood and hands you a song
+  const SOTD = {
+    sun: [["A Sky Full of Stars", "Coldplay"], ["Pilihanku", "Maliq & D'Essentials"], ["Loving Is Easy", "Rex Orange County"], ["Monokrom", "Tulus"], ["Blueming", "IU"], ["Banana Pancakes", "Jack Johnson"]],
+    moon: [["Space Song", "Beach House"], ["fine today", "Ardhito Pramono"], ["Best Part", "Daniel Caesar ft. H.E.R."], ["Gala Bunga Matahari", "Sal Priadi"], ["Birds of a Feather", "Billie Eilish"], ["Rehat", "Kunto Aji"]],
+    rain: [["Bertaut", "Nadin Amizah"], ["Hati-Hati di Jalan", "Tulus"], ["Glimpse of Us", "Joji"], ["Let Down", "Radiohead"], ["Satu Bulan", "Bernadya"], ["Video Games", "Lana Del Rey"]],
+  };
+  W.push({
+    test: (p) => /song.?of.?the.?day|\/song\/?$|starry ?·? ?song/i.test(p.name + " " + p.url), cls: "w-sotd", sticker: ["new ✧", "pink"],
+    html: (p) => `<div class="twk-sky">${Array.from({ length: 26 }, () => `<i style="left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-delay:${(Math.random() * 3).toFixed(1)}s"></i>`).join("")}</div>
+      <div class="k">✦ SONG ORACLE</div><div class="q">how does today feel?</div>
+      <div class="opts"><button type="button" data-m="sun">☀️ bright</button><button type="button" data-m="moon">🌙 quiet</button><button type="button" data-m="rain">🌧 a little blue</button></div>
+      <div class="res" aria-live="polite"></div>${p.url ? `<a class="ask" href="${p.url}" target="_blank" rel="noopener">ask Starry properly · 7 questions ↗</a>` : ""}`,
+    init(el) {
+      const res = el.querySelector(".res");
+      el.querySelectorAll("[data-m]").forEach((b) => b.onclick = () => {
+        el.querySelectorAll("[data-m]").forEach((x) => x.classList.toggle("on", x === b));
+        const [t, a] = pick(SOTD[b.dataset.m]);
+        res.classList.remove("show"); void res.offsetWidth;
+        res.innerHTML = `<span>today's song ✦</span><b>${t}</b><em>${a}</em>`; res.classList.add("show");
+      });
+    },
+  });
+
   // where each character sits: [world test, svg, css position]
   const PEEKS = [
     [/tabula|gardenia/i, BUNNY, "right:22px;top:-26px;width:58px;height:58px"],
     [/quefory/i, MATCHA, "right:20px;top:-40px;width:52px;height:62px"],
     [/novem|sudoku/i, STARCAT, "right:18px;top:-22px;width:56px;height:56px"],
     [/grind|study.?quest/i, PIXBUDDY, "right:22px;top:-22px;width:46px;height:40px"],
+    [/song.?of.?the.?day|\/song\/?$|starry ?·? ?song/i, STARRY, "right:16px;top:-50px;width:56px;height:76px"],
     [/starpal/i, PIXCAT, "right:24px;top:-18px;width:44px;height:34px"],
   ];
   return {
     find: (p) => W.find((w) => w.test(p)),
-    peek: (p) => { const k = PEEKS.find(([re]) => re.test(p.name + p.url)); return k ? `<span class="peek" style="${k[2]}">${k[1]}</span>` : ""; },
+    peek: (p) => { const k = PEEKS.find(([re]) => re.test(p.name + " " + p.url)); return k ? `<span class="peek" style="${k[2]}">${k[1]}</span>` : ""; },
   };
 })();
