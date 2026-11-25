@@ -1,0 +1,234 @@
+/* ====== Purrfect Tense · Jam Kosmik ======
+   Warna diatur lewat variabel di bawah.
+   html[data-theme="night"] = malam, html[data-theme="day"] = siang.
+   body.route-* menentukan latar tiap halaman. */
+
+:root {
+  --serif: 'Cinzel', Georgia, serif;
+  --italic: 'Cormorant Garamond', Georgia, serif;
+  --sans: 'Inter', system-ui, sans-serif;
+  --mono: 'JetBrains Mono', ui-monospace, monospace;
+}
+
+html[data-theme="night"] {
+  --bg: #0B1029; --neb: rgba(201,164,92,.14); --neb2: rgba(90,110,220,.18); --vig: rgba(0,0,0,.6);
+  --p1: rgba(28,34,72,.82); --p2: rgba(16,21,50,.9); --chip: rgba(11,16,41,.7);
+  --brass: #C9A45C; --hi: #F1D58A; --dk: #8A6A2E;
+  --text: #F3E7C9; --t2: #CFC4A8; --t3: #A99E80; --on: #1E1608; --acc: #F1D58A;
+  --verb: #FFE7A3; --verbBg: rgba(201,164,92,.28);
+  /* halaman materi: cetak biru */
+  --bp-bg: #133A6A; --bp-grid: rgba(255,255,255,.07); --bp-p1: rgba(20,62,112,.85); --bp-p2: rgba(14,46,88,.92);
+  --bp-line: rgba(230,238,255,.5); --bp-acc: #FFD66B; --bp-text: #F4F8FF; --bp-t2: #C7D6EF; --bp-t3: #A9BFE2;
+  /* halaman menara */
+  --castle-bg: #100C24; --stone: #3A3058;
+}
+html[data-theme="day"] {
+  --bg: #F4EBDD; --neb: rgba(232,150,110,.25); --neb2: rgba(150,175,215,.3); --vig: rgba(120,80,50,.12);
+  --p1: rgba(255,251,244,.88); --p2: rgba(247,238,224,.94); --chip: rgba(232,218,198,.8);
+  --brass: #B06A45; --hi: #E09A72; --dk: #7A4428;
+  --text: #2B2230; --t2: #574A55; --t3: #6A5C63; --on: #2A1A12; --acc: #9A4E2A;
+  --verb: #7A3A1C; --verbBg: rgba(224,154,114,.32);
+  --bp-bg: #F4EBDD; --bp-grid: rgba(120,80,50,.07); --bp-p1: rgba(255,251,244,.92); --bp-p2: rgba(247,238,224,.96);
+  --bp-line: rgba(122,68,40,.4); --bp-acc: #9A4E2A; --bp-text: #2B2230; --bp-t2: #574A55; --bp-t3: #6A5C63;
+  --castle-bg: #F1E6D6; --stone: #D9CBB6;
+}
+
+* { box-sizing: border-box; }
+html, body { margin: 0; height: 100%; }
+body {
+  font-family: var(--sans); color: var(--text); background: var(--bg);
+  transition: background-color .5s, color .3s;
+  -webkit-font-smoothing: antialiased;
+}
+button { font: inherit; color: inherit; cursor: pointer; }
+a { color: var(--acc); }
+:focus-visible { outline: 2px solid var(--hi); outline-offset: 3px; }
+[hidden] { display: none !important; }
+
+/* ---------- latar per halaman ---------- */
+body.route-home {
+  overflow: hidden;
+  background-image: radial-gradient(ellipse at 50% 55%, var(--neb), transparent 50%),
+    radial-gradient(ellipse at 15% 20%, var(--neb2), transparent 40%),
+    radial-gradient(ellipse at 50% 50%, transparent 55%, var(--vig));
+}
+body.route-lessons {
+  background-color: var(--bp-bg); color: var(--bp-text);
+  background-image: repeating-linear-gradient(0deg, var(--bp-grid) 0 1px, transparent 1px 32px),
+    repeating-linear-gradient(90deg, var(--bp-grid) 0 1px, transparent 1px 32px);
+}
+body.route-quiz {
+  background-color: var(--castle-bg);
+  background-image: radial-gradient(ellipse at 30% 40%, var(--neb), transparent 45%),
+    repeating-linear-gradient(0deg, rgba(255,255,255,.025) 0 2px, transparent 2px 56px),
+    radial-gradient(ellipse at 50% 50%, transparent 55%, var(--vig));
+}
+
+/* ---------- kanvas 3D ---------- */
+.orrery { position: fixed; inset: 0; width: 100vw; height: 100vh; display: block; touch-action: none; }
+body:not(.route-home) .orrery { display: none; }
+
+/* ---------- header ---------- */
+.top {
+  position: fixed; left: 32px; right: 32px; top: 18px; height: 58px; z-index: 20;
+  display: flex; align-items: center; justify-content: space-between;
+  border-bottom: 1px solid color-mix(in srgb, var(--brass) 40%, transparent);
+}
+body.route-lessons { --pagebg: var(--bp-bg); }
+body.route-quiz { --pagebg: var(--castle-bg); }
+body:not(.route-home) .top {
+  position: sticky; top: 0; left: auto; right: auto; height: 76px; padding: 18px 32px 0;
+  background: color-mix(in srgb, var(--pagebg) 90%, transparent);
+  backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+}
+body.route-lessons .top { border-color: var(--bp-line); }
+.brand { display: flex; align-items: baseline; gap: 14px; }
+.brand-name { font-family: var(--serif); font-weight: 700; font-size: 22px; letter-spacing: .06em; text-transform: uppercase; color: var(--acc); text-decoration: none; }
+body.route-lessons .brand-name { color: var(--bp-acc); }
+.brand-lab { font-size: 12px; color: var(--t3); text-decoration: none; }
+.brand-lab:hover { color: var(--acc); }
+.nav { display: flex; align-items: center; gap: 24px; font-family: var(--serif); font-weight: 600; font-size: 13px; letter-spacing: .12em; text-transform: uppercase; }
+.nav a { color: var(--t2); text-decoration: none; padding-bottom: 4px; border-bottom: 1px solid transparent; }
+.nav a:hover { color: var(--acc); }
+.nav a[aria-current="page"] { color: var(--acc); border-bottom-color: var(--brass); }
+.nav-soon { color: var(--t3); }
+body.route-lessons .nav a { color: var(--bp-t2); }
+body.route-lessons .nav a[aria-current="page"] { color: var(--bp-acc); border-bottom-color: var(--bp-acc); }
+.icon-btn {
+  width: 40px; height: 40px; border-radius: 50%; border: 1px solid color-mix(in srgb, var(--brass) 60%, transparent);
+  background: transparent; display: flex; align-items: center; justify-content: center; color: var(--acc);
+}
+html[data-theme="night"] .ico-moon, html[data-theme="day"] .ico-sun { display: none; }
+.seg { display: flex; border: 1px solid color-mix(in srgb, var(--brass) 60%, transparent); border-radius: 999px; padding: 3px; }
+.seg button { border: none; background: transparent; color: var(--t2); border-radius: 999px; padding: 5px 12px; font-family: var(--serif); font-weight: 700; font-size: 12px; letter-spacing: .1em; }
+.seg button[aria-pressed="true"] { background: var(--brass); color: var(--on); }
+
+/* ---------- panel kuningan ---------- */
+.panel {
+  background: linear-gradient(180deg, var(--p1), var(--p2));
+  border: 1px solid color-mix(in srgb, var(--brass) 55%, transparent);
+  box-shadow: inset 0 0 0 4px var(--p2), inset 0 0 0 5px color-mix(in srgb, var(--brass) 22%, transparent), 0 20px 50px rgba(0,0,0,.25);
+  backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px);
+  border-radius: 22px;
+}
+.eyebrow { font-family: var(--serif); font-weight: 600; font-size: 11px; letter-spacing: .22em; text-transform: uppercase; color: var(--acc); }
+.btn-gold {
+  display: block; width: 100%; padding: 13px; border: none; border-radius: 14px; text-align: center; text-decoration: none;
+  background: linear-gradient(180deg, var(--hi), var(--brass)); color: var(--on);
+  font-family: var(--serif); font-weight: 700; font-size: 13px; letter-spacing: .1em; text-transform: uppercase;
+  transition: transform .12s, filter .12s;
+}
+.btn-gold:hover { transform: translateY(-1px); filter: brightness(1.06); }
+.btn-line {
+  display: block; width: 100%; padding: 12px; border-radius: 14px; border: 1px solid var(--brass); background: transparent; color: var(--acc);
+  font-family: var(--serif); font-weight: 700; font-size: 13px; letter-spacing: .1em; text-transform: uppercase; text-align: center; text-decoration: none;
+}
+.btn-line:hover { background: color-mix(in srgb, var(--brass) 18%, transparent); }
+
+/* ---------- beranda ---------- */
+.home { position: fixed; inset: 0; pointer-events: none; z-index: 10; }
+.home > * { pointer-events: auto; }
+.intro { position: absolute; left: 44px; top: 108px; width: 340px; pointer-events: none; }
+.intro h1 { font-family: var(--serif); font-weight: 700; font-size: 46px; line-height: 1.05; margin: 10px 0 0; }
+.intro p { margin: 10px 0 0; font-family: var(--italic); font-style: italic; font-weight: 600; font-size: 18px; line-height: 1.35; color: var(--t2); }
+.err3d { position: absolute; left: 50%; top: 45%; transform: translate(-50%, -50%); max-width: 420px; text-align: center; color: var(--t2); font-size: 16px; }
+
+.planet-panel { position: absolute; right: 32px; top: 108px; width: 330px; padding: 24px; }
+.planet-panel h2 { font-family: var(--serif); font-weight: 700; font-size: 30px; margin: 6px 0 0; }
+.planet-panel p { margin: 10px 0 0; font-size: 14px; line-height: 1.5; color: var(--t2); }
+.tense-list { display: flex; flex-direction: column; gap: 8px; margin: 14px 0 18px; }
+.tense-list div { padding: 12px 14px; border-radius: 12px; background: var(--chip); font-weight: 600; font-size: 14px; display: flex; justify-content: space-between; gap: 10px; }
+.tense-list small { font-family: var(--mono); font-weight: 500; font-size: 11px; color: var(--t3); align-self: center; }
+.planet-panel .btn-line { margin-top: 10px; }
+
+.gears { position: absolute; left: 32px; bottom: 26px; width: 260px; padding: 16px 18px; }
+.gears-head { display: flex; justify-content: space-between; align-items: baseline; }
+.gears-head b { font-family: var(--serif); font-size: 16px; }
+.gear-grid { display: grid; grid-template-columns: repeat(8, minmax(0, 1fr)); gap: 6px; margin-top: 10px; }
+.gear-grid span { aspect-ratio: 1; border-radius: 50%; border: 1.5px dashed color-mix(in srgb, var(--brass) 55%, transparent); }
+.gear-grid span.on { border: none; background: repeating-conic-gradient(var(--hi) 0deg 20deg, var(--brass) 20deg 40deg); box-shadow: inset 0 0 0 4px var(--dk); }
+.gears p { margin: 10px 0 0; font-size: 12px; line-height: 1.4; color: var(--t3); }
+
+.lever { position: absolute; left: 50%; bottom: 26px; transform: translateX(-50%); width: min(660px, calc(100vw - 640px)); min-width: 460px; padding: 16px 22px; }
+.lever-head { display: flex; justify-content: space-between; align-items: center; gap: 16px; }
+.lever-tense { padding: 3px 12px; border-radius: 999px; border: 1px solid var(--brass); font-size: 12px; font-weight: 600; color: var(--acc); }
+.lever-sentence { margin: 8px 0 0; text-align: center; font-family: var(--italic); font-weight: 600; font-size: 28px; line-height: 1.2; }
+.lever-sentence mark { background: var(--verbBg); color: var(--verb); padding: 0 6px; border-radius: 6px; }
+.lever-exp { margin: 4px 0 0; text-align: center; font-size: 13px; color: var(--t2); }
+.lever-exp b { color: var(--text); font-weight: 600; font-family: var(--mono); font-size: 12px; }
+.lever-row { display: flex; align-items: center; gap: 12px; margin-top: 10px; }
+.step {
+  flex-shrink: 0; width: 44px; height: 44px; border-radius: 50%; border: 1px solid var(--brass); background: transparent; color: var(--acc);
+  display: flex; align-items: center; justify-content: center;
+}
+.step:hover { background: color-mix(in srgb, var(--brass) 25%, transparent); }
+.lever-track { flex: 1; }
+.lever-track input { width: 100%; margin: 0; accent-color: var(--brass); }
+.lever-scale { display: flex; justify-content: space-between; margin-top: 2px; font-family: var(--serif); font-weight: 600; font-size: 10px; letter-spacing: .14em; text-transform: uppercase; color: var(--t3); }
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+.tip {
+  position: fixed; z-index: 30; pointer-events: none; padding: 4px 12px; border-radius: 999px;
+  background: var(--hi); color: var(--on); font-family: var(--serif); font-weight: 700; font-size: 12px; letter-spacing: .1em; text-transform: uppercase; white-space: nowrap;
+}
+
+/* ---------- halaman materi (cetak biru) ---------- */
+.page { max-width: 1216px; margin: 0 auto; padding: 36px 32px 72px; }
+.lessons .sheet { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--bp-t3); }
+.lessons h1 { font-family: var(--serif); font-weight: 700; font-size: 46px; margin: 8px 0 0; color: var(--bp-text); }
+.lessons .lede { margin: 8px 0 0; font-family: var(--italic); font-style: italic; font-weight: 600; font-size: 19px; color: var(--bp-t2); max-width: 640px; }
+.planet-grid { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 20px; margin-top: 30px; }
+.bp-card {
+  background: linear-gradient(180deg, var(--bp-p1), var(--bp-p2)); border: 1px solid var(--bp-line); border-radius: 18px; padding: 20px 22px;
+  scroll-margin-top: 100px; transition: box-shadow .3s;
+}
+.bp-card.focus { box-shadow: 0 0 0 3px var(--bp-acc); }
+.bp-head { display: flex; align-items: center; gap: 14px; }
+.bp-dot { width: 44px; height: 44px; border-radius: 50%; flex-shrink: 0; box-shadow: inset -8px -6px 12px rgba(0,0,0,.4); }
+.bp-head h2 { font-family: var(--serif); font-weight: 700; font-size: 22px; margin: 0; color: var(--bp-text); }
+.bp-head .fig { font-family: var(--mono); font-size: 11px; letter-spacing: .12em; color: var(--bp-t3); }
+.bp-lv { margin-left: auto; padding: 4px 10px; border-radius: 999px; border: 1px solid var(--bp-line); font-family: var(--mono); font-size: 11px; color: var(--bp-t2); }
+.bp-desc { margin: 12px 0 0; font-size: 14px; line-height: 1.5; color: var(--bp-t2); }
+.bp-tenses { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 10px; margin-top: 14px; }
+.bp-tense { border: 1.5px dashed var(--bp-line); border-radius: 12px; padding: 12px 14px; }
+.bp-tense b { display: block; font-size: 15px; color: var(--bp-text); }
+.bp-tense code { display: block; margin-top: 4px; font-family: var(--mono); font-size: 12px; color: var(--bp-acc); }
+.bp-tense span { display: block; margin-top: 8px; font-size: 12px; color: var(--bp-t3); }
+.note { margin-top: 26px; font-size: 14px; color: var(--bp-t3); }
+
+/* ---------- halaman menara ---------- */
+.page.quiz { display: flex; gap: 48px; align-items: flex-start; padding-top: 48px; }
+.quiz h1 { font-family: var(--serif); font-weight: 700; font-size: 46px; margin: 8px 0 0; }
+.quiz .lede { margin: 8px 0 0; font-family: var(--italic); font-style: italic; font-weight: 600; font-size: 19px; color: var(--t2); max-width: 520px; }
+.quiz-soon { margin-top: 22px; padding: 18px 20px; max-width: 520px; }
+.quiz-soon p { margin: 0 0 14px; font-size: 14px; line-height: 1.5; color: var(--t2); }
+.tower { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column-reverse; gap: 10px; width: 360px; flex-shrink: 0; }
+.tower li {
+  display: flex; align-items: center; gap: 14px; padding: 14px 18px; border-radius: 14px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--stone) 70%, transparent), color-mix(in srgb, var(--stone) 40%, transparent));
+  border: 1px solid color-mix(in srgb, var(--brass) 35%, transparent);
+  font-family: var(--serif); font-weight: 700; letter-spacing: .06em;
+}
+.tower li .n { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid var(--brass); display: flex; align-items: center; justify-content: center; font-size: 13px; color: var(--acc); }
+.tower li.peak { border-color: var(--hi); }
+.tower li svg { margin-left: auto; color: var(--t3); }
+
+/* ---------- layar kecil ---------- */
+.small { display: none; }
+@media (max-width: 1023px) {
+  .app { display: none; }
+  body, body.route-home, body.route-lessons, body.route-quiz { overflow: auto; background: #0B1029; background-image: radial-gradient(ellipse at 50% 32%, rgba(201,164,92,.18), transparent 55%); color: #F3E7C9; }
+  .small { display: flex; flex-direction: column; align-items: center; text-align: center; min-height: 100vh; padding: 56px 28px 36px; }
+  .small-brand { font-family: var(--serif); font-weight: 700; font-size: 18px; letter-spacing: .08em; text-transform: uppercase; color: #F1D58A; }
+  .small-orrery { position: relative; width: 200px; height: 200px; margin-top: 40px; }
+  .small-orrery .ring { position: absolute; inset: 0; border-radius: 50%; border: 2px solid #C9A45C; }
+  .small-orrery .spin { position: absolute; inset: 28px; border-radius: 50%; border: 1px dashed rgba(201,164,92,.5); animation: spin 12s linear infinite; }
+  .small-orrery .spin i { position: absolute; right: -8px; top: 50%; margin-top: -8px; width: 16px; height: 16px; border-radius: 50%; background: radial-gradient(circle at 35% 30%, #9CC8F0, #3A73B8); border: 2px solid #C9A45C; }
+  .small-orrery .sun { position: absolute; left: 70px; top: 70px; width: 60px; height: 60px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #FFF6D0, #F2C14E 45%, #C98A1E 85%); box-shadow: 0 0 0 3px #8A6A2E, 0 0 0 5px #C9A45C, 0 0 40px rgba(242,193,78,.6); }
+  .small h1 { font-family: var(--serif); font-weight: 700; font-size: 26px; line-height: 1.2; margin: 40px 0 0; }
+  .small-body { margin: 14px 0 0; max-width: 380px; font-family: var(--italic); font-style: italic; font-weight: 600; font-size: 19px; line-height: 1.4; color: #CFC4A8; }
+  .small .btn-gold { margin-top: 36px; max-width: 380px; background: linear-gradient(180deg, #F1D58A, #C9A45C); color: #1E1608; }
+  .small-note { margin: 14px 0 0; font-size: 13px; color: #A99E80; }
+}
+@keyframes spin { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .small-orrery .spin { animation: none; } }
