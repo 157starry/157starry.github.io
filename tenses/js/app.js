@@ -20,9 +20,11 @@
     sel: null,
     mastered: Array.isArray(saved.mastered) ? saved.mastered.filter((x) => TENSES[x]) : [],
     level: 'easy',
-    quiz: null
+    quiz: null,
+    towerCleared: Math.max(0, Math.min(5, +saved.towerCleared || 0)),
+    towerBest: Math.max(0, +saved.towerBest || 0)
   };
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ lang: state.lang, theme: state.theme, mastered: state.mastered })); } catch (e) { /* mode privat: abaikan */ } };
+  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ lang: state.lang, theme: state.theme, mastered: state.mastered, towerCleared: state.towerCleared, towerBest: state.towerBest })); } catch (e) { /* mode privat: abaikan */ } };
   const isMastered = (tid) => state.mastered.indexOf(tid) >= 0;
 
   i18n.lang = state.lang;
@@ -84,7 +86,7 @@
       if (b && TENSES[b]) return { route: 'lesson', tense: b };
       return { route: 'lessons', planet: b || null };
     }
-    if (a === 'menara') return { route: 'quiz' };
+    if (a === 'menara') { const n = parseInt(b, 10); return { route: 'quiz', floor: n >= 1 && n <= 5 ? n : null }; }
     return { route: 'home' };
   }
 
@@ -108,7 +110,8 @@
       if (orrery) orrery.pause();
       if (r.route === 'lessons') view.innerHTML = lessonsHTML();
       else if (r.route === 'lesson') { view.innerHTML = lessonHTML(r.tense); bindLesson(r.tense); }
-      else view.innerHTML = quizHTML();
+      else if (r.floor && r.floor <= state.towerCleared + 1) JK.tower.play(view, r.floor, towerApi);
+      else view.innerHTML = JK.tower.overview(towerApi);
       window.scrollTo(0, keepScroll ? y : 0);
       if (r.route === 'lessons' && r.planet && !keepScroll) {
         const el = document.getElementById('planet-' + r.planet);
@@ -359,14 +362,15 @@
     }
   });
 
-  /* ---------- menara (tahap 3) ---------- */
-  const LOCK = '<svg width="18" height="20" viewBox="0 0 18 20" aria-hidden="true"><rect x="2" y="9" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 9V6a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
-  function quizHTML() {
-    const fl = t('floors');
-    return '<div class="page quiz"><ol class="tower">' + fl.map((f, i) => '<li class="' + (i === fl.length - 1 ? 'peak' : '') + '"><span class="n">' + (i + 1) + '</span>' + esc(f) + LOCK + '</li>').join('') + '</ol>' +
-      '<div><div class="eyebrow">' + esc(t('navQuiz')) + '</div><h1>' + esc(t('quizTitle')) + '</h1><p class="lede">' + esc(t('quizLede')) + '</p>' +
-      '<div class="panel quiz-soon"><p>' + esc(t('quizSoon')) + '</p><a class="btn-line" href="#/">' + esc(t('toHome')) + '</a></div></div></div>';
-  }
+  /* ---------- menara kuis (lihat tower.js) ---------- */
+  const towerApi = {
+    t, esc,
+    lang: () => state.lang,
+    cleared: () => state.towerCleared,
+    setCleared: (n) => { state.towerCleared = Math.max(state.towerCleared, n); save(); },
+    best: () => state.towerBest,
+    setBest: (n) => { state.towerBest = n; save(); }
+  };
 
   /* ---------- layar kecil ---------- */
   $('#copyLink').addEventListener('click', async (e) => {
