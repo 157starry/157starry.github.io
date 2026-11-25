@@ -1,10 +1,13 @@
-/* Aplikasi utama: pengaturan (bahasa, siang/malam), router halaman, beranda 3D. */
+/* Aplikasi utama: pengaturan (bahasa, siang/malam), router halaman, beranda 3D,
+   halaman materi, mini kuis, roda gigi, dan pop-up naik level. */
 (function () {
-  const { i18n, data } = window.JK;
+  const { i18n, data, lessons, checker } = window.JK;
   const { PLANETS, TENSES, LEVER } = data;
   const t = (k) => i18n.t(k);
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+  const ORDER = PLANETS.reduce((a, p) => a.concat(p.tenses), []);
+  const planetOf = (tid) => PLANETS.find((p) => p.tenses.indexOf(tid) >= 0);
 
   /* ---------- pengaturan tersimpan ---------- */
   const KEY = 'jk-settings';
@@ -15,9 +18,12 @@
     theme: saved.theme === 'day' ? 'day' : 'night',
     lever: 4,
     sel: null,
-    mastered: Array.isArray(saved.mastered) ? saved.mastered : []
+    mastered: Array.isArray(saved.mastered) ? saved.mastered.filter((x) => TENSES[x]) : [],
+    level: 'easy',
+    quiz: null
   };
   const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ lang: state.lang, theme: state.theme, mastered: state.mastered })); } catch (e) { /* mode privat: abaikan */ } };
+  const isMastered = (tid) => state.mastered.indexOf(tid) >= 0;
 
   i18n.lang = state.lang;
   document.documentElement.dataset.theme = state.theme;
@@ -34,7 +40,7 @@
       });
       orrery.setDay(state.theme === 'day');
       orrery.setLabels({ past: t('past'), now: t('now'), future: t('future') });
-      const L = LEVER[state.lever]; orrery.setLever(state.lever, L.planet);
+      orrery.setLever(state.lever, LEVER[state.lever].planet);
     } catch (e) {
       err3d = true; orrery = null;
       const box = $('#err3d'); if (box) box.hidden = false;
@@ -60,7 +66,7 @@
   document.querySelectorAll('.seg [data-lang]').forEach((b) => b.addEventListener('click', () => {
     if (state.lang === b.dataset.lang) return;
     state.lang = b.dataset.lang; i18n.lang = state.lang; save();
-    i18n.apply(); syncHeader(); render();
+    i18n.apply(); syncHeader(); render(true);
     if (orrery) orrery.setLabels({ past: t('past'), now: t('now'), future: t('future') });
   }));
   $('#modeBtn').addEventListener('click', () => {
@@ -74,19 +80,24 @@
   function parse() {
     const h = location.hash.replace(/^#\/?/, '');
     const [a, b] = h.split('/');
-    if (a === 'materi') return { route: 'lessons', planet: b || null };
+    if (a === 'materi') {
+      if (b && TENSES[b]) return { route: 'lesson', tense: b };
+      return { route: 'lessons', planet: b || null };
+    }
     if (a === 'menara') return { route: 'quiz' };
     return { route: 'home' };
   }
 
-  function render() {
+  function render(keepScroll) {
     const r = parse();
-    document.body.className = 'route-' + r.route;
+    const bodyRoute = r.route === 'lesson' ? 'lessons' : r.route;
+    document.body.className = 'route-' + bodyRoute;
     document.querySelectorAll('.nav [data-route]').forEach((a) => {
-      if (a.dataset.route === r.route) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
+      if (a.dataset.route === bodyRoute) a.setAttribute('aria-current', 'page'); else a.removeAttribute('aria-current');
     });
     hideTip();
     const view = $('#view');
+    const y = window.scrollY;
     if (r.route === 'home') {
       view.innerHTML = homeHTML();
       bindHome();
@@ -95,30 +106,36 @@
       if (err3d) $('#err3d').hidden = false;
     } else {
       if (orrery) orrery.pause();
-      view.innerHTML = r.route === 'lessons' ? lessonsHTML() : quizHTML();
-      window.scrollTo(0, 0);
-      if (r.route === 'lessons' && r.planet) {
+      if (r.route === 'lessons') view.innerHTML = lessonsHTML();
+      else if (r.route === 'lesson') { view.innerHTML = lessonHTML(r.tense); bindLesson(r.tense); }
+      else view.innerHTML = quizHTML();
+      window.scrollTo(0, keepScroll ? y : 0);
+      if (r.route === 'lessons' && r.planet && !keepScroll) {
         const el = document.getElementById('planet-' + r.planet);
         if (el) { el.classList.add('focus'); el.scrollIntoView({ block: 'center' }); }
       }
     }
-    document.title = t('appName') + ' · ' + (r.route === 'home' ? t('title') : r.route === 'lessons' ? t('lessonsTitle') : t('quizTitle'));
+    const title = r.route === 'home' ? t('title') : r.route === 'lessons' ? t('lessonsTitle') : r.route === 'lesson' ? TENSES[r.tense].name : t('quizTitle');
+    document.title = t('appName') + ' · ' + title;
   }
-  window.addEventListener('hashchange', () => { if (parse().route !== 'home') state.sel = null; render(); $('#view').focus({ preventScroll: true }); });
+  window.addEventListener('hashchange', () => {
+    if (parse().route !== 'home') state.sel = null;
+    closeModal();
+    render(); $('#view').focus({ preventScroll: true });
+  });
 
   /* ---------- beranda ---------- */
   const chevron = (d) => '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="' + (d < 0 ? 'M10 3 L5 8 L10 13' : 'M6 3 L11 8 L6 13') + '" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
+  const gearGrid = () => Array.from({ length: 16 }, (_, i) => '<span' + (i < state.mastered.length ? ' class="on"' : '') + '></span>').join('');
   function homeHTML() {
-    const done = state.mastered.length;
     return '<section class="home">' +
       '<div class="intro"><div class="eyebrow">' + esc(t('eyebrow')) + '</div><h1>' + esc(t('title')) + '</h1><p>' + esc(t('hint')) + '</p></div>' +
       '<p id="err3d" class="err3d" hidden>' + esc(t('err3d')) + '</p>' +
       '<aside id="planetPanel" class="panel planet-panel" hidden></aside>' +
-      '<div class="panel gears"><div class="gears-head"><span class="eyebrow">' + esc(t('gears')) + '</span><b>' + done + ' / 16</b></div>' +
-        '<div class="gear-grid">' + Array.from({ length: 16 }, (_, i) => '<span' + (i < done ? ' class="on"' : '') + '></span>').join('') + '</div>' +
-        '<p>' + esc(t('gearsHint')) + '</p></div>' +
+      '<div class="panel gears"><div class="gears-head"><span class="eyebrow">' + esc(t('gears')) + '</span><b>' + state.mastered.length + ' / 16</b></div>' +
+        '<div class="gear-grid">' + gearGrid() + '</div><p>' + esc(t('gearsHint')) + '</p></div>' +
       '<div class="panel lever">' +
-        '<div class="lever-head"><span class="eyebrow">' + esc(t('lever')) + '</span><span class="lever-tense" id="lvTense"></span></div>' +
+        '<div class="lever-head"><span class="eyebrow">' + esc(t('lever')) + '</span><a class="lever-tense" id="lvTense" href="#/materi"></a></div>' +
         '<p class="lever-sentence" id="lvSentence" aria-live="polite"></p>' +
         '<p class="lever-exp" id="lvExp"></p>' +
         '<div class="lever-row">' +
@@ -133,9 +150,9 @@
 
   function updateLever() {
     const L = LEVER[state.lever];
-    $('#lvTense').textContent = TENSES[L.tense].name;
+    const a = $('#lvTense'); a.textContent = TENSES[L.tense].name; a.href = '#/materi/' + L.tense;
     const s = $('#lvSentence'); s.textContent = '';
-    s.append(L.pre); const m = document.createElement('mark'); m.textContent = L.verb; s.append(m, L.post);
+    const m = document.createElement('mark'); m.textContent = L.verb; s.append(L.pre, m, L.post);
     $('#lvExp').innerHTML = esc(L.exp[state.lang]) + ' · <b>' + esc(TENSES[L.tense].f) + '</b>';
     $('#lvRange').value = state.lever;
     $('#lvRange').setAttribute('aria-valuetext', TENSES[L.tense].name);
@@ -159,27 +176,190 @@
     const n = PLANETS.indexOf(p) + 1;
     box.innerHTML = '<div class="eyebrow">' + esc(t('planet')) + ' ' + n + ' · ' + esc(t('level')) + ' ' + esc(p.lv) + '</div>' +
       '<h2>' + esc(p.name[state.lang]) + '</h2><p>' + esc(p.desc[state.lang]) + '</p>' +
-      '<div class="tense-list">' + p.tenses.map((k) => '<div>' + esc(TENSES[k].name) + '<small>' + esc(TENSES[k].f) + '</small></div>').join('') + '</div>' +
-      '<a class="btn-gold" href="#/materi/' + p.id + '">' + esc(t('enter')) + '</a>' +
+      '<div class="tense-list">' + p.tenses.map((k) => '<a href="#/materi/' + k + '">' + esc(TENSES[k].name) + (isMastered(k) ? ' <em>✓</em>' : '') + '<small>' + esc(TENSES[k].f) + '</small></a>').join('') + '</div>' +
+      '<a class="btn-gold" href="#/materi/' + p.tenses[0] + '">' + esc(t('enter')) + '</a>' +
       '<button type="button" class="btn-line" id="backBtn">' + esc(t('back')) + '</button>';
     box.hidden = false;
     $('#backBtn').addEventListener('click', () => { state.sel = null; box.hidden = true; if (orrery) orrery.back(); });
   }
 
-  /* ---------- materi (tahap 1: peta) ---------- */
+  /* ---------- peta materi ---------- */
   const DOT = { mercury: '#A8917E', venus: '#E2BF7E', earth: '#3A7BD0', mars: '#C2583A', jupiter: '#C99A6E', saturn: '#E3C88E', uranus: '#7CC4BE', neptune: '#4F6AD0' };
   function lessonsHTML() {
-    return '<div class="page lessons"><div class="sheet">' + esc(t('sheet')) + ' · 16</div>' +
-      '<h1>' + esc(t('lessonsTitle')) + '</h1><p class="lede">' + esc(t('lessonsLede')) + '</p>' +
+    return '<div class="page lessons"><div class="sheet">' + esc(t('sheet')) + ' · ' + state.mastered.length + ' / 16 ' + esc(t('mastered')) + '</div>' +
+      '<h1>' + esc(t('lessonsTitle')) + '</h1><p class="lede">' + esc(t('lessonsLede')) + '</p><p class="map-hint">' + esc(t('mapHint')) + '</p>' +
       '<div class="planet-grid">' + PLANETS.map((p, i) =>
         '<section class="bp-card" id="planet-' + p.id + '"><div class="bp-head"><span class="bp-dot" style="background:' + DOT[p.id] + '"></span>' +
         '<div><div class="fig">FIG. 0' + (i + 1) + '</div><h2>' + esc(p.name[state.lang]) + '</h2></div><span class="bp-lv">' + esc(p.lv) + '</span></div>' +
         '<p class="bp-desc">' + esc(p.desc[state.lang]) + '</p>' +
-        '<div class="bp-tenses">' + p.tenses.map((k) => '<div class="bp-tense"><b>' + esc(TENSES[k].name) + '</b><code>' + esc(TENSES[k].f) + '</code><span>' + esc(t('soon')) + '</span></div>').join('') + '</div></section>'
-      ).join('') + '</div><p class="note">' + esc(t('lessonSoon')) + '</p></div>';
+        '<div class="bp-tenses">' + p.tenses.map((k) => '<a class="bp-tense' + (isMastered(k) ? ' done' : '') + '" href="#/materi/' + k + '"><b>' + esc(TENSES[k].name) + '</b><code>' + esc(TENSES[k].f) + '</code><span>' + esc(isMastered(k) ? t('mastered') + ' ✓' : t('start') + ' →') + '</span></a>').join('') + '</div></section>'
+      ).join('') + '</div></div>';
   }
 
-  /* ---------- menara (tahap 1: placeholder) ---------- */
+  /* ---------- timeline SVG ---------- */
+  function timelineSVG(tl, note) {
+    const X = { now: 310, past: 160, future: 460, pastfut: 160 };
+    const ref = X[tl.ref], pf = tl.ref === 'pastfut';
+    const acc = 'var(--bp-acc)', line = 'var(--bp-line)', dim = 'var(--bp-t3)';
+    let g = '';
+    // sumbu
+    g += '<line x1="20" y1="70" x2="600" y2="70" stroke="' + line + '" stroke-width="2"/><path d="M590 64 L602 70 L590 76" fill="none" stroke="' + line + '" stroke-width="2"/>';
+    g += '<line x1="310" y1="36" x2="310" y2="98" stroke="' + dim + '" stroke-width="1" stroke-dasharray="3 4"/>';
+    if (tl.ref !== 'now') {
+      g += '<line x1="' + ref + '" y1="30" x2="' + ref + '" y2="100" stroke="' + acc + '" stroke-width="2"/>';
+      g += '<text x="' + ref + '" y="22" fill="' + acc + '" font-family="JetBrains Mono, monospace" font-size="11" text-anchor="middle">' + esc(t('refPoint').toUpperCase()) + '</text>';
+    } else {
+      g += '<line x1="310" y1="30" x2="310" y2="100" stroke="' + acc + '" stroke-width="2"/>';
+    }
+    const dash = pf ? ' stroke-dasharray="6 4"' : '';
+    // pastfut: proyeksi dari titik acuan ke "bayangan"
+    const c = pf ? 260 : ref;
+    if (pf) {
+      g += '<path d="M' + (ref + 6) + ' 52 Q 210 30 ' + (c - 8) + ' 52" fill="none" stroke="' + acc + '" stroke-width="1.5" stroke-dasharray="4 4"/>';
+      g += '<text x="' + c + '" y="22" fill="' + dim + '" font-family="JetBrains Mono, monospace" font-size="11" text-anchor="middle">' + esc(t('imagined').toUpperCase()) + '</text>';
+    }
+    if (tl.asp === 'simple') {
+      if (tl.ref === 'now') [130, 200, 270, 350, 420, 490].forEach((x) => { g += '<circle cx="' + x + '" cy="70" r="6" fill="' + acc + '"/>'; });
+      else g += '<circle cx="' + c + '" cy="70" r="8" fill="' + (pf ? 'none' : acc) + '" stroke="' + acc + '" stroke-width="2"' + dash + '/>';
+    } else if (tl.asp === 'cont') {
+      g += '<rect x="' + (c - 75) + '" y="56" width="150" height="28" rx="14" fill="var(--bp-verbBg, rgba(255,214,107,.18))" stroke="' + acc + '" stroke-width="1.5" stroke-dasharray="6 4"/>';
+      g += '<circle cx="' + c + '" cy="70" r="5" fill="' + acc + '"/>';
+    } else if (tl.asp === 'perf') {
+      const s = c - 110;
+      g += '<circle cx="' + s + '" cy="70" r="7" fill="' + (pf ? 'none' : acc) + '" stroke="' + acc + '" stroke-width="2"' + dash + '/>';
+      g += '<path d="M' + (s + 10) + ' 70 L' + (c - 8) + ' 70" stroke="' + acc + '" stroke-width="2.5"' + dash + '/><path d="M' + (c - 16) + ' 64 L' + (c - 6) + ' 70 L' + (c - 16) + ' 76" fill="none" stroke="' + acc + '" stroke-width="2.5"/>';
+    } else {
+      const s = c - 150;
+      g += '<rect x="' + s + '" y="58" width="' + (c - s) + '" height="24" rx="12" fill="var(--bp-verbBg, rgba(255,214,107,.18))" stroke="' + acc + '" stroke-width="1.5"' + (pf ? dash : ' stroke-dasharray="6 4"') + '/>';
+      g += '<path d="M' + (c - 14) + ' 62 L' + (c - 2) + ' 70 L' + (c - 14) + ' 78" fill="none" stroke="' + acc + '" stroke-width="2.5"/>';
+    }
+    g += '<text x="20" y="114" fill="' + dim + '" font-family="JetBrains Mono, monospace" font-size="12">' + esc(t('past').toUpperCase()) + '</text>';
+    g += '<text x="310" y="114" fill="' + dim + '" font-family="JetBrains Mono, monospace" font-size="12" text-anchor="middle">' + esc(t('now').toUpperCase()) + '</text>';
+    g += '<text x="600" y="114" fill="' + dim + '" font-family="JetBrains Mono, monospace" font-size="12" text-anchor="end">' + esc(t('future').toUpperCase()) + '</text>';
+    return '<svg class="tl" viewBox="0 0 620 124" role="img" aria-label="' + esc(t('timeT') + ': ' + note) + '">' + g + '</svg><p class="tl-note">' + esc(note) + '</p>';
+  }
+
+  /* ---------- halaman materi satu tense ---------- */
+  function lessonHTML(tid) {
+    const L = lessons[tid], T = TENSES[tid], p = planetOf(tid), lg = state.lang, li = lg === 'id' ? 1 : 2;
+    const n = ORDER.indexOf(tid);
+    if (!state.quiz || state.quiz.tense !== tid) state.quiz = { tense: tid, q: 0, correct: [], answer: '', fb: null };
+    const part = (x) => '<span class="part' + (x === 'S' ? '' : ' hl') + '">' + esc(x) + '</span>';
+    const formula = (sign, parts, ex) => '<div class="frow"><span class="fsign">' + sign + '</span><div class="fparts">' + parts.map(part).join('<span class="fplus">+</span>') + '</div><span class="fex">' + esc(ex) + '</span></div>';
+    const prev = ORDER[n - 1], next = ORDER[n + 1];
+    return '<div class="page lesson">' +
+      '<nav class="crumbs" aria-label="Breadcrumb"><a href="#/">' + esc(t('navHome')) + '</a><span>›</span><a href="#/materi">' + esc(t('lessonsTitle')) + '</a><span>›</span><a href="#/materi/' + p.id + '">' + esc(p.name[lg]) + '</a><span>›</span><span aria-current="page">' + esc(T.name) + '</span></nav>' +
+      '<div class="lhead"><div><div class="sheet">' + esc(t('sheet')) + ' · ' + esc(p.name[lg]) + ' · ' + String(n + 1).padStart(2, '0') + ' / 16</div>' +
+        '<h1>' + esc(T.name) + (isMastered(tid) ? ' <span class="done-badge" title="' + esc(t('mastered')) + '">✓</span>' : '') + '</h1><p class="lede">' + esc(L.tag[lg]) + '</p></div>' +
+        '<div class="ltabs">' + p.tenses.map((k) => '<a href="#/materi/' + k + '"' + (k === tid ? ' aria-current="page"' : '') + '>' + esc(TENSES[k].name) + (isMastered(k) ? ' ✓' : '') + '</a>').join('') + '</div></div>' +
+      '<div class="lgrid"><div class="lcol">' +
+        '<section class="bp-card"><div class="fig">FIG. 01</div><h2>' + esc(t('whenT')) + '</h2><div class="uses">' +
+          L.uses.map((u, i) => '<div class="use"><span class="num">' + (i + 1) + '</span><div><b>' + esc(u[lg === 'id' ? 0 : 1]) + '</b><i>' + esc(u[2]) + '</i></div></div>').join('') + '</div></section>' +
+        '<section class="bp-card"><div class="fig">FIG. 02</div><h2>' + esc(t('formulaT')) + '</h2><div class="formulas">' +
+          formula('(+)', L.forms.pos, L.fx[0]) + formula('(−)', L.forms.neg, L.fx[1]) + formula('(?)', L.forms.q, L.fx[2]) + '</div></section>' +
+        '<section class="bp-card"><div class="fig">FIG. 03</div><h2>' + esc(t('timeT')) + '</h2>' + timelineSVG(L.tl, L.tlNote[lg]) +
+          '<div class="markers"><span class="mk-label">' + esc(t('markersT')) + '</span>' + L.markers.map((m) => '<span class="mk">' + esc(m) + '</span>').join('') + '</div></section>' +
+        '<div class="duo">' +
+          '<section class="bp-card compact"><div class="fig bad">' + esc(t('mistakeT').toUpperCase()) + '</div><p class="mis"><s>' + esc(L.mistake.w) + '</s><br>' + esc(L.mistake.r) + ' ✓</p><p class="why">' + esc(L.mistake.why[lg]) + '</p></section>' +
+          '<section class="bp-card compact"><div class="fig good">' + esc(t('twinT').toUpperCase()) + '</div><p class="mis">' + esc(L.twin.a) + ' <em>→ ' + esc(L.twin.na[lg]) + '</em><br>' + esc(L.twin.b) + ' <em>→ ' + esc(L.twin.nb[lg]) + '</em></p><a class="twin-link" href="#/materi/' + L.twin.to + '">' + esc(TENSES[L.twin.to].name) + ' →</a></section>' +
+        '</div>' +
+      '</div><div class="lcol">' +
+        '<section class="bp-card"><div class="fig">FIG. 04</div><h2>' + esc(t('exT')) + '</h2>' +
+          '<div class="lv-tabs" role="tablist">' + ['easy', 'medium', 'hard'].map((k) => '<button type="button" role="tab" data-lv="' + k + '" aria-selected="' + (state.level === k) + '">' + k[0].toUpperCase() + k.slice(1) + '</button>').join('') + '</div>' +
+          '<div id="exList" class="ex-list"></div></section>' +
+        '<section class="bp-card quizcard" id="quizCard"></section>' +
+      '</div></div>' +
+      '<nav class="lnav">' + (prev ? '<a href="#/materi/' + prev + '">← ' + esc(t('prevT')) + ': ' + esc(TENSES[prev].name) + '</a>' : '<span></span>') +
+        (next ? '<a href="#/materi/' + next + '">' + esc(t('nextT')) + ': ' + esc(TENSES[next].name) + ' →</a>' : '<span></span>') + '</nav>' +
+      '</div>';
+  }
+
+  function renderExamples(tid) {
+    const L = lessons[tid], li = state.lang === 'id' ? 1 : 2;
+    $('#exList').innerHTML = L.ex[state.level].map((e) => '<div class="ex"><p>' + esc(e[0]) + '</p><span>' + esc(e[li]) + '</span></div>').join('');
+    document.querySelectorAll('.lv-tabs button').forEach((b) => b.setAttribute('aria-selected', String(b.dataset.lv === state.level)));
+  }
+
+  function renderQuiz(tid) {
+    const L = lessons[tid], q = state.quiz, verb = L.quiz.verbs[q.q], done = isMastered(tid);
+    const dots = L.quiz.verbs.map((_, i) => '<span class="qd' + (q.correct.indexOf(i) >= 0 ? ' ok' : '') + (i === q.q ? ' cur' : '') + '"></span>').join('');
+    const fb = q.fb;
+    $('#quizCard').innerHTML =
+      '<div class="qhead"><h2>' + esc(t('quizT')) + '</h2><span class="fig">' + esc(t('question')) + ' ' + (q.q + 1) + ' / 5</span></div>' +
+      '<div class="qdots" aria-hidden="true">' + dots + '</div>' +
+      '<p class="qask">' + esc(t('quizAsk').replace('{tense}', TENSES[tid].name)) + '</p>' +
+      '<div class="kw">' + esc(verb) + '</div>' +
+      '<label class="qlabel" for="qAns">' + esc(t('yours')) + '</label>' +
+      '<textarea id="qAns" rows="2" placeholder="' + esc(t('ph')) + '" autocomplete="off" spellcheck="false">' + esc(q.answer) + '</textarea>' +
+      '<div class="qbtns"><button type="button" class="btn-gold inline" id="qCheck">' + esc(t('check')) + '</button><button type="button" class="btn-line inline" id="qNext">' + esc(t('nextQ')) + '</button></div>' +
+      '<div id="qFb" role="status" aria-live="polite">' + (fb ? '<div class="fb ' + (fb.ok ? 'ok' : 'no') + '"><b>' + esc(fb.ok ? t('right') : t('wrong')) + '</b> ' + esc(fb.msg) + '</div>' : '') + '</div>' +
+      '<p class="qgoal">' + esc(done ? t('quizDone') : t('quizGoal')) + '</p>';
+    const ta = $('#qAns');
+    ta.addEventListener('input', () => { q.answer = ta.value; });
+    ta.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); doCheck(tid); } });
+    $('#qCheck').addEventListener('click', () => doCheck(tid));
+    $('#qNext').addEventListener('click', () => { q.q = (q.q + 1) % 5; q.answer = ''; q.fb = null; renderQuiz(tid); $('#qAns').focus(); });
+  }
+
+  function doCheck(tid) {
+    const L = lessons[tid], q = state.quiz;
+    q.answer = $('#qAns').value;
+    const r = checker.check(q.answer, tid, L.quiz.verbs[q.q], state.lang, L.markers);
+    q.fb = r;
+    if (r.ok && q.correct.indexOf(q.q) < 0) q.correct.push(q.q);
+    renderQuiz(tid);
+    $('#qAns').focus();
+    if (r.ok && q.correct.length >= 4 && !isMastered(tid)) {
+      state.mastered.push(tid); save();
+      setTimeout(() => openModal(tid), 500);
+    }
+  }
+
+  function bindLesson(tid) {
+    renderExamples(tid);
+    document.querySelectorAll('.lv-tabs button').forEach((b) => b.addEventListener('click', () => { state.level = b.dataset.lv; renderExamples(tid); }));
+    renderQuiz(tid);
+  }
+
+  /* ---------- pop-up naik level ---------- */
+  let lastFocus = null;
+  function openModal(tid) {
+    const m = $('#modal'), n = state.mastered.length, next = ORDER.find((k) => !isMastered(k));
+    lastFocus = document.activeElement;
+    m.innerHTML = '<div class="modal-card" role="dialog" aria-modal="true" aria-labelledby="mTitle">' +
+      '<div class="m-gear" aria-hidden="true"><span class="glow"></span><span class="spin"><i class="teeth"></i><i class="body"></i><i class="bar v"></i><i class="bar h"></i></span></div>' +
+      '<div class="m-eyebrow">' + esc(t('levelEyebrow')) + '</div>' +
+      '<h2 id="mTitle">' + esc(TENSES[tid].name) + '</h2>' +
+      '<p class="m-sub">' + esc(n >= 16 ? t('allDone') : t('levelSub')) + '</p>' +
+      '<div class="m-count">' + esc(t('gears')) + ' ' + n + ' / 16</div>' +
+      '<div class="m-slots">' + Array.from({ length: 16 }, (_, i) => '<span class="' + (i < n - 1 ? 'on' : i === n - 1 ? 'new' : '') + '"></span>').join('') + '</div>' +
+      '<div class="m-btns"><a class="btn-gold inline" href="#/">' + esc(t('toObs')) + '</a>' +
+        (next ? '<a class="btn-line inline" href="#/materi/' + next + '">' + esc(t('nextLesson')) + ': ' + esc(TENSES[next].name) + '</a>' : '') + '</div>' +
+      '<button type="button" class="m-close" id="mClose" aria-label="' + esc(t('close')) + '">×</button></div>';
+    m.hidden = false;
+    $('#mClose').addEventListener('click', closeModal);
+    m.addEventListener('click', (e) => { if (e.target === m) closeModal(); });
+    $('.m-btns a', m).focus();
+  }
+  function closeModal() {
+    const m = $('#modal');
+    if (m.hidden) return;
+    m.hidden = true; m.innerHTML = '';
+    if (lastFocus && document.body.contains(lastFocus)) lastFocus.focus();
+  }
+  document.addEventListener('keydown', (e) => {
+    const m = $('#modal');
+    if (m.hidden) return;
+    if (e.key === 'Escape') closeModal();
+    if (e.key === 'Tab') {
+      const f = m.querySelectorAll('a, button');
+      if (!f.length) return;
+      if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
+      else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
+    }
+  });
+
+  /* ---------- menara (tahap 3) ---------- */
   const LOCK = '<svg width="18" height="20" viewBox="0 0 18 20" aria-hidden="true"><rect x="2" y="9" width="14" height="10" rx="2" fill="none" stroke="currentColor" stroke-width="1.8"/><path d="M5 9V6a4 4 0 0 1 8 0v3" fill="none" stroke="currentColor" stroke-width="1.8"/></svg>';
   function quizHTML() {
     const fl = t('floors');
