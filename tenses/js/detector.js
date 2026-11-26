@@ -13,6 +13,12 @@
     'By next June, I will have finished my thesis.'
   ];
 
+  // kunci pemilik (disimpan di browser ini saja)
+  const OKEY = 'jk-owner';
+  const getPass = () => { try { return localStorage.getItem(OKEY) || ''; } catch (e) { return ''; } };
+  const setPass = (v) => { try { if (v) localStorage.setItem(OKEY, v); else localStorage.removeItem(OKEY); } catch (e) { /* abaikan */ } };
+  let ownerOpen = false, ownerMsg = '', repaintOwner = null;
+
   // bertahan saat ganti bahasa / mode / pindah halaman
   const S = { text: '', busy: false, res: null, src: null, why: null, asked: '' };
 
@@ -52,15 +58,27 @@
         '<form class="panel det-form" id="detForm" novalidate>' +
           '<label class="det-label" for="detIn">' + esc(t('detLabel')) + '</label>' +
           '<textarea id="detIn" rows="4" maxlength="' + MAX + '" placeholder="' + esc(t('detPh')) + '" spellcheck="false" autocomplete="off">' + esc(S.text) + '</textarea>' +
-          '<div class="det-row"><span class="det-count" id="detCount" aria-live="polite"></span><span class="det-note">' + esc(fill(t('detRules'), { n: MAX, d: PER_DAY })) + '</span></div>' +
+          '<div class="det-row"><span class="det-count" id="detCount" aria-live="polite"></span><span class="det-note">' + esc(getPass() ? fill(t('detRulesOwner'), { n: MAX }) : fill(t('detRules'), { n: MAX, d: PER_DAY })) + '</span></div>' +
           '<p class="det-err" id="detErr" role="alert" hidden></p>' +
           '<button type="submit" class="btn-gold" id="detBtn">' + esc(t('detCheck')) + '</button>' +
           '<div class="det-try"><span>' + esc(t('detTry')) + '</span>' +
             EXAMPLES.map((e, i) => '<button type="button" class="det-ex" data-ex="' + i + '">' + esc(e) + '</button>').join('') + '</div>' +
         '</form>' +
+        '<div class="det-owner" id="detOwner">' + ownerHTML(api) + '</div>' +
       '</section>' +
       '<section class="det-main" id="detOut" tabindex="-1" aria-live="polite">' + resultHTML(api) + '</section>' +
     '</div>';
+  }
+
+  function ownerHTML(api) {
+    const { t, esc } = api;
+    const msg = ownerMsg ? '<p class="det-owner-msg" role="status">' + esc(ownerMsg) + '</p>' : '';
+    if (getPass()) return '<span class="own-on"><span aria-hidden="true">🔑</span> ' + esc(t('detOwnerOn')) + '</span><button type="button" class="link-btn" id="ownOff">' + esc(t('detOwnerOff')) + '</button>' + msg;
+    if (!ownerOpen) return '<button type="button" class="link-btn" id="ownOpen">' + esc(t('detOwner')) + '</button>' + msg;
+    return '<form id="ownForm" class="own-form"><label class="sr-only" for="ownIn">' + esc(t('detOwnerPh')) + '</label>' +
+      '<input id="ownIn" type="password" autocomplete="current-password" placeholder="' + esc(t('detOwnerPh')) + '">' +
+      '<button type="submit" class="btn-line inline">' + esc(t('detOwnerSave')) + '</button>' +
+      '<button type="button" class="link-btn" id="ownCancel">' + esc(t('detOwnerCancel')) + '</button></form>' + msg;
   }
 
   function resultHTML(api) {
@@ -140,7 +158,7 @@
     try {
       const res = await fetch(ENDPOINT, {
         method: 'POST',
-        headers: { 'Content-Type': 'application/json', apikey: PUBLIC_KEY },
+        headers: Object.assign({ 'Content-Type': 'application/json', apikey: PUBLIC_KEY }, getPass() ? { 'x-owner-pass': getPass() } : {}),
         body: JSON.stringify({ text }),
         signal: ctrl.signal
       });
@@ -148,6 +166,7 @@
       try { body = await res.json(); } catch (e) { /* bukan JSON */ }
       if (res.ok && body && body.ok && body.result) return { ok: true, result: body.result };
       const code = body && body.error;
+      if (code === 'bad_owner') return { ok: false, why: 'bad_owner' };
       return { ok: false, why: code === 'limit_visitor' || code === 'limit_day' ? code : res.status >= 500 || res.status === 404 ? 'offline' : 'error' };
     } catch (e) {
       return { ok: false, why: 'offline' };
@@ -168,6 +187,21 @@
     };
     btn.disabled = S.busy;
     repaint = paint;
+    const ownBox = $('#detOwner');
+    const paintOwner = () => {
+      ownBox.innerHTML = ownerHTML(api);
+      const o = ownBox.querySelector('#ownOpen'); if (o) o.addEventListener('click', () => { ownerOpen = true; ownerMsg = ''; paintOwner(); ownBox.querySelector('#ownIn').focus(); });
+      const c = ownBox.querySelector('#ownCancel'); if (c) c.addEventListener('click', () => { ownerOpen = false; paintOwner(); });
+      const off = ownBox.querySelector('#ownOff'); if (off) off.addEventListener('click', () => { setPass(''); ownerMsg = ''; mount(view, api); });
+      const f = ownBox.querySelector('#ownForm'); if (f) f.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const v = ownBox.querySelector('#ownIn').value.trim();
+        if (!v) return;
+        setPass(v); ownerOpen = false; ownerMsg = api.t('detOwnerSaved'); mount(view, api);
+      });
+    };
+    paintOwner();
+    repaintOwner = paintOwner;
     ta.addEventListener('input', () => { S.text = ta.value; upd(); showErr(''); });
     ta.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); $('#detForm').requestSubmit(); } });
     view.querySelectorAll('.det-ex').forEach((b) => b.addEventListener('click', () => {
@@ -181,9 +215,11 @@
       if (text.length > MAX) return showErr(fill(api.t('detTooLong'), { n: MAX }));
       S.busy = true; S.asked = text; paint();
       const r = await askAI(text);
-      if (r.ok) { S.res = r.result; S.src = 'ai'; S.why = null; }
+      if (r.why === 'bad_owner') { setPass(''); ownerMsg = api.t('detOwnerBad'); }
+      if (r.ok) { S.res = r.result; S.src = 'ai'; S.why = null; if (ownerMsg && repaintOwner) { ownerMsg = ''; repaintOwner(); } }
       else { S.res = JK.rules.analyze(text); S.src = 'rules'; S.why = r.why; }
       S.busy = false;
+      if (r.why === 'bad_owner') { const v = document.getElementById('view'); if (v && document.getElementById('detOut')) { mount(v, api); return; } }
       if (repaint) repaint();
       const o = document.getElementById('detOut'); if (o) o.focus({ preventScroll: true });
     });

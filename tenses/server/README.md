@@ -7,7 +7,10 @@ File di folder ini **tidak dipakai langsung oleh GitHub Pages**. Isinya disalin 
 | `setup.sql` | Supabase → SQL Editor (jalankan sekali) |
 | `grammar-detector.ts` | Supabase → Edge Functions → function bernama `grammar-detector` |
 
-Secret yang dibutuhkan: `ANTHROPIC_API_KEY` (Edge Functions → Secrets). Jangan pernah menaruh key itu di repo.
+Secret yang dibutuhkan (Edge Functions → Secrets), jangan pernah ditaruh di repo:
+
+- `ANTHROPIC_API_KEY`: API key Claude
+- `OWNER_PASS` (opsional): kata sandi pemilik. Masukkan sekali lewat tautan "Kunci pemilik" di halaman Detector; browser itu lalu bebas dari batas per pengunjung (rem harian tetap berlaku). Kata sandi yang salah dihapus otomatis dan tetap dihitung sebagai cek biasa.
 
 ## Pengaturan yang bisa diubah (di `grammar-detector.ts`)
 

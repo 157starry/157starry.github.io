@@ -2,6 +2,8 @@
 // Nama function di Supabase: grammar-detector
 // Butuh secret ANTHROPIC_API_KEY (sudah dipasang) dan tabel dari setup.sql.
 // API key TIDAK pernah dikirim ke browser; browser hanya menerima hasil koreksi.
+// Opsional: secret OWNER_PASS = kata sandi pemilik. Kalau dikirim lewat header x-owner-pass
+// dan cocok, batas per pengunjung dilewati (rem harian PER_DAY tetap berlaku).
 
 import postgres from "npm:postgres@3.4.5";
 
@@ -90,7 +92,7 @@ function cors(origin: string | null): Record<string, string> {
   return {
     "Access-Control-Allow-Origin": allow,
     "Access-Control-Allow-Methods": "POST, OPTIONS",
-    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info",
+    "Access-Control-Allow-Headers": "authorization, apikey, content-type, x-client-info, x-owner-pass",
     "Vary": "Origin",
   };
 }
@@ -108,6 +110,11 @@ async function visitorId(req: Request): Promise<string> {
   const data = new TextEncoder().encode("jk-detector|" + day + "|" + ip);
   const hash = await crypto.subtle.digest("SHA-256", data);
   return Array.from(new Uint8Array(hash)).slice(0, 12).map((b) => b.toString(16).padStart(2, "0")).join("");
+}
+
+async function sha(s: string): Promise<string> {
+  const h = await crypto.subtle.digest("SHA-256", new TextEncoder().encode(s));
+  return Array.from(new Uint8Array(h)).map((b) => b.toString(16).padStart(2, "0")).join("");
 }
 
 const str = (v: unknown, max = 400) => (typeof v === "string" ? v.slice(0, max) : "");
@@ -152,9 +159,16 @@ Deno.serve(async (req) => {
   const key = Deno.env.get("ANTHROPIC_API_KEY");
   if (!key || !sql) return reply(503, { error: "not_configured" }, origin);
 
+  // kunci pemilik: dicek dulu, tapi percobaan yang salah tetap dihitung sebagai cek pengunjung
+  const ownerPass = Deno.env.get("OWNER_PASS") ?? "";
+  const sent = req.headers.get("x-owner-pass") ?? "";
+  const owner = !!sent && !!ownerPass && (await sha(sent)) === (await sha(ownerPass));
+
   // batas pemakaian (kalau tabel belum dibuat, tolak dulu supaya biaya aman)
   try {
-    const [row] = await sql`select public.detector_hit(${await visitorId(req)}, ${PER_VISITOR}, ${PER_DAY}) as s`;
+    const who = owner ? "owner" : await visitorId(req);
+    const [row] = await sql`select public.detector_hit(${who}, ${owner ? PER_DAY : PER_VISITOR}, ${PER_DAY}) as s`;
+    if (sent && !owner) return reply(401, { error: "bad_owner" }, origin);
     if (row?.s === "visitor") return reply(429, { error: "limit_visitor", max: PER_VISITOR }, origin);
     if (row?.s === "day") return reply(429, { error: "limit_day" }, origin);
   } catch (e) {
@@ -186,7 +200,7 @@ Deno.serve(async (req) => {
     const data = await res.json();
     const block = (data?.content ?? []).find((b: any) => b?.type === "tool_use");
     if (!block) return reply(502, { error: "ai_empty" }, origin);
-    return reply(200, { ok: true, model: MODEL, result: clean(block.input) }, origin);
+    return reply(200, { ok: true, model: MODEL, owner, result: clean(block.input) }, origin);
   } catch (e) {
     console.error("anthropic fetch failed", e);
     return reply(502, { error: "ai_error" }, origin);

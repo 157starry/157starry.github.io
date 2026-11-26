@@ -518,3 +518,12 @@ a.cl-row:hover { border-color: color-mix(in srgb, var(--pc) 70%, transparent); b
 .det-src { margin: -4px 4px 0; font-size: 12px; line-height: 1.5; color: var(--t3); }
 .det-src.rules { color: var(--t2); }
 @media (prefers-reduced-motion: reduce) { .lens.spin { animation: none; } }
+.det-owner { margin-top: 14px; padding: 0 6px; font-size: 13px; color: var(--t3); display: flex; flex-wrap: wrap; align-items: center; gap: 6px 12px; }
+.det-owner .link-btn { margin: 0; font-size: 13px; color: var(--t3); }
+.det-owner .link-btn:hover { color: var(--acc); }
+.own-on { color: var(--acc); font-weight: 600; }
+.own-form { display: flex; align-items: center; gap: 8px; width: 100%; }
+.own-form input { flex: 1; min-width: 0; padding: 9px 12px; border-radius: 10px; border: 1px solid color-mix(in srgb, var(--brass) 55%, transparent); background: var(--chip); color: var(--text); font: 14px var(--sans); }
+.own-form input:focus { outline: none; border-color: var(--hi); }
+.own-form .btn-line.inline { padding: 8px 14px; font-size: 12px; }
+.det-owner-msg { width: 100%; margin: 2px 0 0; font-size: 12px; color: var(--t2); }
