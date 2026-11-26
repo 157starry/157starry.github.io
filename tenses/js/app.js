@@ -24,7 +24,11 @@
     towerCleared: Math.max(0, Math.min(5, +saved.towerCleared || 0)),
     towerBest: Math.max(0, +saved.towerBest || 0)
   };
-  const save = () => { try { localStorage.setItem(KEY, JSON.stringify({ lang: state.lang, theme: state.theme, mastered: state.mastered, towerCleared: state.towerCleared, towerBest: state.towerBest })); } catch (e) { /* mode privat: abaikan */ } };
+  const progressOf = () => ({ gears: state.mastered.length, floors: state.towerCleared, best: state.towerBest });
+  const save = () => {
+    try { localStorage.setItem(KEY, JSON.stringify({ lang: state.lang, theme: state.theme, mastered: state.mastered, towerCleared: state.towerCleared, towerBest: state.towerBest })); } catch (e) { /* mode privat: abaikan */ }
+    if (JK.visitors) JK.visitors.progress(progressOf());
+  };
   const isMastered = (tid) => state.mastered.indexOf(tid) >= 0;
 
   i18n.lang = state.lang;
@@ -64,7 +68,20 @@
     document.querySelectorAll('.seg [data-lang]').forEach((b) => b.setAttribute('aria-pressed', String(b.dataset.lang === state.lang)));
     $('#modeBtn').setAttribute('aria-label', state.theme === 'night' ? t('modeToDay') : t('modeToNight'));
     $('meta[name="theme-color"]').setAttribute('content', state.theme === 'night' ? '#0B1029' : '#F4EBDD');
+    syncMe();
   }
+  function syncMe() {
+    const b = $('#meBtn'), V = JK.visitors;
+    if (!b || !V) return;
+    const m = V.me();
+    b.textContent = V.isOwner() ? t('meOwner') : m.name ? t('meHi').replace('{name}', m.name) : t('meHello');
+    b.classList.toggle('named', !!m.name || V.isOwner());
+  }
+  $('#meBtn').addEventListener('click', () => {
+    if (JK.visitors.isOwner()) location.hash = '#/pemilik';
+    else openWelcome('edit');
+  });
+  window.addEventListener('jk-owner-change', syncMe);
   document.querySelectorAll('.seg [data-lang]').forEach((b) => b.addEventListener('click', () => {
     if (state.lang === b.dataset.lang) return;
     state.lang = b.dataset.lang; i18n.lang = state.lang; save();
@@ -88,6 +105,7 @@
     }
     if (a === 'menara') { const n = parseInt(b, 10); return { route: 'quiz', floor: n >= 1 && n <= 5 ? n : null }; }
     if (a === 'detector') return { route: 'detector' };
+    if (a === 'pemilik') return { route: 'owner' };
     return { route: 'home' };
   }
 
@@ -112,6 +130,7 @@
       if (r.route === 'lessons') view.innerHTML = lessonsHTML();
       else if (r.route === 'lesson') { view.innerHTML = lessonHTML(r.tense); bindLesson(r.tense); }
       else if (r.route === 'detector') JK.detector.mount(view, detectorApi);
+      else if (r.route === 'owner') JK.owner.mount(view, detectorApi);
       else if (r.floor && r.floor <= state.towerCleared + 1) JK.tower.play(view, r.floor, towerApi);
       else view.innerHTML = JK.tower.overview(towerApi);
       window.scrollTo(0, keepScroll ? y : 0);
@@ -120,7 +139,7 @@
         if (el) { el.classList.add('focus'); el.scrollIntoView({ block: 'center' }); }
       }
     }
-    const title = r.route === 'home' ? t('title') : r.route === 'lessons' ? t('lessonsTitle') : r.route === 'lesson' ? TENSES[r.tense].name : r.route === 'detector' ? t('detTitle') : t('quizTitle');
+    const title = r.route === 'home' ? t('title') : r.route === 'lessons' ? t('lessonsTitle') : r.route === 'lesson' ? TENSES[r.tense].name : r.route === 'detector' ? t('detTitle') : r.route === 'owner' ? t('ownTitle') : t('quizTitle');
     document.title = t('appName') + ' · ' + title;
   }
   window.addEventListener('hashchange', () => {
@@ -349,6 +368,8 @@
     const m = $('#modal');
     if (m.hidden) return;
     m.hidden = true; m.innerHTML = '';
+    if (welcomeKind && welcomeKind !== 'edit') JK.visitors.skip(welcomeKind === 'remind');
+    welcomeKind = null;
     if (lastFocus && document.body.contains(lastFocus)) lastFocus.focus();
   }
   document.addEventListener('keydown', (e) => {
@@ -356,12 +377,46 @@
     if (m.hidden) return;
     if (e.key === 'Escape') closeModal();
     if (e.key === 'Tab') {
-      const f = m.querySelectorAll('a, button');
+      const f = m.querySelectorAll('a, button, input');
       if (!f.length) return;
       if (e.shiftKey && document.activeElement === f[0]) { e.preventDefault(); f[f.length - 1].focus(); }
       else if (!e.shiftKey && document.activeElement === f[f.length - 1]) { e.preventDefault(); f[0].focus(); }
     }
   });
+
+  /* ---------- sambutan Starry (kenalan) ---------- */
+  let welcomeKind = null;
+  function openWelcome(kind) {
+    const m = $('#modal'), V = JK.visitors, me = V.me();
+    if (!m.hidden) return;
+    welcomeKind = kind;
+    lastFocus = document.activeElement;
+    const title = kind === 'remind' ? t('welRemindT').replace('{n}', me.visits) : t('welT');
+    const body = kind === 'remind' ? t('welRemindB') : kind === 'edit' && me.name ? t('welEditB') : t('welB');
+    m.innerHTML = '<div class="modal-card welcome" role="dialog" aria-modal="true" aria-labelledby="wTitle">' +
+      '<div class="w-orrery" aria-hidden="true"><span class="ring"></span><span class="spin"><i></i></span><span class="sun"></span></div>' +
+      '<div class="eyebrow">' + esc(t('appName')) + '</div>' +
+      '<h2 id="wTitle">' + esc(title) + '</h2><p class="w-body">' + esc(body) + '</p>' +
+      '<form id="wForm" class="w-form" novalidate><label for="wName">' + esc(t('welLabel')) + '</label>' +
+        '<input id="wName" maxlength="40" autocomplete="nickname" placeholder="' + esc(t('welPh')) + '" value="' + esc(me.name) + '">' +
+        '<p class="w-err" id="wErr" role="alert" hidden></p>' +
+        '<div class="w-btns"><button type="submit" class="btn-gold inline">' + esc(t('welSave')) + '</button>' +
+        '<button type="button" class="btn-line inline" id="wSkip">' + esc(kind === 'edit' ? t('close') : t('welSkip')) + '</button></div></form>' +
+      '<p class="w-note">' + esc(t('welPrivacy')) + '</p>' +
+      '<button type="button" class="m-close" id="mClose" aria-label="' + esc(t('close')) + '">×</button></div>';
+    m.hidden = false;
+    const done = () => { closeModal(); };
+    $('#wForm').addEventListener('submit', (e) => {
+      e.preventDefault();
+      const v = $('#wName').value.trim();
+      if (!v) { const er = $('#wErr'); er.textContent = t('welEmpty'); er.hidden = false; return; }
+      V.setName(v); welcomeKind = null; done(); syncMe();
+    });
+    $('#wSkip').addEventListener('click', done);
+    $('#mClose').addEventListener('click', done);
+    m.addEventListener('click', (e) => { if (e.target === m) done(); });
+    $('#wName').focus();
+  }
 
   /* ---------- menara kuis (lihat tower.js) ---------- */
   const towerApi = {
@@ -385,6 +440,11 @@
 
   /* ---------- mulai ---------- */
   i18n.apply();
+  if (JK.visitors) JK.visitors.visit(progressOf());
   syncHeader();
   render();
+  setTimeout(() => {
+    const k = JK.visitors && JK.visitors.shouldGreet();
+    if (k && parse().route !== 'owner' && window.innerWidth >= 1024) openWelcome(k);
+  }, 1200);
 })();
