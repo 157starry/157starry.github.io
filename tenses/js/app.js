@@ -2,7 +2,7 @@
    halaman materi, mini kuis, roda gigi, dan pop-up naik level. */
 (function () {
   const { i18n, data, lessons, checker } = window.JK;
-  const { PLANETS, TENSES, LEVER } = data;
+  const { PLANETS, TENSES, LEVER, DOT } = data;
   const t = (k) => i18n.t(k);
   const $ = (s, r) => (r || document).querySelector(s);
   const esc = (s) => String(s).replace(/[&<>"']/g, (c) => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
@@ -87,6 +87,7 @@
       return { route: 'lessons', planet: b || null };
     }
     if (a === 'menara') { const n = parseInt(b, 10); return { route: 'quiz', floor: n >= 1 && n <= 5 ? n : null }; }
+    if (a === 'detector') return { route: 'detector' };
     return { route: 'home' };
   }
 
@@ -110,6 +111,7 @@
       if (orrery) orrery.pause();
       if (r.route === 'lessons') view.innerHTML = lessonsHTML();
       else if (r.route === 'lesson') { view.innerHTML = lessonHTML(r.tense); bindLesson(r.tense); }
+      else if (r.route === 'detector') JK.detector.mount(view, detectorApi);
       else if (r.floor && r.floor <= state.towerCleared + 1) JK.tower.play(view, r.floor, towerApi);
       else view.innerHTML = JK.tower.overview(towerApi);
       window.scrollTo(0, keepScroll ? y : 0);
@@ -118,7 +120,7 @@
         if (el) { el.classList.add('focus'); el.scrollIntoView({ block: 'center' }); }
       }
     }
-    const title = r.route === 'home' ? t('title') : r.route === 'lessons' ? t('lessonsTitle') : r.route === 'lesson' ? TENSES[r.tense].name : t('quizTitle');
+    const title = r.route === 'home' ? t('title') : r.route === 'lessons' ? t('lessonsTitle') : r.route === 'lesson' ? TENSES[r.tense].name : r.route === 'detector' ? t('detTitle') : t('quizTitle');
     document.title = t('appName') + ' · ' + title;
   }
   window.addEventListener('hashchange', () => {
@@ -187,7 +189,6 @@
   }
 
   /* ---------- peta materi ---------- */
-  const DOT = { mercury: '#A8917E', venus: '#E2BF7E', earth: '#3A7BD0', mars: '#C2583A', jupiter: '#C99A6E', saturn: '#E3C88E', uranus: '#7CC4BE', neptune: '#4F6AD0' };
   function lessonsHTML() {
     return '<div class="page lessons"><div class="sheet">' + esc(t('sheet')) + ' · ' + state.mastered.length + ' / 16 ' + esc(t('mastered')) + '</div>' +
       '<h1>' + esc(t('lessonsTitle')) + '</h1><p class="lede">' + esc(t('lessonsLede')) + '</p><p class="map-hint">' + esc(t('mapHint')) + '</p>' +
@@ -371,6 +372,9 @@
     best: () => state.towerBest,
     setBest: (n) => { state.towerBest = n; save(); }
   };
+
+  /* ---------- grammar detector (lihat detector.js) ---------- */
+  const detectorApi = { t, esc, lang: () => state.lang, data };
 
   /* ---------- layar kecil ---------- */
   $('#copyLink').addEventListener('click', async (e) => {
