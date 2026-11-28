@@ -421,7 +421,7 @@ html[data-theme="day"] { --wood: #7A4E36; --stone2: #C4B39B; --brassDk2: #7A4428
 .small { display: none; }
 @media (max-width: 1023px) {
   .app { display: none; }
-  body, body.route-home, body.route-lessons, body.route-quiz, body.route-detector { overflow: auto; background: #0B1029; background-image: radial-gradient(ellipse at 50% 32%, rgba(201,164,92,.18), transparent 55%); color: #F3E7C9; }
+  body, body.route-home, body.route-lessons, body.route-quiz, body.route-detector, body.route-owner { overflow: auto; background: #0B1029; background-image: radial-gradient(ellipse at 50% 32%, rgba(201,164,92,.18), transparent 55%); color: #F3E7C9; }
   .small { display: flex; flex-direction: column; align-items: center; text-align: center; min-height: 100vh; padding: 56px 28px 36px; }
   .small-brand { font-family: var(--serif); font-weight: 700; font-size: 18px; letter-spacing: .08em; text-transform: uppercase; color: #F1D58A; }
   .small-orrery { position: relative; width: 200px; height: 200px; margin-top: 40px; }
@@ -438,8 +438,8 @@ html[data-theme="day"] { --wood: #7A4E36; --stone2: #C4B39B; --brassDk2: #7A4428
 @media (prefers-reduced-motion: reduce) { .small-orrery .spin { animation: none; } }
 
 /* ---------- grammar detector (teropong kalimat) ---------- */
-body.route-detector { --pagebg: var(--bg); }
-@media (min-width: 1024px) { body.route-detector {
+body.route-detector, body.route-owner { --pagebg: var(--bg); }
+@media (min-width: 1024px) { body.route-detector, body.route-owner {
   background-image: radial-gradient(ellipse at 78% 18%, var(--neb), transparent 45%),
     radial-gradient(ellipse at 12% 70%, var(--neb2), transparent 40%),
     radial-gradient(ellipse at 50% 50%, transparent 60%, var(--vig));
@@ -527,3 +527,74 @@ a.cl-row:hover { border-color: color-mix(in srgb, var(--pc) 70%, transparent); b
 .own-form input:focus { outline: none; border-color: var(--hi); }
 .own-form .btn-line.inline { padding: 8px 14px; font-size: 12px; }
 .det-owner-msg { width: 100%; margin: 2px 0 0; font-size: 12px; color: var(--t2); }
+
+/* ---------- kartu kedatangan (sambutan) ---------- */
+.me-chip { padding: 7px 14px; border-radius: 999px; border: 1px dashed color-mix(in srgb, var(--brass) 70%, transparent); background: transparent; color: var(--acc); font-family: var(--serif); font-weight: 700; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; white-space: nowrap; max-width: 200px; overflow: hidden; text-overflow: ellipsis; }
+.me-chip.named { border-style: solid; text-transform: none; letter-spacing: .04em; font-size: 12px; }
+.me-chip:hover { background: color-mix(in srgb, var(--brass) 18%, transparent); }
+body.route-lessons .me-chip { color: var(--bp-acc); border-color: var(--bp-line); }
+.modal-card.welcome {
+  width: 560px; padding: 34px 40px 26px; color: var(--text); text-align: center;
+  background: linear-gradient(180deg, var(--p1), var(--p2)); background-color: var(--bg);
+  border: 1px solid var(--brass); box-shadow: inset 0 0 0 6px var(--p2), inset 0 0 0 7px color-mix(in srgb, var(--brass) 40%, transparent), 0 30px 80px rgba(0,0,0,.45);
+}
+.modal-card.welcome::before, .modal-card.welcome::after { content: ''; position: absolute; top: 50%; width: 26px; height: 26px; margin-top: -13px; border-radius: 50%; background: rgba(5,10,24,.75); border: 1px solid var(--brass); }
+.modal-card.welcome::before { left: -14px; } .modal-card.welcome::after { right: -14px; }
+.w-orrery { position: relative; width: 84px; height: 84px; margin: 0 auto 14px; }
+.w-orrery .ring { position: absolute; inset: 0; border-radius: 50%; border: 1.5px solid var(--brass); }
+.w-orrery .spin { position: absolute; inset: 12px; border-radius: 50%; border: 1px dashed color-mix(in srgb, var(--brass) 60%, transparent); animation: spin 12s linear infinite; }
+.w-orrery .spin i { position: absolute; right: -5px; top: 50%; margin-top: -5px; width: 10px; height: 10px; border-radius: 50%; background: #6FB8B2; border: 1.5px solid var(--brass); }
+.w-orrery .sun { position: absolute; left: 30px; top: 30px; width: 24px; height: 24px; border-radius: 50%; background: radial-gradient(circle at 38% 32%, #FFF6D0, #F2C14E 45%, #C98A1E 85%); box-shadow: 0 0 18px rgba(242,193,78,.6); }
+.modal-card.welcome h2 { margin: 8px 0 0; font-family: var(--serif); font-weight: 700; font-size: 26px; line-height: 1.2; color: var(--text); }
+.w-body { margin: 10px auto 0; max-width: 440px; font-family: var(--italic); font-style: italic; font-weight: 600; font-size: 18px; line-height: 1.4; color: var(--t2); }
+.w-form { margin: 20px auto 0; max-width: 400px; padding: 16px 18px 18px; border-radius: 16px; border: 1.5px dashed color-mix(in srgb, var(--brass) 60%, transparent); text-align: left; }
+.w-form label { font-family: var(--serif); font-weight: 600; font-size: 11px; letter-spacing: .16em; text-transform: uppercase; color: var(--acc); }
+.w-form input { display: block; width: 100%; margin-top: 8px; padding: 6px 2px; border: none; border-bottom: 2px solid var(--brass); background: transparent; color: var(--text); font: 600 26px/1.2 var(--italic); }
+.w-form input:focus { outline: none; border-bottom-color: var(--hi); }
+.w-form input::placeholder { color: var(--t3); }
+.w-err { margin: 8px 0 0; font-size: 13px; color: var(--bad); }
+.w-btns { display: flex; gap: 10px; justify-content: center; flex-wrap: wrap; margin-top: 16px; }
+.modal .welcome .btn-gold { background: linear-gradient(180deg, var(--hi), var(--brass)); color: var(--on); }
+.modal .welcome .btn-line { border-color: var(--brass); color: var(--acc); }
+.modal .welcome .m-close { border-color: color-mix(in srgb, var(--brass) 50%, transparent); color: var(--acc); }
+.w-note { margin: 14px auto 0; max-width: 420px; font-size: 12px; line-height: 1.5; color: var(--t3); }
+@media (prefers-reduced-motion: reduce) { .w-orrery .spin { animation: none; } }
+
+/* ---------- buku tamu (dashboard pemilik) ---------- */
+.page.owner { padding-top: 44px; }
+.owner h1 { font-family: var(--serif); font-weight: 700; font-size: 44px; margin: 8px 0 0; }
+.owner .lede { margin: 8px 0 0; font-family: var(--italic); font-style: italic; font-weight: 600; font-size: 18px; color: var(--t2); max-width: 640px; }
+.own-top { display: flex; justify-content: space-between; align-items: flex-end; gap: 24px; flex-wrap: wrap; }
+.own-actions { display: flex; align-items: center; gap: 14px; }
+.own-actions .link-btn { color: var(--t3); margin: 0; }
+.own-lock { margin-top: 24px; max-width: 520px; padding: 22px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center; }
+.own-lock p { width: 100%; margin: 0; font-size: 14px; color: var(--t2); }
+.own-lock input, .own-q { flex: 1; min-width: 0; padding: 11px 14px; border-radius: 12px; border: 1px solid color-mix(in srgb, var(--brass) 55%, transparent); background: var(--chip); color: var(--text); font: 15px var(--sans); }
+.own-lock input:focus, .own-q:focus { outline: none; border-color: var(--hi); }
+.own-tiles { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); gap: 14px; margin-top: 26px; }
+.own-tile { padding: 16px 18px; border-radius: 16px; background: var(--chip); border: 1px solid color-mix(in srgb, var(--brass) 35%, transparent); }
+.own-tile b { display: block; font-family: var(--serif); font-size: 30px; color: var(--acc); }
+.own-tile span { display: block; margin-top: 2px; font-size: 12px; color: var(--t3); }
+.own-card { margin-top: 18px; padding: 20px 22px; }
+.own-q { display: block; width: 320px; flex: none; }
+.own-scroll { margin-top: 14px; overflow-x: auto; }
+.own-table { width: 100%; border-collapse: collapse; font-size: 14px; }
+.own-table th, .own-table td { padding: 11px 12px; text-align: left; border-bottom: 1px solid color-mix(in srgb, var(--brass) 20%, transparent); white-space: nowrap; }
+.own-table thead th { font-family: var(--serif); font-weight: 600; font-size: 11px; letter-spacing: .12em; text-transform: uppercase; color: var(--t3); }
+.own-table tbody th { font-weight: 600; color: var(--text); }
+.own-table tbody th.guest { color: var(--t3); font-weight: 500; }
+.own-table td { color: var(--t2); font-variant-numeric: tabular-nums; }
+.own-table tbody tr:hover { background: color-mix(in srgb, var(--brass) 8%, transparent); }
+.own-bar { display: inline-block; vertical-align: middle; width: 54px; height: 6px; margin-right: 8px; border-radius: 3px; background: linear-gradient(90deg, var(--brass) calc(var(--v) * 100%), color-mix(in srgb, var(--brass) 20%, transparent) 0); }
+.own-del { margin: 0; font-size: 13px; color: var(--t3); }
+.own-del:hover { color: var(--bad); }
+.own-empty { margin: 18px 0 4px; color: var(--t3); font-size: 14px; }
+.nav a, .brand-name, .brand-lab { white-space: nowrap; }
+.nav > * { flex-shrink: 0; }
+@media (max-width: 1279px) {
+  .nav { gap: 14px; font-size: 11.5px; letter-spacing: .08em; }
+  .brand { gap: 10px; }
+  .brand-name { font-size: 18px; letter-spacing: .04em; }
+  .me-chip { max-width: 130px; padding: 6px 10px; }
+  .icon-btn { width: 36px; height: 36px; }
+}

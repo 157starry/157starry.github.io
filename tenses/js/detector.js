@@ -73,7 +73,7 @@
   function ownerHTML(api) {
     const { t, esc } = api;
     const msg = ownerMsg ? '<p class="det-owner-msg" role="status">' + esc(ownerMsg) + '</p>' : '';
-    if (getPass()) return '<span class="own-on"><span aria-hidden="true">🔑</span> ' + esc(t('detOwnerOn')) + '</span><button type="button" class="link-btn" id="ownOff">' + esc(t('detOwnerOff')) + '</button>' + msg;
+    if (getPass()) return '<span class="own-on"><span aria-hidden="true">🔑</span> ' + esc(t('detOwnerOn')) + '</span><a class="link-btn" href="#/pemilik">' + esc(t('ownTitle')) + '</a><button type="button" class="link-btn" id="ownOff">' + esc(t('detOwnerOff')) + '</button>' + msg;
     if (!ownerOpen) return '<button type="button" class="link-btn" id="ownOpen">' + esc(t('detOwner')) + '</button>' + msg;
     return '<form id="ownForm" class="own-form"><label class="sr-only" for="ownIn">' + esc(t('detOwnerPh')) + '</label>' +
       '<input id="ownIn" type="password" autocomplete="current-password" placeholder="' + esc(t('detOwnerPh')) + '">' +
@@ -192,12 +192,12 @@
       ownBox.innerHTML = ownerHTML(api);
       const o = ownBox.querySelector('#ownOpen'); if (o) o.addEventListener('click', () => { ownerOpen = true; ownerMsg = ''; paintOwner(); ownBox.querySelector('#ownIn').focus(); });
       const c = ownBox.querySelector('#ownCancel'); if (c) c.addEventListener('click', () => { ownerOpen = false; paintOwner(); });
-      const off = ownBox.querySelector('#ownOff'); if (off) off.addEventListener('click', () => { setPass(''); ownerMsg = ''; mount(view, api); });
+      const off = ownBox.querySelector('#ownOff'); if (off) off.addEventListener('click', () => { setPass(''); ownerMsg = ''; window.dispatchEvent(new Event('jk-owner-change')); mount(view, api); });
       const f = ownBox.querySelector('#ownForm'); if (f) f.addEventListener('submit', (e) => {
         e.preventDefault();
         const v = ownBox.querySelector('#ownIn').value.trim();
         if (!v) return;
-        setPass(v); ownerOpen = false; ownerMsg = api.t('detOwnerSaved'); mount(view, api);
+        setPass(v); ownerOpen = false; ownerMsg = api.t('detOwnerSaved'); window.dispatchEvent(new Event('jk-owner-change')); mount(view, api);
       });
     };
     paintOwner();
@@ -215,7 +215,8 @@
       if (text.length > MAX) return showErr(fill(api.t('detTooLong'), { n: MAX }));
       S.busy = true; S.asked = text; paint();
       const r = await askAI(text);
-      if (r.why === 'bad_owner') { setPass(''); ownerMsg = api.t('detOwnerBad'); }
+      if (r.why === 'bad_owner') { setPass(''); ownerMsg = api.t('detOwnerBad'); window.dispatchEvent(new Event('jk-owner-change')); }
+      if (JK.visitors) JK.visitors.check();
       if (r.ok) { S.res = r.result; S.src = 'ai'; S.why = null; if (ownerMsg && repaintOwner) { ownerMsg = ''; repaintOwner(); } }
       else { S.res = JK.rules.analyze(text); S.src = 'rules'; S.why = r.why; }
       S.busy = false;
