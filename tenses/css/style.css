@@ -311,7 +311,19 @@ html[data-theme="night"] .ico-moon, html[data-theme="day"] .ico-sun { display: n
 
 /* ---------- menara kuis ---------- */
 html[data-theme="night"] { --wood: #5A3826; --stone2: #241D3C; --brassDk2: #8A6A2E; }
+html[data-theme="night"] {
+  --sc-sky1: #070A1E; --sc-sky2: #2A2350; --sc-night: #070A1E; --sc-moon: #F3E7C9; --sc-hill: #151030;
+  --sc-wall: #3A3058; --sc-dark: #17122C; --sc-mortar: rgba(0,0,0,.32); --sc-floor: #1E1838; --sc-path: #2C2448;
+  --sc-step: #5A4E82; --sc-riser: #2A2246; --sc-col: #4A3F6E; --sc-col2: #5C5084; --sc-iron: #2A2433;
+  --sc-banner: #8E2A3A; --sc-glow: #FFC857; --sc-grass: #3E6B4F; --sc-shelf: #3A2618; --sc-shelf2: #24170E; --sc-dim: rgba(7,10,30,.28);
+}
 html[data-theme="day"] { --wood: #7A4E36; --stone2: #C4B39B; --brassDk2: #7A4428; }
+html[data-theme="day"] {
+  --sc-sky1: #9DB3D9; --sc-sky2: #F6D6B8; --sc-night: #26305E; --sc-moon: #FFF3C4; --sc-hill: #B9C49A;
+  --sc-wall: #D9CBB6; --sc-dark: #A8957A; --sc-mortar: rgba(90,60,30,.22); --sc-floor: #C4B39B; --sc-path: #E4D6C0;
+  --sc-step: #EFE4D2; --sc-riser: #BFAE95; --sc-col: #E8DCC8; --sc-col2: #CDBB9F; --sc-iron: #5A4A3E;
+  --sc-banner: #A33A3A; --sc-glow: #FFB347; --sc-grass: #6E9A5A; --sc-shelf: #8A5A3A; --sc-shelf2: #6A4228; --sc-dim: rgba(255,240,220,.08);
+}
 .page.quiz { display: flex; gap: 56px; align-items: flex-start; padding-top: 48px; }
 .quiz h1 { font-family: var(--serif); font-weight: 700; font-size: 46px; margin: 8px 0 0; }
 .quiz .lede { margin: 8px 0 0; font-family: var(--italic); font-style: italic; font-weight: 600; font-size: 19px; color: var(--t2); max-width: 540px; }
@@ -352,7 +364,7 @@ html[data-theme="day"] { --wood: #7A4E36; --stone2: #C4B39B; --brassDk2: #7A4428
 @keyframes flick { 50% { transform: scale(.9, 1.12); } }
 .tscore { padding: 6px 14px; border-radius: 999px; border: 1px solid var(--brass); font-size: 13px; font-weight: 600; color: var(--acc); }
 .tplay { display: flex; gap: 40px; margin-top: 26px; align-items: flex-start; }
-.tdoor { width: 340px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
+.tdoor { width: 380px; flex-shrink: 0; display: flex; flex-direction: column; align-items: center; }
 .fl-name { font-family: var(--serif); font-weight: 700; font-size: 28px; letter-spacing: .04em; }
 .fl-sub { margin-top: 4px; font-size: 13px; color: var(--t3); }
 .door-frame { margin-top: 20px; width: 290px; height: 410px; border-radius: 145px 145px 10px 10px; padding: 12px; background: linear-gradient(180deg, var(--stone), var(--stone2)); box-shadow: 0 0 0 3px var(--brass), 0 0 0 9px var(--stone2), 0 0 0 10px color-mix(in srgb, var(--brass) 50%, transparent); }
@@ -409,7 +421,7 @@ html[data-theme="day"] { --wood: #7A4E36; --stone2: #C4B39B; --brassDk2: #7A4428
 .guide p { margin: 3px 0 0; font-size: 14px; line-height: 1.5; }
 .link-btn { display: block; margin-top: 3px; padding: 0; border: none; background: none; color: var(--text); font-size: 14px; text-decoration: underline; }
 .tend { display: flex; gap: 44px; align-items: center; margin-top: 30px; padding: 32px 40px; }
-.tend .door-frame { margin: 0; flex-shrink: 0; }
+.tend .scene { margin: 0; flex-shrink: 0; }
 .tend h2 { font-family: var(--serif); font-weight: 700; font-size: 38px; margin: 8px 0 0; }
 .tend p { margin: 10px 0 0; font-size: 16px; line-height: 1.55; color: var(--t2); max-width: 520px; }
 .tend .perfect { color: var(--acc); font-weight: 600; }
@@ -598,3 +610,42 @@ body.route-lessons .me-chip { color: var(--bp-acc); border-color: var(--bp-line)
   .me-chip { max-width: 130px; padding: 6px 10px; }
   .icon-btn { width: 36px; height: 36px; }
 }
+
+/* ---------- adegan per lantai (js/scenes.js) ---------- */
+.scene { position: relative; margin-top: 18px; width: 380px; height: 520px; border-radius: 22px; overflow: hidden; flex-shrink: 0;
+  box-shadow: 0 0 0 1px color-mix(in srgb, var(--brass) 55%, transparent), 0 0 0 5px var(--p2), 0 0 0 6px color-mix(in srgb, var(--brass) 25%, transparent), 0 24px 60px rgba(0,0,0,.35); }
+.sc-bg { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+.scene .door-frame { position: absolute; left: 50%; bottom: 46px; margin: 0 0 0 -145px; transform: scale(.74); transform-origin: 50% 100%; }
+.scene .door-frame.shake { animation: shake-sc .45s; }
+@keyframes shake-sc { 20%, 60% { transform: scale(.74) translateX(-8px); } 40%, 80% { transform: scale(.74) translateX(8px); } }
+.sc-twinkle { animation: twinkle 3.6s ease-in-out infinite; }
+@keyframes twinkle { 50% { opacity: .25; } }
+html[data-theme="day"] .sc-stars { opacity: .25; }
+.sc-flag { animation: flag 2.4s ease-in-out infinite; transform-box: fill-box; transform-origin: 0 50%; }
+@keyframes flag { 50% { transform: skewY(-6deg) scaleX(.9); } }
+.sc-orbit { animation: spin 6s linear infinite; transform-origin: 0 0; }
+/* kulit pintu per lantai */
+.fl-2 .door-leaf { background-color: #3E2A1E; } .fl-2 .door-leaf i { background: #4A4452; height: 14px; }
+.fl-3 .door-frame { border-radius: 145px 145px 4px 4px; background: linear-gradient(180deg, var(--sc-col2), var(--sc-col)); }
+.fl-3 .door-leaf { background-color: #6E1F2A; background-image: none; box-shadow: inset 0 0 0 3px rgba(0,0,0,.25), inset 18px 60px 0 -6px rgba(0,0,0,.18), inset -18px -60px 0 -6px rgba(0,0,0,.18); }
+.fl-4 .door-frame { border-radius: 6px; background: var(--sc-shelf2); box-shadow: 0 0 0 3px var(--sc-shelf2), 0 0 26px 6px color-mix(in srgb, var(--hi) 35%, transparent); animation: hint-glow 3s ease-in-out infinite; }
+.fl-4 .door-arch { border-radius: 2px; }
+.fl-4 .door-leaf { background-color: var(--sc-shelf);
+  background-image: repeating-linear-gradient(180deg, transparent 0 58px, var(--sc-shelf2) 58px 66px),
+    repeating-linear-gradient(90deg, #7A1F2B 0 9px, #2F4A6E 9px 17px, #8A6A2E 17px 24px, #3E6B4F 24px 34px, #5A3A6E 34px 41px, transparent 41px 44px); }
+.fl-4 .door-leaf i { opacity: 0; }
+@keyframes hint-glow { 50% { box-shadow: 0 0 0 3px var(--sc-shelf2), 0 0 6px 1px color-mix(in srgb, var(--hi) 15%, transparent); } }
+.fl-5 .door-leaf { background-color: #141A44; background-image: radial-gradient(circle at 30% 20%, #F1D58A 0 1.5px, transparent 2px), radial-gradient(circle at 70% 55%, #F1D58A 0 1.5px, transparent 2px), radial-gradient(circle at 40% 80%, #fff 0 1px, transparent 1.5px), radial-gradient(circle at 60% 35%, #fff 0 1px, transparent 1.5px); background-size: 70px 90px; }
+.fl-5 .door-light { background: radial-gradient(circle at 50% 45%, #FFF3C4, #8FA8FF 30%, #2A2F7A 70%, #070A1E); }
+.fl-5 .door-light span { color: #FFF3C4; }
+@media (prefers-reduced-motion: reduce) { .sc-twinkle, .sc-flag, .sc-orbit, .fl-4 .door-frame, .scene .door-frame.shake { animation: none; } }
+
+/* peta menara: ilustrasi + ikon */
+.tw-art { width: 200px; flex-shrink: 0; margin-top: -10px; }
+.tw-seg.locked { opacity: .55; }
+.tw-seg.open rect:first-child { stroke: var(--hi); stroke-width: 2; }
+.tw-n { font-family: var(--serif); font-weight: 700; font-size: 15px; fill: var(--t3); }
+.tw-seg.done .tw-n, .tw-seg.open .tw-n { fill: var(--acc); }
+.tower .fl-ico { flex-shrink: 0; width: 34px; height: 34px; color: var(--acc); opacity: .9; }
+.tower .floor.locked .fl-ico { color: var(--t3); }
+@media (max-width: 1259px) { .tw-art { display: none; } }
