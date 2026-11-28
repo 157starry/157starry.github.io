@@ -112,6 +112,13 @@
         '<h2>' + esc(t(ask)) + '</h2>' + body + '<div class="tfb" role="status" aria-live="polite">' + fb + '</div></section>';
     }
 
+    // ekspresi maskot di panel bisikan
+    function guideMood(c) {
+      if (c.status === 'open') return 'happy';
+      if (c.status === 'wrong') return 'oops';
+      return c.hint ? 'think' : 'idle';
+    }
+
     function draw(opts) {
       opts = opts || {};
       const lv = t('floorLv')[floor - 1];
@@ -122,21 +129,21 @@
           doorHTML(c.status === 'open', opts.shake) + '</div>' +
           '<div class="tright"><div class="tchips">' + t('qtypes').map((x, k) => '<span class="tchip' + (k === ti ? ' on' : '') + '">' + esc(x) + '</span>').join('') + '</div>' +
           questionHTML() +
-          '<section class="panel guide"><span class="g-orb" aria-hidden="true"><svg width="20" height="20" viewBox="0 0 20 20"><path d="M10 0 L12 8 L20 10 L12 12 L10 20 L8 12 L0 10 L8 8 Z" fill="var(--hi)"/></svg></span><div><b>' + esc(t('guide')) + '</b>' +
-            (c.hint ? '<p>' + esc(c.q.hint[api.lang()]) + '</p>' : '<button type="button" class="link-btn" id="tHint">' + esc(t('askHint')) + '</button>') + '</div></section>' +
+          '<section class="panel guide"><span class="g-lumi">' + JK.mascot.svg(guideMood(c), 58) + '</span><div><b>' + esc(t('guide')) + '</b>' +
+            (c.status === 'open' ? '<p>' + esc(t('lumiYay')) + '</p>' : c.hint ? '<p>' + esc(c.q.hint[api.lang()]) + '</p>' : '<button type="button" class="link-btn" id="tHint">' + esc(t('askHint')) + '</button>') + '</div></section>' +
           '</div></div>';
       } else if (S.phase === 'clear') {
         const perfect = S.lost === 0;
         const isTop = floor === 5;
         main = '<div class="tend panel">' + doorHTML(true) +
-          '<div class="tend-text"><div class="eyebrow">' + esc(t('floors')[floor - 1]) + '</div><h2>' + esc(isTop ? t('finaleTitle') : t('clearedTitle').replace('{n}', floor)) + '</h2>' +
+          '<div class="tend-text"><span class="tend-lumi">' + JK.mascot.svg(perfect || isTop ? 'wow' : 'happy', 76, true) + '</span><div class="eyebrow">' + esc(t('floors')[floor - 1]) + '</div><h2>' + esc(isTop ? t('finaleTitle') : t('clearedTitle').replace('{n}', floor)) + '</h2>' +
           '<p>' + esc(isTop ? t('finaleBody') : t('clearedBody')) + '</p>' + (perfect ? '<p class="perfect">' + esc(t('perfect')) + '</p>' : '') +
           '<div class="tend-score">' + esc(t('floorScore')) + ': <b>' + S.score + '</b></div><div class="qbtns">' +
           (isTop ? '<a class="btn-gold inline" href="#/">' + esc(t('toObs')) + '</a>' : '<a class="btn-gold inline" href="#/menara/' + (floor + 1) + '">' + esc(t('nextFloor').replace('{n}', floor + 1)) + '</a>') +
           '<a class="btn-line inline" href="#/menara">' + esc(t('backTower')) + '</a></div></div></div>';
       } else {
         main = '<div class="tend panel fail">' + doorHTML(false) +
-          '<div class="tend-text"><div class="eyebrow">' + esc(t('floors')[floor - 1]) + '</div><h2>' + esc(t('failTitle')) + '</h2><p>' + esc(t('failBody')) + '</p>' +
+          '<div class="tend-text"><span class="tend-lumi">' + JK.mascot.svg('sad', 76) + '</span><div class="eyebrow">' + esc(t('floors')[floor - 1]) + '</div><h2>' + esc(t('failTitle')) + '</h2><p>' + esc(t('failBody')) + '</p>' +
           '<div class="qbtns"><button type="button" class="btn-gold inline" id="tRetry">' + esc(t('retry')) + '</button><a class="btn-line inline" href="#/menara">' + esc(t('backTower')) + '</a></div></div></div>';
       }
       view.innerHTML = '<div class="page quiz-play"><div class="tbar"><ol class="fchips" aria-label="' + esc(t('floorsLabel')) + '">' + floorChips() + '</ol>' +

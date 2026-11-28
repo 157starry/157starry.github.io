@@ -84,23 +84,23 @@
   function resultHTML(api) {
     const { t, esc, data } = api, lg = api.lang();
     if (S.busy) {
-      return '<div class="panel det-empty busy"><div class="lens spin" aria-hidden="true"><i></i></div><h2>' + esc(t('detChecking')) + '</h2></div>';
+      return '<div class="panel det-empty busy"><div class="det-lumi">' + JK.mascot.svg('think', 120, true) + '</div><h2>' + esc(t('detChecking')) + '</h2></div>';
     }
     const r = S.res;
     if (!r) {
-      return '<div class="panel det-empty"><div class="lens" aria-hidden="true"><i></i></div><h2>' + esc(t('detEmptyT')) + '</h2><p>' + esc(t('detEmptyB')) + '</p></div>';
+      return '<div class="panel det-empty"><div class="det-lumi">' + JK.mascot.svg('idle', 120, true) + '</div><h2>' + esc(t('detEmptyT')) + '</h2><p>' + esc(t('detEmptyB')) + '</p></div>';
     }
     const src = '<p class="det-src' + (S.src === 'rules' ? ' rules' : '') + '">' +
       (S.src === 'rules' && S.why ? esc(fill(t('detWhy')[S.why] || t('detWhy').error, { n: PER_DAY })) + ' ' : '') +
       esc(S.src === 'ai' ? t('detSrcAI') : t('detSrcRules')) + '</p>';
     if (!r.is_sentence) {
-      return '<div class="panel det-card"><div class="det-status no"><b>' + esc(t('detNotSentence')) + '</b></div>' +
+      return '<div class="panel det-card"><div class="det-status no">' + JK.mascot.svg('think', 40) + '<b>' + esc(t('detNotSentence')) + '</b></div>' +
         (r.summary && r.summary[lg] ? '<p class="det-sum">' + esc(r.summary[lg]) + '</p>' : '') + '</div>' + src;
     }
     const n = r.issues.length;
     // status + dua kalimat
     let out = '<div class="panel det-card">' +
-      '<div class="det-status ' + (n ? 'no' : 'ok') + '"><span class="dot"></span><b>' + esc(n ? fill(t('detBad'), { n }) : t('detOk')) + '</b></div>';
+      '<div class="det-status ' + (n ? 'no' : 'ok') + '">' + JK.mascot.svg(n ? 'oops' : 'wow', 40) + '<b>' + esc(n ? fill(t('detBad'), { n }) : t('detOk')) + '</b></div>';
     if (n) {
       out += '<div class="det-pair"><div><div class="det-k">' + esc(t('detYours')) + '</div><p class="det-sent orig">' +
         marks(S.asked, r.issues.map((i) => ({ phrase: i.wrong, open: '<mark class="bad">' })), esc) + '</p></div>' +

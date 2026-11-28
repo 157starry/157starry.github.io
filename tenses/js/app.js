@@ -151,9 +151,15 @@
   /* ---------- beranda ---------- */
   const chevron = (d) => '<svg width="16" height="16" viewBox="0 0 16 16" aria-hidden="true"><path d="' + (d < 0 ? 'M10 3 L5 8 L10 13' : 'M6 3 L11 8 L6 13') + '" stroke="currentColor" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
   const gearGrid = () => Array.from({ length: 16 }, (_, i) => '<span' + (i < state.mastered.length ? ' class="on"' : '') + '></span>').join('');
+  // maskot di beranda: menyapa, lalu berbisik tentang planet yang dipilih
+  function homeLumi() {
+    const i = PLANETS.findIndex((q) => q.id === state.sel);
+    return JK.mascot.say(i >= 0 ? 'happy' : 'idle', i >= 0 ? t('lumiPlanet')[i] : t('lumiHome'), t('mascotName'), { id: 'homeLumi', cls: 'home-lumi', size: 84, decor: true });
+  }
   function homeHTML() {
     return '<section class="home">' +
       '<div class="intro"><div class="eyebrow">' + esc(t('eyebrow')) + '</div><h1>' + esc(t('title')) + '</h1><p>' + esc(t('hint')) + '</p></div>' +
+      homeLumi() +
       '<p id="err3d" class="err3d" hidden>' + esc(t('err3d')) + '</p>' +
       '<aside id="planetPanel" class="panel planet-panel" hidden></aside>' +
       '<div class="panel gears"><div class="gears-head"><span class="eyebrow">' + esc(t('gears')) + '</span><b>' + state.mastered.length + ' / 16</b></div>' +
@@ -195,6 +201,8 @@
   function renderPlanetPanel() {
     const box = $('#planetPanel');
     if (!box) return;
+    const ml = $('#homeLumi');
+    if (ml) ml.outerHTML = homeLumi();
     const p = PLANETS.find((q) => q.id === state.sel);
     if (!p) { box.hidden = true; return; }
     const n = PLANETS.indexOf(p) + 1;
@@ -204,7 +212,7 @@
       '<a class="btn-gold" href="#/materi/' + p.tenses[0] + '">' + esc(t('enter')) + '</a>' +
       '<button type="button" class="btn-line" id="backBtn">' + esc(t('back')) + '</button>';
     box.hidden = false;
-    $('#backBtn').addEventListener('click', () => { state.sel = null; box.hidden = true; if (orrery) orrery.back(); });
+    $('#backBtn').addEventListener('click', () => { state.sel = null; box.hidden = true; if (orrery) orrery.back(); const m = $('#homeLumi'); if (m) m.outerHTML = homeLumi(); });
   }
 
   /* ---------- peta materi ---------- */
@@ -315,7 +323,8 @@
       '<label class="qlabel" for="qAns">' + esc(t('yours')) + '</label>' +
       '<textarea id="qAns" rows="2" placeholder="' + esc(t('ph')) + '" autocomplete="off" spellcheck="false">' + esc(q.answer) + '</textarea>' +
       '<div class="qbtns"><button type="button" class="btn-gold inline" id="qCheck">' + esc(t('check')) + '</button><button type="button" class="btn-line inline" id="qNext">' + esc(t('nextQ')) + '</button></div>' +
-      '<div id="qFb" role="status" aria-live="polite">' + (fb ? '<div class="fb ' + (fb.ok ? 'ok' : 'no') + '"><b>' + esc(fb.ok ? t('right') : t('wrong')) + '</b> ' + esc(fb.msg) + '</div>' : '') + '</div>' +
+      '<div id="qFb" role="status" aria-live="polite">' + (fb ? '<div class="fb has-lumi ' + (fb.ok ? 'ok' : 'no') + '">' + JK.mascot.svg(fb.ok ? 'happy' : 'oops', 46) + '<div><b>' + esc(fb.ok ? t('right') : t('wrong')) + '</b> ' + esc(fb.msg) + '</div></div>'
+        : JK.mascot.say('idle', t('lumiLesson'), '', { cls: 'lumi-mini', size: 40 })) + '</div>' +
       '<p class="qgoal">' + esc(done ? t('quizDone') : t('quizGoal')) + '</p>';
     const ta = $('#qAns');
     ta.addEventListener('input', () => { q.answer = ta.value; });

@@ -21,6 +21,8 @@ html[data-theme="night"] {
   --bp-line: rgba(230,238,255,.5); --bp-acc: #FFD66B; --bp-verbBg: rgba(255,214,107,.18); --bp-chip: rgba(10,34,66,.6); --bp-on: #102A4E; --ok: #7FF0B5; --bad: #FFB38A; --bp-text: #F4F8FF; --bp-t2: #C7D6EF; --bp-t3: #A9BFE2;
   /* halaman menara */
   --castle-bg: #100C24; --stone: #3A3058;
+  /* maskot bintang */
+  --star: #F7D774; --star2: #FCE9A6; --star-edge: #E2B24E; --star-line: #C9A45C; --star-ink: #3A2410; --star-cheek: #F4A3B4;
 }
 html[data-theme="day"] {
   --bg: #F4EBDD; --neb: rgba(232,150,110,.25); --neb2: rgba(150,175,215,.3); --vig: rgba(120,80,50,.12);
@@ -31,6 +33,7 @@ html[data-theme="day"] {
   --bp-bg: #F4EBDD; --bp-grid: rgba(120,80,50,.07); --bp-p1: rgba(255,251,244,.92); --bp-p2: rgba(247,238,224,.96);
   --bp-line: rgba(122,68,40,.4); --bp-acc: #9A4E2A; --bp-verbBg: rgba(224,154,114,.28); --bp-chip: rgba(232,218,198,.6); --bp-on: #FFF8EE; --ok: #1F7A4D; --bad: #A3401C; --bp-text: #2B2230; --bp-t2: #574A55; --bp-t3: #6A5C63;
   --castle-bg: #F1E6D6; --stone: #D9CBB6;
+  --star: #F5CF6A; --star2: #FBE4A0; --star-edge: #D9A443; --star-line: #B06A45; --star-ink: #3A2410; --star-cheek: #F29AAE;
 }
 
 * { box-sizing: border-box; }
@@ -598,3 +601,46 @@ body.route-lessons .me-chip { color: var(--bp-acc); border-color: var(--bp-line)
   .me-chip { max-width: 130px; padding: 6px 10px; }
   .icon-btn { width: 36px; height: 36px; }
 }
+
+/* ---------- maskot bintang (js/mascot.js) ---------- */
+.m-star { display: block; overflow: visible; flex-shrink: 0; }
+.m-star .m-body { animation: m-bob 3.4s ease-in-out infinite; transform-box: view-box; }
+.m-star .m-eyes { animation: m-blink 5s infinite; transform-box: fill-box; transform-origin: center; }
+.m-star.m-happy .m-body, .m-star.m-wow .m-body { animation: m-hop .9s ease-in-out infinite; }
+.m-star.m-oops .m-body, .m-star.m-sad .m-body { animation: m-wobble 2.6s ease-in-out infinite; transform-origin: 50px 90px; }
+.m-star .m-dots circle { animation: m-dot 1.4s ease-in-out infinite; }
+.m-star .m-dots circle:nth-child(2) { animation-delay: .2s; } .m-star .m-dots circle:nth-child(3) { animation-delay: .4s; }
+.m-star .m-orbit { animation: m-orbit 24s linear infinite; transform-origin: 50px 52px; }
+@keyframes m-bob { 50% { transform: translateY(-3px); } }
+@keyframes m-hop { 0%, 100% { transform: translateY(0); } 40% { transform: translateY(-5px) rotate(-3deg); } }
+@keyframes m-wobble { 0%, 100% { transform: rotate(-3deg); } 50% { transform: rotate(3deg); } }
+@keyframes m-blink { 0%, 92%, 100% { transform: scaleY(1); } 95% { transform: scaleY(.1); } }
+@keyframes m-dot { 50% { opacity: .25; } }
+@keyframes m-orbit { to { transform: rotate(360deg); } }
+@media (prefers-reduced-motion: reduce) { .m-star *, .m-star .m-body { animation: none !important; } }
+
+.lumi { display: flex; align-items: center; gap: 10px; }
+.lumi-say { position: relative; padding: 10px 14px; border-radius: 16px; background: var(--p1); border: 1px solid color-mix(in srgb, var(--brass) 55%, transparent); color: var(--text); }
+.lumi-say::before { content: ''; position: absolute; left: -7px; top: 50%; width: 12px; height: 12px; margin-top: -6px; background: inherit; border-left: inherit; border-bottom: inherit; transform: rotate(45deg); }
+.lumi-say b { display: block; font-family: var(--serif); font-size: 12px; letter-spacing: .12em; text-transform: uppercase; color: var(--acc); }
+.lumi-say p { margin: 3px 0 0; font-size: 13.5px; line-height: 1.45; }
+
+/* beranda: di bawah judul */
+.home-lumi { position: absolute; left: 34px; top: 300px; width: 360px; }
+.home-lumi .lumi-say { flex: 1; backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px); }
+@media (max-height: 760px) { .home-lumi { top: 262px; } .home-lumi .m-star { width: 66px; height: 66px; } }
+
+/* materi: mini kuis (cetak biru) */
+.lumi-mini { margin-top: 14px; gap: 8px; }
+.lumi-mini .lumi-say { padding: 7px 12px; background: var(--bp-chip); border-color: var(--bp-line); color: var(--bp-t2); }
+.lumi-mini .lumi-say p { margin: 0; font-size: 13px; }
+.fb.has-lumi { display: flex; align-items: center; gap: 12px; }
+.fb.has-lumi .m-star { margin: -6px 0; }
+
+/* menara: panel bisikan */
+.g-lumi { flex-shrink: 0; width: 58px; display: flex; justify-content: center; }
+.tend-lumi { display: block; margin: -10px 0 4px -6px; }
+
+/* detector */
+.det-lumi { display: flex; justify-content: center; }
+.det-status .m-star { margin: -6px 0; }
