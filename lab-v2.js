@@ -214,6 +214,48 @@ window.LAB_WORLDS = (function () {
     },
   });
 
+  // Purrfect Tense · Jam Kosmik — a brass orrery with a tiny time lever
+  const KOS_P = [["mercury", 26, "#A8917E", 4], ["venus", 38, "#E2BF7E", 5], ["earth", 50, "#3A7BD0", 5.5], ["mars", 62, "#C2583A", 4.5], ["jupiter", 78, "#C99A6E", 8], ["saturn", 93, "#E3C88E", 6.5]];
+  const KOS_L = [["had visited", " Bali before 2020.", "Past Perfect", "S + had + V3", 3], ["visited", " Bali last year.", "Simple Past", "S + V2", 2],
+    ["was visiting", " Bali when it rained.", "Past Continuous", "S + was/were + V-ing", 2], ["have visited", " Bali twice.", "Present Perfect", "S + have/has + V3", 1],
+    ["visit", " Bali every year.", "Simple Present", "S + V1 (s/es)", 0], ["am visiting", " Bali this week.", "Present Continuous", "S + am/is/are + V-ing", 0],
+    ["will visit", " Bali next year.", "Simple Future", "S + will + V1", 4], ["will be visiting", " Bali this time tomorrow.", "Future Continuous", "S + will be + V-ing", 4],
+    ["will have visited", " Bali by 2030.", "Future Perfect", "S + will have + V3", 5]];
+  W.push({
+    test: (p) => /purrfect|jam.?kosmik|\/tenses\/?$/i.test(p.name + " " + p.url), cls: "w-kos", sticker: ["new ✧", "pink"],
+    html: (p) => `<div class="twk-sky">${Array.from({ length: 24 }, () => `<i style="left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-delay:${(Math.random() * 3).toFixed(1)}s"></i>`).join("")}</div>
+      <div class="orr">${svg("0 50 200 100", `<g class="orbits">${KOS_P.map(([id, r]) => `<ellipse data-o="${id}" cx="100" cy="100" rx="${r}" ry="${(r * .44).toFixed(1)}"/>`).join("")}</g>
+        <line class="arm" x1="100" y1="100" x2="100" y2="100"/><circle cx="100" cy="100" r="17" fill="#F2C14E" opacity=".18"/><circle cx="100" cy="100" r="10" fill="#F7D774"/>
+        ${KOS_P.map(([id, , c, s]) => `<g class="pl" data-p="${id}">${id === "saturn" ? `<ellipse rx="${s * 1.9}" ry="${s * .6}" fill="none" stroke="#E3C88E" stroke-width="1.4"/>` : ""}<circle r="${s}" fill="${c}"/></g>`).join("")}`)}</div>
+      <div class="side"><div class="k">✦ JAM KOSMIK · TIME LEVER</div><p class="sent" aria-live="polite"></p><div class="meta"><b></b><code></code></div>
+        <div class="lever"><button type="button" class="st" data-d="-1" aria-label="Back in time">‹</button><input type="range" min="0" max="8" step="1" value="4" aria-label="Time lever"><button type="button" class="st" data-d="1" aria-label="Forward in time">›</button></div>
+        <div class="scale"><span>past</span><span>now</span><span>future</span></div>
+        ${p.url ? `<a class="ask" href="${p.url}" target="_blank" rel="noopener">turn the real lever · 16 tenses ↗</a>` : ""}</div>`,
+    init(el) {
+      const rng = el.querySelector("input"), arm = el.querySelector(".arm"), still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const pls = KOS_P.map(([id, r], k) => ({ id, r, a: k * 1.7, v: .9 / Math.sqrt(r), g: el.querySelector(`[data-p="${id}"]`) }));
+      let cur = 4;
+      function place() {
+        pls.forEach((p) => { const x = 100 + p.r * Math.cos(p.a), y = 100 + p.r * .44 * Math.sin(p.a); p.x = x; p.y = y; p.g.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)})`); });
+        const t = pls[KOS_L[cur][4]]; arm.setAttribute("x2", t.x.toFixed(1)); arm.setAttribute("y2", t.y.toFixed(1));
+      }
+      function set(v) {
+        cur = Math.max(0, Math.min(8, v)); rng.value = cur;
+        const [verb, post, name, f, pi] = KOS_L[cur];
+        el.querySelector(".sent").innerHTML = `I <mark>${verb}</mark>${post}`;
+        el.querySelector(".meta b").textContent = name; el.querySelector(".meta code").textContent = f;
+        rng.setAttribute("aria-valuetext", name);
+        el.querySelectorAll("[data-o]").forEach((o) => o.classList.toggle("on", o.dataset.o === KOS_P[pi][0]));
+        el.querySelectorAll(".pl").forEach((g) => g.classList.toggle("on", g.dataset.p === KOS_P[pi][0]));
+        place();
+      }
+      rng.oninput = () => set(+rng.value);
+      el.querySelectorAll(".st").forEach((b) => b.onclick = () => set(cur + +b.dataset.d));
+      set(4);
+      if (!still) { let last = 0; const tick = (ts) => { if (!el.isConnected) return; const dt = Math.min(50, ts - (last || ts)); last = ts; pls.forEach((p) => p.a += p.v * dt / 1000); place(); requestAnimationFrame(tick); }; requestAnimationFrame(tick); }
+    },
+  });
+
   // where each character sits: [world test, svg, css position]
   const PEEKS = [
     [/tabula|gardenia/i, BUNNY, "right:22px;top:-26px;width:58px;height:58px"],
