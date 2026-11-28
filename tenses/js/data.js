@@ -60,6 +60,9 @@
     { tense: 'future-perfect', pre: 'I ', verb: 'will have visited', post: ' Bali by 2030.', exp: { id: 'Sudah selesai sebelum titik masa depan', en: 'Completed before a future point' }, planet: 'saturn' }
   ];
 
+  /* warna titik planet (peta materi & detector) */
+  const DOT = { mercury: '#A8917E', venus: '#E2BF7E', earth: '#3A7BD0', mars: '#C2583A', jupiter: '#C99A6E', saturn: '#E3C88E', uranus: '#7CC4BE', neptune: '#4F6AD0' };
+
   window.JK = window.JK || {};
-  window.JK.data = { PLANETS, TENSES, LEVER };
+  window.JK.data = { PLANETS, TENSES, LEVER, DOT };
 })();
