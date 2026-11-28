@@ -15,13 +15,13 @@
     const next = Math.min(done + 1, 5);
     const items = fl.map((f, i) => {
       const n = i + 1, st = n <= done ? 'done' : n === done + 1 ? 'open' : 'locked';
-      const inner = '<span class="n">' + n + '</span><span class="fname">' + esc(f) + '<small>' + esc(lv[i]) + '</small></span>' +
+      const inner = '<span class="n">' + n + '</span>' + JK.scenes.icon(n) + '<span class="fname">' + esc(f) + '<small>' + esc(lv[i]) + '</small></span>' +
         '<span class="fstat">' + (st === 'done' ? CHECK : st === 'open' ? esc(t('enterFloor')) : LOCK) + '</span>';
       const cls = 'floor ' + st + (n === 5 ? ' peak' : '');
       return '<li>' + (st === 'locked' ? '<span class="' + cls + '" aria-disabled="true">' + inner + '<span class="sr-only">' + esc(t('locked')) + '</span></span>' : '<a class="' + cls + '" href="#/menara/' + n + '">' + inner + '</a>') + '</li>';
     }).join('');
     const types = t('qtypes').map((x) => '<span class="tchip">' + esc(x) + '</span>').join('');
-    return '<div class="page quiz"><ol class="tower">' + items + '</ol>' +
+    return '<div class="page quiz">' + JK.scenes.tower(done, Math.min(done + 1, 5)) + '<ol class="tower">' + items + '</ol>' +
       '<div class="tower-side"><div class="eyebrow">' + esc(t('navQuiz')) + '</div><h1>' + esc(t('quizTitle')) + '</h1><p class="lede">' + esc(t('quizLede')) + '</p>' +
       '<div class="panel rules"><p>' + esc(t('towerRules')) + '</p><div class="tchips">' + types + '</div>' +
       '<div class="rules-foot"><span>' + esc(t('bestScore')) + ': <b>' + api.best() + '</b></span><span>' + done + ' / 5 ' + esc(t('cleared')) + '</span></div>' +
@@ -67,11 +67,11 @@
 
     function doorHTML(open, shake) {
       const label = floor === 5 && S.i === PER_FLOOR - 1 ? t('beyondTop') : t('beyond');
-      return '<div class="door-frame' + (shake ? ' shake' : '') + '"><div class="door-arch">' +
+      return '<div class="scene fl-' + floor + '">' + JK.scenes.backdrop(floor) + '<div class="door-frame' + (shake ? ' shake' : '') + '"><div class="door-arch">' +
         '<div class="door-light"><span>' + esc(label) + '</span></div>' +
         '<div class="door-leaf left' + (open ? ' open' : '') + '"><i></i><i></i></div>' +
         '<div class="door-leaf right' + (open ? ' open' : '') + '"><i></i><i></i></div>' +
-        '<div class="door-lock' + (open ? ' spin' : '') + '"><span></span></div></div></div>';
+        '<div class="door-lock' + (open ? ' spin' : '') + '"><span></span></div></div></div></div>';
     }
 
     function questionHTML() {
