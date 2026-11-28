@@ -173,30 +173,28 @@
 .w-twin .ask:hover { color: #47e0ff; text-decoration: underline; }
 @media (max-width: 520px) { .w-twin { padding: 12px 5%; } .w-twin .q { font-size: 14px; } .w-twin .stage { width: 40%; } }
 
-/* brass orrery · Purrfect Tense · Jam Kosmik */
-.w-kos { background: radial-gradient(70% 90% at 22% 45%, rgba(201,164,92,.22), transparent 65%), radial-gradient(ellipse at 80% 0%, #1c2350, #0B1029 60%); color: #F3E7C9;
-  flex-direction: row; align-items: center; gap: 3%; padding: 14px 5% 14px 3%; font-family: "Inter", var(--sans); overflow: hidden; }
-.w-kos .twk-sky i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #F3E7C9; animation: twk 3s ease-in-out infinite; }
-.w-kos > * { position: relative; }
-.w-kos .orr { flex: none; width: 48%; aspect-ratio: 2 / 1; }
-.w-kos .orr svg { width: 100%; height: 100%; display: block; overflow: visible; }
-.w-kos .orbits ellipse { fill: none; stroke: rgba(201,164,92,.35); stroke-width: 1; transition: stroke .3s; }
-.w-kos .orbits ellipse.on { stroke: #F1D58A; stroke-width: 1.8; }
-.w-kos .arm { stroke: #C9A45C; stroke-width: 1.6; stroke-linecap: round; }
-.w-kos .pl.on circle { stroke: #F1D58A; stroke-width: 2; filter: drop-shadow(0 0 4px #F1D58A); }
-.w-kos .side { flex: 1; min-width: 0; }
-.w-kos .k { font-family: ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: .24em; color: #C9A45C; }
-.w-kos .sent { margin: 6px 0 4px; font-family: "Cormorant Garamond", var(--serif-display), serif; font-style: italic; font-weight: 600; font-size: clamp(17px, 2.4vw, 24px); line-height: 1.2; min-height: 2.4em; color: #F3E7C9; }
-.w-kos .sent mark { background: rgba(201,164,92,.3); color: #FFE7A3; padding: 0 5px; border-radius: 5px; }
-.w-kos .meta { color: #CFC4A8; display: flex; flex-wrap: wrap; gap: 4px 10px; align-items: baseline; font-size: 12px; }
-.w-kos .meta b { font-family: "Cinzel", var(--serif-display), serif; font-weight: 700; letter-spacing: .06em; color: #F1D58A; }
-.w-kos .meta code { font-family: ui-monospace, Menlo, monospace; font-size: 10.5px; color: #CFC4A8; }
-.w-kos .lever { display: flex; align-items: center; gap: 8px; margin-top: 12px; }
-.w-kos .st { width: 28px; height: 28px; flex: none; border-radius: 50%; border: 1px solid #C9A45C; background: transparent; color: #F1D58A; font-size: 16px; line-height: 1; }
-.w-kos input[type=range] { flex: 1; min-width: 0; accent-color: #C9A45C; }
-.w-kos .scale { display: flex; justify-content: space-between; padding: 2px 36px 0; font-family: ui-monospace, Menlo, monospace; font-size: 9px; letter-spacing: .14em; text-transform: uppercase; color: #A99E80; }
-.w-kos .ask { display: block; margin-top: 10px; font-size: 11.5px; color: #CFC4A8; text-decoration: none; }
+/* brass cosmic clock · Purrfect Tense · Jam Kosmik */
+.w-kos { background: radial-gradient(45% 70% at 50% 50%, rgba(201,164,92,.16), transparent 70%), radial-gradient(60% 80% at 85% 0%, rgba(90,110,220,.18), transparent 70%), radial-gradient(ellipse at 50% 120%, #1a1438, #070A1E 65%);
+  color: #F3E7C9; overflow: hidden; cursor: pointer; }
+.w-kos .twk-sky i { position: absolute; width: 2px; height: 2px; border-radius: 50%; background: #F3E7C9; animation: twk 4s ease-in-out infinite; }
+.w-kos > svg { position: absolute; inset: 4% 0; width: 100%; height: 92%; overflow: visible; }
+.w-kos .gears { fill: none; stroke: rgba(201,164,92,.22); stroke-width: 1.2; }
+.w-kos .gr { animation: kos-rot 60s linear infinite; } .w-kos .gr:nth-child(2) { animation-direction: reverse; animation-duration: 48s; } .w-kos .gr:nth-child(3) { animation-duration: 26s; }
+.w-kos .rim { fill: rgba(11,16,41,.55); stroke: #C9A45C; stroke-width: 2.2; } .w-kos .rim2 { fill: none; stroke: rgba(201,164,92,.4); stroke-width: 1; }
+.w-kos .tk { stroke: rgba(201,164,92,.45); stroke-width: 1; } .w-kos .tk.big { stroke: #C9A45C; stroke-width: 2; }
+.w-kos .face text { font-family: "Cinzel", var(--serif-display), serif; font-weight: 700; font-size: 11px; fill: #CFB27A; text-anchor: middle; letter-spacing: .04em; }
+.w-kos .orbits ellipse { fill: none; stroke: rgba(241,213,138,.28); stroke-width: .8; }
+.w-kos .halo { animation: kos-breathe 4s ease-in-out infinite; transform-origin: 200px 114px; }
+.w-kos .hand { stroke-linecap: round; } .w-kos .hand.h { stroke: #F1D58A; stroke-width: 3.4; } .w-kos .hand.m { stroke: #F1D58A; stroke-width: 2.2; } .w-kos .hand.s { stroke: #E2725B; stroke-width: 1; }
+.w-kos .k { position: absolute; left: 16px; top: 13px; font-family: ui-monospace, Menlo, monospace; font-size: 10px; letter-spacing: .3em; color: #C9A45C; }
+.w-kos .kos-line { position: absolute; left: 16px; bottom: 14px; max-width: 24%; font-family: "Cormorant Garamond", var(--serif-display), serif; font-style: italic; font-weight: 600; font-size: clamp(12px, 1.5vw, 15px); line-height: 1.25; color: #CFC4A8; opacity: .85; }
+.w-kos .ask { position: absolute; right: 16px; bottom: 12px; font-family: ui-sans-serif, system-ui, sans-serif; font-size: 11px; letter-spacing: .04em; color: #A99E80; text-decoration: none; }
 .w-kos .ask:hover { color: #F1D58A; text-decoration: underline; }
-@media (max-width: 520px) { .w-kos { padding: 12px 4%; } .w-kos .orr { width: 42%; } .w-kos .k { font-size: 8px; letter-spacing: .1em; white-space: nowrap; } .w-kos .ask, .w-kos .scale { display: none; } .w-kos .sent { min-height: 0; } }
-
-@media (prefers-reduced-motion: reduce) { .w-kos .twk-sky i { animation: none; } .w-twin .portal span, .w-twin .holo::before, .w-twin .holo.pop { animation: none; } .w-sotd .twk-sky i, .w-sotd .res { animation: none; transition: none; } .proj, .face, .peek { transition: none; } .blink, .w-term .cur, .w-novem .twk-sky i { animation: none; } }
+.w-kos .comet { position: absolute; top: 12%; left: -10%; width: 70px; height: 1.5px; background: linear-gradient(90deg, transparent, #F3E7C9); border-radius: 2px; opacity: 0; transform: rotate(14deg); animation: kos-comet 11s ease-in 3s infinite; }
+.w-kos.stir .rim { animation: kos-glow 1.4s ease-out; }
+@keyframes kos-rot { to { transform: rotate(360deg); } }
+@keyframes kos-breathe { 50% { transform: scale(1.5); opacity: .05; } }
+@keyframes kos-comet { 0% { left: -10%; opacity: 0; } 4% { opacity: .9; } 12% { left: 60%; opacity: 0; } 100% { left: 60%; opacity: 0; } }
+@keyframes kos-glow { 0% { stroke: #FFF3C4; filter: drop-shadow(0 0 10px #F1D58A); } 100% { stroke: #C9A45C; filter: none; } }
+@media (max-width: 520px) { .w-kos .kos-line { display: none; } .w-kos .k { font-size: 9px; } .w-kos .ask { font-size: 10px; right: 10px; bottom: 8px; } }
+@media (prefers-reduced-motion: reduce) { .w-kos .twk-sky i, .w-kos .gr, .w-kos .halo, .w-kos .comet, .w-kos.stir .rim { animation: none; } .w-twin .portal span, .w-twin .holo::before, .w-twin .holo.pop { animation: none; } .w-sotd .twk-sky i, .w-sotd .res { animation: none; transition: none; } .proj, .face, .peek { transition: none; } .blink, .w-term .cur, .w-novem .twk-sky i { animation: none; } }

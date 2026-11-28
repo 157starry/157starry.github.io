@@ -214,45 +214,42 @@ window.LAB_WORLDS = (function () {
     },
   });
 
-  // Purrfect Tense · Jam Kosmik — a brass orrery with a tiny time lever
-  const KOS_P = [["mercury", 26, "#A8917E", 4], ["venus", 38, "#E2BF7E", 5], ["earth", 50, "#3A7BD0", 5.5], ["mars", 62, "#C2583A", 4.5], ["jupiter", 78, "#C99A6E", 8], ["saturn", 93, "#E3C88E", 6.5]];
-  const KOS_L = [["had visited", " Bali before 2020.", "Past Perfect", "S + had + V3", 3], ["visited", " Bali last year.", "Simple Past", "S + V2", 2],
-    ["was visiting", " Bali when it rained.", "Past Continuous", "S + was/were + V-ing", 2], ["have visited", " Bali twice.", "Present Perfect", "S + have/has + V3", 1],
-    ["visit", " Bali every year.", "Simple Present", "S + V1 (s/es)", 0], ["am visiting", " Bali this week.", "Present Continuous", "S + am/is/are + V-ing", 0],
-    ["will visit", " Bali next year.", "Simple Future", "S + will + V1", 4], ["will be visiting", " Bali this time tomorrow.", "Future Continuous", "S + will be + V-ing", 4],
-    ["will have visited", " Bali by 2030.", "Future Perfect", "S + will have + V3", 5]];
+  // Purrfect Tense · Jam Kosmik — a brass cosmic clock that keeps its own time
+  const KOS_P = [[30, "#A8917E", 3], [42, "#E2BF7E", 3.8], [54, "#3A7BD0", 4.2], [66, "#C2583A", 3.4], [80, "#C99A6E", 6], [94, "#E3C88E", 5]];
+  const gear = (cx, cy, r, n) => { let d = ""; for (let i = 0; i < n * 2; i++) { const a0 = (i / (n * 2)) * Math.PI * 2, a1 = ((i + 1) / (n * 2)) * Math.PI * 2, rr = i % 2 ? r : r + 7;
+    d += `${i ? "L" : "M"}${(cx + rr * Math.cos(a0)).toFixed(1)} ${(cy + rr * Math.sin(a0)).toFixed(1)}L${(cx + rr * Math.cos(a1)).toFixed(1)} ${(cy + rr * Math.sin(a1)).toFixed(1)}`; }
+    return `<g class="gr" style="transform-origin:${cx}px ${cy}px"><path d="${d}Z"/><circle cx="${cx}" cy="${cy}" r="${r * .62}"/><circle cx="${cx}" cy="${cy}" r="${r * .16}"/></g>`; };
+  const ROMAN = ["XII", "I", "II", "III", "IV", "V", "VI", "VII", "VIII", "IX", "X", "XI"];
   W.push({
     test: (p) => /purrfect|jam.?kosmik|\/tenses\/?$/i.test(p.name + " " + p.url), cls: "w-kos", sticker: ["new ✧", "pink"],
-    html: (p) => `<div class="twk-sky">${Array.from({ length: 24 }, () => `<i style="left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-delay:${(Math.random() * 3).toFixed(1)}s"></i>`).join("")}</div>
-      <div class="orr">${svg("0 50 200 100", `<g class="orbits">${KOS_P.map(([id, r]) => `<ellipse data-o="${id}" cx="100" cy="100" rx="${r}" ry="${(r * .44).toFixed(1)}"/>`).join("")}</g>
-        <line class="arm" x1="100" y1="100" x2="100" y2="100"/><circle cx="100" cy="100" r="17" fill="#F2C14E" opacity=".18"/><circle cx="100" cy="100" r="10" fill="#F7D774"/>
-        ${KOS_P.map(([id, , c, s]) => `<g class="pl" data-p="${id}">${id === "saturn" ? `<ellipse rx="${s * 1.9}" ry="${s * .6}" fill="none" stroke="#E3C88E" stroke-width="1.4"/>` : ""}<circle r="${s}" fill="${c}"/></g>`).join("")}`)}</div>
-      <div class="side"><div class="k">✦ JAM KOSMIK · TIME LEVER</div><p class="sent" aria-live="polite"></p><div class="meta"><b></b><code></code></div>
-        <div class="lever"><button type="button" class="st" data-d="-1" aria-label="Back in time">‹</button><input type="range" min="0" max="8" step="1" value="4" aria-label="Time lever"><button type="button" class="st" data-d="1" aria-label="Forward in time">›</button></div>
-        <div class="scale"><span>past</span><span>now</span><span>future</span></div>
-        ${p.url ? `<a class="ask" href="${p.url}" target="_blank" rel="noopener">turn the real lever · 16 tenses ↗</a>` : ""}</div>`,
+    html: (p) => `<div class="twk-sky">${Array.from({ length: 34 }, () => `<i style="left:${Math.random() * 100}%;top:${Math.random() * 100}%;animation-delay:${(Math.random() * 4).toFixed(1)}s"></i>`).join("")}</div><span class="comet"></span>
+      ${svg("0 0 400 228", `<g class="gears">${gear(70, 176, 46, 14)}${gear(334, 52, 38, 12)}${gear(352, 190, 22, 9)}</g>
+        <g class="face"><circle cx="200" cy="114" r="104" class="rim"/><circle cx="200" cy="114" r="96" class="rim2"/>
+        ${Array.from({ length: 60 }, (_, i) => { const a = i * Math.PI / 30, r1 = i % 5 ? 92 : 88; return `<line x1="${(200 + r1 * Math.sin(a)).toFixed(1)}" y1="${(114 - r1 * Math.cos(a)).toFixed(1)}" x2="${(200 + 96 * Math.sin(a)).toFixed(1)}" y2="${(114 - 96 * Math.cos(a)).toFixed(1)}" class="${i % 5 ? "tk" : "tk big"}"/>`; }).join("")}
+        ${ROMAN.map((n, i) => { const a = i * Math.PI / 6; return `<text x="${(200 + 77 * Math.sin(a)).toFixed(1)}" y="${(118 - 77 * Math.cos(a)).toFixed(1)}">${n}</text>`; }).join("")}</g>
+        <g class="orbits">${KOS_P.map(([r]) => `<ellipse cx="200" cy="114" rx="${(r * .62).toFixed(1)}" ry="${(r * .24).toFixed(1)}"/>`).join("")}</g>
+        <circle cx="200" cy="114" r="20" fill="#F2C14E" opacity=".14" class="halo"/>
+        ${KOS_P.map(([, c, s], k) => `<circle class="pl" data-k="${k}" r="${s * .8}" fill="${c}"/>`).join("")}
+        <line class="hand h" x1="200" y1="114" x2="200" y2="74"/><line class="hand m" x1="200" y1="114" x2="200" y2="46"/><line class="hand s" x1="200" y1="124" x2="200" y2="38"/>
+        <circle cx="200" cy="114" r="7" fill="#F7D774"/><circle cx="200" cy="114" r="2.4" fill="#8A6A2E"/>`)}
+      <div class="k">✦ JAM KOSMIK</div><div class="kos-line">some clocks<br>don't tell time.<br>they keep it.</div>
+      ${p.url ? `<a class="ask" href="${p.url}" target="_blank" rel="noopener">enter the observatory ↗</a>` : ""}`,
     init(el) {
-      const rng = el.querySelector("input"), arm = el.querySelector(".arm"), still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
-      const pls = KOS_P.map(([id, r], k) => ({ id, r, a: k * 1.7, v: .9 / Math.sqrt(r), g: el.querySelector(`[data-p="${id}"]`) }));
-      let cur = 4;
-      function place() {
-        pls.forEach((p) => { const x = 100 + p.r * Math.cos(p.a), y = 100 + p.r * .44 * Math.sin(p.a); p.x = x; p.y = y; p.g.setAttribute("transform", `translate(${x.toFixed(1)} ${y.toFixed(1)})`); });
-        const t = pls[KOS_L[cur][4]]; arm.setAttribute("x2", t.x.toFixed(1)); arm.setAttribute("y2", t.y.toFixed(1));
+      const still = window.matchMedia && matchMedia("(prefers-reduced-motion: reduce)").matches;
+      const pls = [...el.querySelectorAll(".pl")].map((g, k) => ({ g, r: KOS_P[k][0], a: k * 1.9, v: 1.1 / Math.sqrt(KOS_P[k][0]) }));
+      const H = el.querySelector(".hand.h"), M = el.querySelector(".hand.m"), S = el.querySelector(".hand.s");
+      const hand = (ln, deg, len, back) => { const a = deg * Math.PI / 180; ln.setAttribute("x1", (200 - back * Math.sin(a)).toFixed(1)); ln.setAttribute("y1", (114 + back * Math.cos(a)).toFixed(1)); ln.setAttribute("x2", (200 + len * Math.sin(a)).toFixed(1)); ln.setAttribute("y2", (114 - len * Math.cos(a)).toFixed(1)); };
+      let boost = 0;
+      function frame(dt) {
+        pls.forEach((p) => { p.a += p.v * (1 + boost * 6) * dt; p.g.setAttribute("cx", (200 + p.r * .62 * Math.cos(p.a)).toFixed(1)); p.g.setAttribute("cy", (114 + p.r * .24 * Math.sin(p.a)).toFixed(1)); });
+        const d = new Date(), s = d.getSeconds() + d.getMilliseconds() / 1000, m = d.getMinutes() + s / 60, h = (d.getHours() % 12) + m / 60;
+        hand(H, h * 30, 40, 6); hand(M, m * 6, 66, 8); hand(S, s * 6, 78, 12);
+        boost = Math.max(0, boost - dt * .7);
       }
-      function set(v) {
-        cur = Math.max(0, Math.min(8, v)); rng.value = cur;
-        const [verb, post, name, f, pi] = KOS_L[cur];
-        el.querySelector(".sent").innerHTML = `I <mark>${verb}</mark>${post}`;
-        el.querySelector(".meta b").textContent = name; el.querySelector(".meta code").textContent = f;
-        rng.setAttribute("aria-valuetext", name);
-        el.querySelectorAll("[data-o]").forEach((o) => o.classList.toggle("on", o.dataset.o === KOS_P[pi][0]));
-        el.querySelectorAll(".pl").forEach((g) => g.classList.toggle("on", g.dataset.p === KOS_P[pi][0]));
-        place();
-      }
-      rng.oninput = () => set(+rng.value);
-      el.querySelectorAll(".st").forEach((b) => b.onclick = () => set(cur + +b.dataset.d));
-      set(4);
-      if (!still) { let last = 0; const tick = (ts) => { if (!el.isConnected) return; const dt = Math.min(50, ts - (last || ts)); last = ts; pls.forEach((p) => p.a += p.v * dt / 1000); place(); requestAnimationFrame(tick); }; requestAnimationFrame(tick); }
+      el.addEventListener("click", (e) => { if (!e.target.closest("a")) { boost = 1; el.classList.remove("stir"); void el.offsetWidth; el.classList.add("stir"); } });
+      frame(0);
+      if (!still) { let last = 0; const tick = (ts) => { if (!el.isConnected) return; frame(Math.min(.05, (ts - (last || ts)) / 1000)); last = ts; requestAnimationFrame(tick); }; requestAnimationFrame(tick); }
+      else setInterval(() => frame(0), 1000);
     },
   });
 
